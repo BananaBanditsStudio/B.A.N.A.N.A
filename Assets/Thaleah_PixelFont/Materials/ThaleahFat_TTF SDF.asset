@@ -190,7 +190,7 @@ Material:
     - _IsoPerimeter: {r: 0, g: 0, b: 0, a: 0}
     - _MaskCoord: {r: 0, g: 0, b: 32767, a: 32767}
     - _Opacity: {r: 0.5661764, g: 0.5661764, b: 0.5661764, a: 0}
-    - _OutlineColor: {r: 0.43527523, g: 0.43527523, b: 0.43527523, a: 1}
+    - _OutlineColor: {r: 0.4352752, g: 0.4352752, b: 0.4352752, a: 1}
     - _OutlineColor1: {r: 0, g: 0, b: 0, a: 1}
     - _OutlineColor2: {r: 0.009433985, g: 0.02534519, b: 1, a: 1}
     - _OutlineColor3: {r: 0, g: 0, b: 0, a: 1}
