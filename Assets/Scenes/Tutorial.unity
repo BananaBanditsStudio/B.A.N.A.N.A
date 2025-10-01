@@ -131,7 +131,7 @@ GameObject:
   m_Layer: 0
   m_Name: Path1
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -264,7 +264,7 @@ GameObject:
   m_Layer: 0
   m_Name: Path1 (2)
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -739,7 +739,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: a1e8049d705148e45be6f16d4979c74b, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 0.608
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: a1e8049d705148e45be6f16d4979c74b, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1111,7 +1111,7 @@ GameObject:
   m_Layer: 0
   m_Name: Path1 (3)
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -1179,7 +1179,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7034251830636075039, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -7.8920436
+      value: -7.59
       objectReference: {fileID: 0}
     - target: {fileID: 7034251830636075039, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1218,6 +1218,14 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7693431494012004112, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+      propertyPath: lookAngle
+      value: 80
+      objectReference: {fileID: 0}
+    - target: {fileID: 7693431494012004112, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+      propertyPath: chaseSpeed
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7693431494012004112, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: 'waypoints.Array.data[0]'
       value: 
       objectReference: {fileID: 97063352}
@@ -1254,7 +1262,7 @@ GameObject:
   m_Layer: 0
   m_Name: Path1 (1)
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1

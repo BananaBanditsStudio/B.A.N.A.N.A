@@ -34,8 +34,8 @@ ModelImporter:
       name: Armature|Armature|Basic_Jump|baselayer
       takeName: Armature|Armature|Basic_Jump|baselayer
       internalID: -6219892372442979867
-      firstFrame: 0
-      lastFrame: 177
+      firstFrame: 40
+      lastFrame: 100
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
