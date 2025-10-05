@@ -66,5 +66,19 @@
     "explorer.fileNesting.patterns": {
         "*.sln": "*.csproj",
     },
-    "dotnet.defaultSolution": "B.A.N.A.N.A.sln"
+    "dotnet.defaultSolution": "B.A.N.A.N.A.sln",
+    "omnisharp.enableEditorConfigSupport": true,
+    "omnisharp.enableImportCompletion": true,
+    "omnisharp.enableRoslynAnalyzers": true,
+    "omnisharp.useGlobalMono": "never",
+    "omnisharp.useModernNet": true,
+    "csharp.semanticHighlighting.enabled": true,
+    "csharp.inlayHints.parameters.enabled": true,
+    "csharp.inlayHints.types.enabled": true,
+    "csharp.format.enable": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
+    }
 }

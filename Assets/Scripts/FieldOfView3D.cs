@@ -61,20 +61,20 @@ public class FieldOfView3D : MonoBehaviour
         {
             Transform t = _targetsBuffer[i].transform;
             
-            // Debug: Log what objects are found in the overlap sphere
-            Debug.Log($"Found object in FOV: {t.name}, Tag: {t.tag}");
+            // // Debug: Log what objects are found in the overlap sphere
+            // Debug.Log($"Found object in FOV: {t.name}, Tag: {t.tag}");
             
             // Only detect objects tagged as "Player"
             if (!t.CompareTag("Player"))
             {
-                Debug.Log($"Object {t.name} is not tagged as Player, skipping");
+                // Debug.Log($"Object {t.name} is not tagged as Player, skipping");
                 continue;
             }
                 
             Vector3 dirToTarget = (t.position - pos).normalized;
             float angleToTarget = Vector3.Angle(transform.forward, dirToTarget);
 
-            Debug.Log($"Player {t.name} found! Distance: {Vector3.Distance(pos, t.position)}, Angle: {angleToTarget}");
+            // Debug.Log($"Player {t.name} found! Distance: {Vector3.Distance(pos, t.position)}, Angle: {angleToTarget}");
 
             if (angleToTarget <= viewAngle * 0.5f)
             {
@@ -85,18 +85,18 @@ public class FieldOfView3D : MonoBehaviour
                 
                 if (Physics.Raycast(pos, dirToTarget, out RaycastHit hit, distToTarget, obstacleMask, QueryTriggerInteraction.Ignore))
                 {
-                    Debug.Log($"Player {t.name} is blocked by obstacle: {hit.collider.name} at distance {hit.distance}");
+                    // Debug.Log($"Player {t.name} is blocked by obstacle: {hit.collider.name} at distance {hit.distance}");
                     Debug.DrawRay(pos, dirToTarget * hit.distance, Color.red, 0.1f);
                 }
                 else
                 {
                     visibleTargets.Add(t);
-                    Debug.Log($"Player {t.name} added to visible targets! (No obstacle blocking)");
+                    // Debug.Log($"Player {t.name} added to visible targets! (No obstacle blocking)");
                 }
             }
             else
             {
-                Debug.Log($"Player {t.name} is outside view angle (current: {angleToTarget}, max: {viewAngle * 0.5f})");
+                // Debug.Log($"Player {t.name} is outside view angle (current: {angleToTarget}, max: {viewAngle * 0.5f})");
             }
         }
     }

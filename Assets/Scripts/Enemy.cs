@@ -237,11 +237,14 @@ public class SimplePatrol : MonoBehaviour
             // Start chasing the first visible target
             currentTarget = fieldOfView.visibleTargets[0];
             isChasing = true;
-            timeSinceLastSeen = 0f;
+            timeSinceLastSeen = 0f; 
             
             // Stop any current patrol behavior
             StopAllCoroutines();
             busy = false;
+            
+            // Ensure we're not in looking around animation when chasing
+            SetLookingAroundAnimation(false);
         }
         else if (!isDetected && isChasing)
         {
