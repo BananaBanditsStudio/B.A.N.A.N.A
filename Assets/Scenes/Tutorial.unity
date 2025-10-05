@@ -194,6 +194,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!115 &122819853
+MonoScript:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  serializedVersion: 7
+  m_DefaultReferences: {}
+  m_Icon: {fileID: 0}
+  m_Type: 0
+  m_ExecutionOrder: 0
+  m_ClassName: MeshyBridge
+  m_Namespace: 
+  m_AssemblyName: MeshyAssembly
 --- !u!1 &154192238
 GameObject:
   m_ObjectHideFlags: 0
@@ -1685,7 +1700,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 0.75864}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2119788232}
   m_Father: {fileID: 507150958}
   m_LocalEulerAnglesHint: {x: 0, y: -301.177, z: 0}
 --- !u!114 &957708239
@@ -2388,6 +2404,78 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!1001 &1502055832
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 957708238}
+    m_Modifications:
+    - target: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.706676
+      objectReference: {fileID: 0}
+    - target: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.012340683
+      objectReference: {fileID: 0}
+    - target: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.70699906
+      objectReference: {fileID: 0}
+    - target: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.024677671
+      objectReference: {fileID: 0}
+    - target: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8771091787928289351, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      propertyPath: m_Name
+      value: Blow Dart Weapon
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8771091787928289351, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2119788233}
+  m_SourcePrefab: {fileID: -4161369568681901532, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
 --- !u!1 &1550817034
 GameObject:
   m_ObjectHideFlags: 0
@@ -3066,6 +3154,65 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1796578264}
   m_CullTransparentMesh: 1
+--- !u!1 &1846708486
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1846708488}
+  - component: {fileID: 1846708487}
+  m_Layer: 0
+  m_Name: MeshyBridge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1846708487
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1846708486}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 1891254709}
+  m_Name: 
+  m_EditorClassIdentifier: MeshyAssembly::MeshyBridge
+--- !u!4 &1846708488
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1846708486}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!115 &1891254709
+MonoScript:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  serializedVersion: 7
+  m_DefaultReferences: {}
+  m_Icon: {fileID: 0}
+  m_Type: 0
+  m_ExecutionOrder: 0
+  m_ClassName: MeshyBridge
+  m_Namespace: 
+  m_AssemblyName: MeshyAssembly
 --- !u!1 &1908558764
 GameObject:
   m_ObjectHideFlags: 0
@@ -3252,6 +3399,50 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EventOnlyInteractable
   useEvents: 1
   promptMessage: Press E to open door
+--- !u!1 &2039177086
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2039177088}
+  - component: {fileID: 2039177087}
+  m_Layer: 0
+  m_Name: MeshyBridge
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2039177087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2039177086}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 122819853}
+  m_Name: 
+  m_EditorClassIdentifier: MeshyAssembly::MeshyBridge
+--- !u!4 &2039177088
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2039177086}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2072064011
 GameObject:
   m_ObjectHideFlags: 0
@@ -3353,6 +3544,38 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d4f702dff3fd6d4469f3a26df167bac0, type: 3}
+--- !u!1 &2119788231 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8771091787928289351, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+  m_PrefabInstance: {fileID: 1502055832}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &2119788232 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -3910990755373119420, guid: 61d9d2b5b88904a4bae814336a8f10b5, type: 3}
+  m_PrefabInstance: {fileID: 1502055832}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &2119788233
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2119788231}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &2125868724
 GameObject:
   m_ObjectHideFlags: 0
@@ -3507,3 +3730,5 @@ SceneRoots:
   - {fileID: 405529065}
   - {fileID: 1030698915}
   - {fileID: 638235841}
+  - {fileID: 1846708488}
+  - {fileID: 2039177088}
