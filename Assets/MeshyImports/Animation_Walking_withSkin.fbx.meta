@@ -31,7 +31,7 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature|Armature|walking_man|baselayer
+      name: walking
       takeName: Armature|Armature|walking_man|baselayer
       internalID: -2901233246522174405
       firstFrame: 0
