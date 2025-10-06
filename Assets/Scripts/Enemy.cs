@@ -17,7 +17,7 @@ public class SimplePatrol : MonoBehaviour
 
     [Header("Look-around")]
     public bool lookAroundAtWaypoint = true;
-    [Range(0f,180f)] public float lookAngle = 60f;
+    [Range(0f,360f)] public float lookAngle = 60f;
     public int sweeps = 1;
     public float lookTurnSpeed = 180f;
     public float waitAtWaypoint = 1f;
@@ -35,6 +35,9 @@ public class SimplePatrol : MonoBehaviour
     public float attackRange = 2f;
     public float attackCooldown = 2f;
     private float lastAttackTime = 0f;
+    public float damage = 10f;
+    public GameObject player;
+    private PlayerHealth playerHealth;
 
     int index = 0, dir = 1;
     public bool loop = true;
@@ -57,6 +60,8 @@ public class SimplePatrol : MonoBehaviour
         {
             Debug.LogWarning("FieldOfView3D component not found in children. Make sure FieldOfView3D script is attached to a child GameObject.");
         }
+
+        playerHealth = player.GetComponent<PlayerHealth>();
     }
 
     void Update()
@@ -126,6 +131,7 @@ public class SimplePatrol : MonoBehaviour
                 
                 // Stop moving during attack
                 // You can add attack logic here (damage, etc.)
+                StartCoroutine(DealDamageAfterDelay(1.3f));
             }
             else if (distanceToTarget > attackRange)
             {
@@ -273,5 +279,12 @@ public class SimplePatrol : MonoBehaviour
         {
             fieldOfView.OnDetectionStateChanged -= OnPlayerDetected;
         }
+    }
+
+
+    private IEnumerator DealDamageAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        playerHealth.TakeDamage(damage);
     }
 }
