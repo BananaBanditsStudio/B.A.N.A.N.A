@@ -3621,6 +3621,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8771091787928289351, guid: 792547fb8f7a1f4429087ff187e6fd18, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2119788233}
+    - targetCorrespondingSourceObject: {fileID: 8771091787928289351, guid: 792547fb8f7a1f4429087ff187e6fd18, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2119788236}
   m_SourcePrefab: {fileID: -4161369568681901532, guid: 792547fb8f7a1f4429087ff187e6fd18, type: 3}
 --- !u!1 &1550817034
 GameObject:
@@ -4558,7 +4561,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7034251830636075039, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       insertIndex: 0
       addedObject: {fileID: 1342093751}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8827158906207099270, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1881763405}
   m_SourcePrefab: {fileID: 100100000, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
 --- !u!224 &1748368674 stripped
 RectTransform:
@@ -4684,6 +4690,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1881763400 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8827158906207099270, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+  m_PrefabInstance: {fileID: 1726202259}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1881763405
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1881763400}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13976b17c936e7f4facf07f0e77fbd48, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  health: 50
 --- !u!1001 &1885644673
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5313,6 +5337,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2119788236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2119788231}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59e3dfb5a8b63854384c1c5403698695, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  damage: 10
+  range: 100
+  fpsCam: {fileID: 0}
 --- !u!1 &2125868724
 GameObject:
   m_ObjectHideFlags: 0
