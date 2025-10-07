@@ -179,8 +179,6 @@ MonoBehaviour:
   m_Script: {fileID: 625691482}
   m_Name: 
   m_EditorClassIdentifier: MeshyAssembly::MeshyBridge
-  _tempCachePath: C:/Users/freds/AppData/Local/Temp/DefaultCompany/B_A_N_A_N_A_S
-  _serverStop: 0
 --- !u!4 &100117467
 Transform:
   m_ObjectHideFlags: 0
@@ -1486,7 +1484,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 14.330017, y: 0}
-  m_SizeDelta: {x: 800, y: 800}
+  m_SizeDelta: {x: 900, y: 800}
   m_Pivot: {x: 0, y: 0}
 --- !u!114 &678895544
 MonoBehaviour:
@@ -2239,8 +2237,6 @@ MonoBehaviour:
   m_Script: {fileID: 1567851626}
   m_Name: 
   m_EditorClassIdentifier: MeshyAssembly::MeshyBridge
-  _tempCachePath: C:/Users/freds/AppData/Local/Temp/DefaultCompany/B_A_N_A_N_A_S
-  _serverStop: 0
 --- !u!4 &889926770
 Transform:
   m_ObjectHideFlags: 0
@@ -4411,6 +4407,10 @@ PrefabInstance:
       value: -0.013038502
       objectReference: {fileID: 0}
     - target: {fileID: 38916637956065444, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 38916637956065444, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.00031438842
       objectReference: {fileID: 0}
@@ -4440,7 +4440,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3651299852246373452, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.338
+      value: 0.489
       objectReference: {fileID: 0}
     - target: {fileID: 3651299852246373452, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_LocalPosition.z
@@ -4642,8 +4642,6 @@ MonoBehaviour:
   m_Script: {fileID: 1891254709}
   m_Name: 
   m_EditorClassIdentifier: MeshyAssembly::MeshyBridge
-  _tempCachePath: C:/Users/freds/AppData/Local/Temp/DefaultCompany/B_A_N_A_N_A_S
-  _serverStop: 0
 --- !u!4 &1846708488
 Transform:
   m_ObjectHideFlags: 0
@@ -5084,8 +5082,6 @@ MonoBehaviour:
   m_Script: {fileID: 122819853}
   m_Name: 
   m_EditorClassIdentifier: MeshyAssembly::MeshyBridge
-  _tempCachePath: C:/Users/freds/AppData/Local/Temp/DefaultCompany/B_A_N_A_N_A_S
-  _serverStop: 0
 --- !u!4 &2039177088
 Transform:
   m_ObjectHideFlags: 0
