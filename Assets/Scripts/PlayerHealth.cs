@@ -34,9 +34,11 @@ public class PlayerHealth : MonoBehaviour
     {
         health = Mathf.Clamp(health, 0, maxHealth);
         UpdateHealthUI();
-        if (overlay.color.a > 0) {
+        if (overlay.color.a > 0)
+        {
             durationTimer += Time.deltaTime;
-            if (durationTimer > duration) {
+            if (durationTimer > duration)
+            {
                 float tempAlpha = overlay.color.a;
                 tempAlpha -= fadeSpeed * Time.deltaTime;
                 overlay.color = new Color(overlay.color.r, overlay.color.g, overlay.color.b, tempAlpha);
@@ -51,7 +53,8 @@ public class PlayerHealth : MonoBehaviour
         float fillB = backHealthBar.fillAmount;
         float hFraction = health / maxHealth;
 
-        if (fillB > hFraction) {
+        if (fillB > hFraction)
+        {
             // Taking Damage - front bar drops instantly, back bar lerps down
             frontHealthBar.fillAmount = hFraction;
             backHealthBar.color = Color.red;
@@ -59,8 +62,9 @@ public class PlayerHealth : MonoBehaviour
             float percentComplete = lerpTimer / chipSpeed;
             backHealthBar.fillAmount = Mathf.Lerp(fillB, hFraction, percentComplete);
         }
-        
-        if (fillF < hFraction) {
+
+        if (fillF < hFraction)
+        {
             // Healing - back bar jumps up instantly, front bar lerps up
             backHealthBar.fillAmount = hFraction;
             backHealthBar.color = Color.green;
@@ -70,7 +74,8 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float damage){
+    public void TakeDamage(float damage)
+    {
         health -= damage;
         lerpTimer = 0f;
         // Flash the image
@@ -79,7 +84,8 @@ public class PlayerHealth : MonoBehaviour
     }
 
 
-    public void Heal(float healAmount){
+    public void Heal(float healAmount)
+    {
         health += healAmount;
         health = Mathf.Clamp(health, 0, maxHealth);
         lerpTimer = 0f;
