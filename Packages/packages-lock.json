@@ -119,7 +119,7 @@
       "dependencies": {}
     },
     "com.unity.formats.fbx": {
-      "version": "5.1.4",
+      "version": "5.1.1",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -245,7 +245,7 @@
       }
     },
     "com.unity.test-framework": {
-      "version": "1.6.0",
+      "version": "1.5.1",
       "depth": 0,
       "source": "builtin",
       "dependencies": {
