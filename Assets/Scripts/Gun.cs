@@ -9,6 +9,8 @@ public class gun : MonoBehaviour
 
     public GameObject grenadePrefab;
     public Transform throwPoint;
+    public GameObject gunEffect;
+    public GameObject impactEffect;
     // Update is called once per frame
     void Update()
     {
@@ -27,6 +29,9 @@ public class gun : MonoBehaviour
     void Shoot()
     {
         RaycastHit hit;
+
+
+        Instantiate(gunEffect, transform.position, transform.rotation);
         if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
         {
             Debug.Log("Hit: " + hit.collider.name);
@@ -34,6 +39,7 @@ public class gun : MonoBehaviour
             EnemyDamage target = hit.transform.GetComponent<EnemyDamage>();
             if (target != null)
             {
+                Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
                 target.TakeDamage(damage);
             }
         }

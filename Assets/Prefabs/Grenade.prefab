@@ -157,6 +157,6 @@ MonoBehaviour:
   delay: 3
   damageRadius: 20
   explosionForce: 1200
-  explosionEffect: {fileID: 2433282508537954060, guid: 3ef3ae421f71c5c4e97fe12dc2fc6312, type: 3}
+  explosionEffect: {fileID: 4425129568585013132, guid: bbeeb0ddc21369746aaaae5c5c1c09cf, type: 3}
   hasBeenThrown: 0
   throwableType: 0

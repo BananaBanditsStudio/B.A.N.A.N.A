@@ -5686,7 +5686,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7034251830636075039, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.1
+      value: 0.88
       objectReference: {fileID: 0}
     - target: {fileID: 7034251830636075039, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_LocalPosition.z
@@ -6696,6 +6696,8 @@ MonoBehaviour:
   fpsCam: {fileID: 957708237}
   grenadePrefab: {fileID: 7430179988462413191, guid: 0b66e6e248dd61e4daf903e009ece40c, type: 3}
   throwPoint: {fileID: 773963350}
+  gunEffect: {fileID: 5880797563127281583, guid: 265d3a5ba69981a4698ceabcedf368b0, type: 3}
+  impactEffect: {fileID: 8771972552311404799, guid: bbf9e36a48d6c5648a13889afab076fd, type: 3}
 --- !u!1 &2125868724
 GameObject:
   m_ObjectHideFlags: 0
