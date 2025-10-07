@@ -85,21 +85,28 @@ public class SimplePatrol : MonoBehaviour
         Vector3 pos = transform.position;
         Vector3 to = (tgt - pos); to.y = 0f;
 
-        // move
-        Vector3 step = to.normalized * moveSpeed * Time.deltaTime;
-        if (step.sqrMagnitude >= to.sqrMagnitude) transform.position = tgt;
-        else transform.position += step;
-
-        // face movement
-        if (to.sqrMagnitude > 0.0001f)
+        // Check if we've arrived at the waypoint
+        bool hasArrived = (transform.position - tgt).sqrMagnitude <= arriveDist * arriveDist;
+        
+        // Only move if we haven't arrived yet and we're not busy (not in AtPoint coroutine)
+        if (!hasArrived && !busy)
         {
-            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(to), 720f * Time.deltaTime);
-            // Set animation to moving (not looking around)
-            SetLookingAroundAnimation(false);
+            // move
+            Vector3 step = to.normalized * moveSpeed * Time.deltaTime;
+            if (step.sqrMagnitude >= to.sqrMagnitude) transform.position = tgt;
+            else transform.position += step;
+
+            // face movement
+            if (to.sqrMagnitude > 0.0001f)
+            {
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(to), 720f * Time.deltaTime);
+                // Set animation to moving (not looking around)
+                SetLookingAroundAnimation(false);
+            }
         }
 
         // arrived?
-        if ((transform.position - tgt).sqrMagnitude <= arriveDist * arriveDist)
+        if (hasArrived && !busy)
             StartCoroutine(AtPoint());
     }
 
@@ -178,12 +185,13 @@ public class SimplePatrol : MonoBehaviour
         if (busy) yield break;
         busy = true;
 
+        // Set animation to idle/looking around immediately when reaching waypoint
+        SetLookingAroundAnimation(true);
+
         if (waitAtWaypoint > 0f) yield return new WaitForSeconds(waitAtWaypoint);
 
         if (lookAroundAtWaypoint && lookAngle > 1f && sweeps > 0)
         {
-            // Set animation to idle/looking around
-            SetLookingAroundAnimation(true);
             
             Quaternion baseRot = transform.rotation;
             Quaternion left = baseRot * Quaternion.Euler(0f, -lookAngle, 0f);
