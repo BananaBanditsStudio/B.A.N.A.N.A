@@ -17,7 +17,7 @@ public class SimplePatrol : MonoBehaviour
 
     [Header("Look-around")]
     public bool lookAroundAtWaypoint = true;
-    [Range(0f,360f)] public float lookAngle = 60f;
+    [Range(0f, 360f)] public float lookAngle = 60f;
     public int sweeps = 1;
     public float lookTurnSpeed = 180f;
     public float waitAtWaypoint = 1f;
@@ -30,7 +30,13 @@ public class SimplePatrol : MonoBehaviour
     public float chaseSpeed = 4f;
     public float chaseArriveDist = 1.5f;
     public float losePlayerTime = 3f; // How long to chase after losing sight
-    
+
+    [Header("Audio")]
+    public AudioSource chaseAudio;
+    public AudioClip chaseClip;
+    public float fadeSpeed = 2f;
+
+
     [Header("Attack Behavior")]
     public float attackRange = 2f;
     public float attackCooldown = 2f;
@@ -41,7 +47,7 @@ public class SimplePatrol : MonoBehaviour
 
     int index = 0, dir = 1;
     public bool loop = true;
-    
+
     // Chase state
     Transform currentTarget;
     float timeSinceLastSeen = 0f;
@@ -87,7 +93,7 @@ public class SimplePatrol : MonoBehaviour
 
         // Check if we've arrived at the waypoint
         bool hasArrived = (transform.position - tgt).sqrMagnitude <= arriveDist * arriveDist;
-        
+
         // Only move if we haven't arrived yet and we're not busy (not in AtPoint coroutine)
         if (!hasArrived && !busy)
         {
@@ -125,9 +131,9 @@ public class SimplePatrol : MonoBehaviour
         if (fieldOfView != null && fieldOfView.visibleTargets.Contains(currentTarget))
         {
             timeSinceLastSeen = 0f;
-            
+
             float distanceToTarget = to.magnitude;
-            
+
             // Check if we're close enough to attack
             if (distanceToTarget <= attackRange && Time.time - lastAttackTime >= attackCooldown)
             {
@@ -135,7 +141,7 @@ public class SimplePatrol : MonoBehaviour
                 IsAttacking = true;
                 UpdateAttackAnimation();
                 lastAttackTime = Time.time;
-                
+
                 // Stop moving during attack
                 // You can add attack logic here (damage, etc.)
                 StartCoroutine(DealDamageAfterDelay(1.3f));
@@ -145,7 +151,7 @@ public class SimplePatrol : MonoBehaviour
                 // Move towards target if not in attack range
                 Vector3 step = to.normalized * chaseSpeed * Time.deltaTime;
                 transform.position += step;
-                
+
                 // Stop attacking when moving
                 IsAttacking = false;
                 UpdateAttackAnimation();
@@ -159,13 +165,13 @@ public class SimplePatrol : MonoBehaviour
         {
             // Lost sight of target
             timeSinceLastSeen += Time.deltaTime;
-            
+
             // Continue moving towards last known position for a short time
             if (timeSinceLastSeen <= losePlayerTime)
             {
                 Vector3 step = to.normalized * chaseSpeed * Time.deltaTime;
                 transform.position += step;
-                
+
                 if (to.sqrMagnitude > 0.0001f)
                     transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(to), 720f * Time.deltaTime);
             }
@@ -192,10 +198,10 @@ public class SimplePatrol : MonoBehaviour
 
         if (lookAroundAtWaypoint && lookAngle > 1f && sweeps > 0)
         {
-            
+
             Quaternion baseRot = transform.rotation;
             Quaternion left = baseRot * Quaternion.Euler(0f, -lookAngle, 0f);
-            Quaternion right = baseRot * Quaternion.Euler(0f,  lookAngle, 0f);
+            Quaternion right = baseRot * Quaternion.Euler(0f, lookAngle, 0f);
 
             for (int i = 0; i < sweeps; i++)
             {
@@ -205,7 +211,7 @@ public class SimplePatrol : MonoBehaviour
                 yield return new WaitForSeconds(0.1f);
             }
             yield return TurnTo(baseRot);
-            
+
             // Set animation back to moving
             SetLookingAroundAnimation(false);
         }
@@ -248,38 +254,42 @@ public class SimplePatrol : MonoBehaviour
     {
         if (isDetected && fieldOfView != null && fieldOfView.visibleTargets.Count > 0)
         {
-            // Start chasing the first visible target
             currentTarget = fieldOfView.visibleTargets[0];
             isChasing = true;
-            timeSinceLastSeen = 0f; 
-            
-            // Stop any current patrol behavior
+            timeSinceLastSeen = 0f;
             StopAllCoroutines();
             busy = false;
-            
-            // Ensure we're not in looking around animation when chasing
             SetLookingAroundAnimation(false);
+
+            //  start chase sound
+            if (chaseAudio && chaseClip)
+            {
+                chaseAudio.clip = chaseClip;
+                if (!chaseAudio.isPlaying)
+                    chaseAudio.Play();
+            }
         }
         else if (!isDetected && isChasing)
         {
-            // Player lost, start countdown to stop chasing
             timeSinceLastSeen = 0f;
         }
     }
+
 
     void StopChasing()
     {
         isChasing = false;
         currentTarget = null;
         timeSinceLastSeen = 0f;
-        
-        // Stop attacking when returning to patrol
         IsAttacking = false;
         UpdateAttackAnimation();
-        
-        // Resume patrol from current position
-        // The patrol will continue from wherever we are
+
+        //  stop chase sound
+        if (chaseAudio && chaseAudio.isPlaying)
+            StartCoroutine(FadeOut(chaseAudio, fadeSpeed));
+
     }
+
 
     void OnDestroy()
     {
@@ -295,4 +305,16 @@ public class SimplePatrol : MonoBehaviour
         yield return new WaitForSeconds(delay);
         playerHealth.TakeDamage(damage);
     }
+
+    IEnumerator FadeOut(AudioSource source, float fadeSpeed)
+    {
+        while (source.volume > 0.01f)
+        {
+            source.volume -= Time.deltaTime * fadeSpeed;
+            yield return null;
+        }
+        source.Stop();
+        source.volume = 1f;
+    }
+
 }
