@@ -26,7 +26,7 @@ public class FirstPersonController : MonoBehaviour
     private Camera playerCamera;
 
     private Vector3 velocity;
-    private bool isGrounded;
+    public bool isGrounded;
     private bool isSprinting = false;
 
     void Start()

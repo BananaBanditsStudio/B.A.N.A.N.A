@@ -11,11 +11,18 @@ public class gun : MonoBehaviour
     public Transform throwPoint;
     public GameObject gunEffect;
     public GameObject impactEffect;
+    public AudioSource m_shootingSound;
     // Update is called once per frame
+
+    void Start()
+    {
+        m_shootingSound = GetComponent<AudioSource>();
+    }
     void Update()
     {
         if (Input.GetButtonDown("Fire1"))
         {
+            m_shootingSound.Play();
             Shoot();
         }
 
