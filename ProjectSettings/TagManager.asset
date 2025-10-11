@@ -7,6 +7,7 @@ TagManager:
   - Obstacle
   - Target
   - FxTemporaire
+  - rock
   layers:
   - Default
   - TransparentFX
@@ -18,7 +19,7 @@ TagManager:
   - Obstacle
   - Interactable
   - MiniMap
-  - rock
+  - 
   - 
   - 
   - 
