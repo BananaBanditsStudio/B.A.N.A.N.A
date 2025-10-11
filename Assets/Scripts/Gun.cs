@@ -43,6 +43,12 @@ public class gun : MonoBehaviour
         {
             Debug.Log("Hit: " + hit.collider.name);
 
+            // Check obstacle tag
+            if (hit.collider.CompareTag("Obstacle"))
+            {
+                CreateBulletImpactEffect(hit);
+            }
+
             EnemyDamage target = hit.transform.GetComponent<EnemyDamage>();
             if (target != null)
             {
@@ -64,5 +70,12 @@ public class gun : MonoBehaviour
         {
             Debug.Log("Throwing towards: " + hit.collider.name);
         }
+    }
+
+
+    void CreateBulletImpactEffect(RaycastHit hit)
+    {
+        GameObject hole = Instantiate(GlobalReferences.Instance.bulletImpactEffectPrefab, hit.point, Quaternion.LookRotation(hit.normal));
+        hole.transform.SetParent(hit.collider.transform);
     }
 }

@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 476cc7d7cd9874016adc216baab94a0a
-timeCreated: 1484146680
+guid: b3cedb949dfc6b44aa88e1e82ba6471d
+timeCreated: 1474643541
 licenseType: Store
 MonoImporter:
   serializedVersion: 2
@@ -14,6 +14,6 @@ AssetOrigin:
   serializedVersion: 1
   productId: 73777
   packageName: Legacy Particle Pack
-  packageVersion: 
-  assetPath: Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs
-  uploadId: 0
+  packageVersion: 4.0
+  assetPath: Assets/UnityTechnologies/EffectExamples/Shared/Scripts/DecalDestroyer.cs
+  uploadId: 684565
