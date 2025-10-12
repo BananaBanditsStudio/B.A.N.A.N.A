@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 
 public class gun : MonoBehaviour
@@ -18,6 +19,11 @@ public class gun : MonoBehaviour
     public Transform bulletSpawnPoint; // Point where bullet originates (gun barrel)
     public float bulletSpeed = 100f;
     public float bulletTrailTime = 0.05f; // How long the trail lasts
+
+
+    public ParticleSystem impactParticleSystem;
+    public TrailRenderer dartTrail;
+
 
     // Update is called once per frame
 
@@ -52,6 +58,9 @@ public class gun : MonoBehaviour
         {
             Debug.Log("Hit: " + hit.collider.name);
             bulletEndPoint = hit.point;
+
+            TrailRenderer trail = Instantiate(dartTrail, bulletSpawnPoint.position, Quaternion.identity);
+            StartCoroutine(SpawnDartTrail(trail, hit));
 
             // Check obstacle tag
             if (hit.collider.CompareTag("Obstacle"))
@@ -103,7 +112,7 @@ public class gun : MonoBehaviour
         return bulletSpawnPoint != null ? bulletSpawnPoint.position : transform.position;
     }
 
-    System.Collections.IEnumerator SpawnBulletTrail(Vector3 startPoint, Vector3 endPoint)
+    IEnumerator SpawnBulletTrail(Vector3 startPoint, Vector3 endPoint)
     {
         if (bulletTrailPrefab != null)
         {
@@ -136,5 +145,26 @@ public class gun : MonoBehaviour
             yield return new WaitForSeconds(bulletTrailTime);
             Destroy(trail.gameObject);
         }
+    }
+
+    private IEnumerator SpawnDartTrail(TrailRenderer trail, RaycastHit hit)
+    {
+        float time = 0;
+        Vector3 startPosition = trail.transform.position;
+
+        while (time < 1)
+        {
+            trail.transform.position = Vector3.Lerp(startPosition, hit.point, time);
+            time += Time.deltaTime / trail.time;
+
+            yield return null;
+        }
+
+
+        // Animator.SetBool("isShooting", false);
+        trail.transform.position = hit.point;
+        // Instantiate(impactParticleSystem, hit.point, Quaternion.LookRotation(hit.normal));
+
+        Destroy(trail.gameObject, trail.time);
     }
 }
