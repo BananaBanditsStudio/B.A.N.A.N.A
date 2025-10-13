@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Obstacle
   - Target
+  - FxTemporaire
+  - rock
   layers:
   - Default
   - TransparentFX
