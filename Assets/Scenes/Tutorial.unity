@@ -308,11 +308,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1246997240}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &95394965 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 96bd66c466f210342b525989688168b7, type: 3}
-  m_PrefabInstance: {fileID: 1334277784}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &97063351
 GameObject:
   m_ObjectHideFlags: 0
@@ -3120,7 +3115,7 @@ PrefabInstance:
     - target: {fileID: 7693431494012004112, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: animator
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1732722495}
     - target: {fileID: 7693431494012004112, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: 'waypoints.Array.data[0]'
       value: 
@@ -9842,45 +9837,40 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -4258411891960909470, guid: 96bd66c466f210342b525989688168b7, type: 3}
+      propertyPath: m_Name
+      value: Armature
+      objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: 96bd66c466f210342b525989688168b7, type: 3}
       propertyPath: m_Name
       value: monkey
       objectReference: {fileID: 0}
+    - target: {fileID: 5323635334777669867, guid: 96bd66c466f210342b525989688168b7, type: 3}
+      propertyPath: m_Name
+      value: char1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5866666021909216657, guid: 96bd66c466f210342b525989688168b7, type: 3}
+      propertyPath: m_Avatar
+      value: 
+      objectReference: {fileID: 9000000, guid: d4f702dff3fd6d4469f3a26df167bac0, type: 3}
+    - target: {fileID: 5866666021909216657, guid: 96bd66c466f210342b525989688168b7, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 9b2447db6f2d71540b33840307e731c2, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 96bd66c466f210342b525989688168b7, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 96bd66c466f210342b525989688168b7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1334277786}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 96bd66c466f210342b525989688168b7, type: 3}
 --- !u!4 &1334277785 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 96bd66c466f210342b525989688168b7, type: 3}
   m_PrefabInstance: {fileID: 1334277784}
   m_PrefabAsset: {fileID: 0}
---- !u!95 &1334277786
-Animator:
-  serializedVersion: 7
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 95394965}
-  m_Enabled: 1
-  m_Avatar: {fileID: 9000000, guid: d4f702dff3fd6d4469f3a26df167bac0, type: 3}
-  m_Controller: {fileID: 9100000, guid: 9b2447db6f2d71540b33840307e731c2, type: 2}
-  m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0
 --- !u!4 &1344553098 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5945734381718280981, guid: e2640158a51d3f140b9a300b124fee3c, type: 3}
@@ -12953,6 +12943,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+--- !u!95 &1732722495 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 6226911125582418654, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+  m_PrefabInstance: {fileID: 1140106688}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1732735331
 PrefabInstance:
   m_ObjectHideFlags: 0
