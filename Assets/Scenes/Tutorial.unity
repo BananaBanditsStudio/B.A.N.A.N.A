@@ -3470,7 +3470,11 @@ PrefabInstance:
     - target: {fileID: 7693431494012004112, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: animator
       value: 
-      objectReference: {fileID: 1732722495}
+      objectReference: {fileID: 1334277786}
+    - target: {fileID: 7693431494012004112, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+      propertyPath: IsAttacking
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7693431494012004112, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: 'waypoints.Array.data[0]'
       value: 
@@ -10759,6 +10763,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 96bd66c466f210342b525989688168b7, type: 3}
   m_PrefabInstance: {fileID: 1334277784}
   m_PrefabAsset: {fileID: 0}
+--- !u!95 &1334277786 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: 96bd66c466f210342b525989688168b7, type: 3}
+  m_PrefabInstance: {fileID: 1334277784}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1344553098 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5945734381718280981, guid: e2640158a51d3f140b9a300b124fee3c, type: 3}
@@ -14009,11 +14018,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
---- !u!95 &1732722495 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 6226911125582418654, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
-  m_PrefabInstance: {fileID: 1140106688}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1732735331
 PrefabInstance:
   m_ObjectHideFlags: 0
