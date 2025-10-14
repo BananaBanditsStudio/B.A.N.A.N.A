@@ -44,6 +44,14 @@ public class SimplePatrol : MonoBehaviour
     public float damage = 10f;
     public GameObject player;
     private PlayerHealth playerHealth;
+
+    [Header("Weapon Pickup")]
+    public float weaponDetectionRange = 5f;
+    public float weaponPickupRange = 1.5f;
+    public LayerMask weaponLayerMask = -1;
+    private GameObject targetWeapon = null;
+    private bool isSeekingWeapon = false;
+    private EnemyWeaponHandler weaponHandler;
     
     // Attack state tracking
     private bool isAttackInProgress = false;
@@ -72,19 +80,31 @@ public class SimplePatrol : MonoBehaviour
         }
 
         playerHealth = player.GetComponent<PlayerHealth>();
+        weaponHandler = GetComponent<EnemyWeaponHandler>();
     }
 
     void Update()
     {
         if (waypoints == null || waypoints.Length == 0) return;
 
+        // Check if we need to seek a weapon first
+        if (isSeekingWeapon && targetWeapon != null)
+        {
+            SeekWeapon();
+        }
         // Check if we should be chasing
-        if (isChasing && currentTarget != null)
+        else if (isChasing && currentTarget != null)
         {
             ChasePlayer();
         }
         else
         {
+            // Check for nearby weapons if we don't have one
+            if (weaponHandler != null && !weaponHandler.isHolding)
+            {
+                CheckForNearbyWeapons();
+            }
+            
             Patrol();
         }
     }
@@ -378,6 +398,92 @@ public class SimplePatrol : MonoBehaviour
         }
         source.Stop();
         source.volume = 1f;
+    }
+
+    void CheckForNearbyWeapons()
+    {
+        // Find all colliders within weapon detection range
+        Collider[] nearbyColliders = Physics.OverlapSphere(transform.position, weaponDetectionRange, weaponLayerMask);
+        
+        GameObject closestWeapon = null;
+        float closestDistance = float.MaxValue;
+        
+        foreach (Collider col in nearbyColliders)
+        {
+            // Check if this is a weapon (has Rigidbody and is not kinematic)
+            Rigidbody rb = col.GetComponent<Rigidbody>();
+            if (rb != null && !rb.isKinematic)
+            {
+                float distance = Vector3.Distance(transform.position, col.transform.position);
+                if (distance < closestDistance)
+                {
+                    closestWeapon = col.gameObject;
+                    closestDistance = distance;
+                }
+            }
+        }
+        
+        if (closestWeapon != null)
+        {
+            targetWeapon = closestWeapon;
+            isSeekingWeapon = true;
+        }
+    }
+
+    void SeekWeapon()
+    {
+        if (targetWeapon == null)
+        {
+            isSeekingWeapon = false;
+            return;
+        }
+
+        Vector3 pos = transform.position;
+        Vector3 to = (targetWeapon.transform.position - pos); to.y = 0f;
+        float distanceToWeapon = to.magnitude;
+
+        // Check if weapon is still valid (exists and not picked up by someone else)
+        if (targetWeapon == null || targetWeapon.GetComponent<Rigidbody>() == null || targetWeapon.GetComponent<Rigidbody>().isKinematic)
+        {
+            targetWeapon = null;
+            isSeekingWeapon = false;
+            return;
+        }
+
+        // If we're close enough, pick up the weapon
+        if (distanceToWeapon <= weaponPickupRange)
+        {
+            PickupWeapon();
+        }
+        else
+        {
+            // Move towards the weapon
+            Vector3 step = to.normalized * moveSpeed * Time.deltaTime;
+            if (step.sqrMagnitude >= to.sqrMagnitude) 
+                transform.position = targetWeapon.transform.position;
+            else 
+                transform.position += step;
+
+            // Face the weapon
+            if (to.sqrMagnitude > 0.0001f)
+            {
+                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(to), 720f * Time.deltaTime);
+            }
+        }
+    }
+
+    void PickupWeapon()
+    {
+        if (weaponHandler != null && targetWeapon != null)
+        {
+            // Set the weapon as the bat and equip it
+            weaponHandler.bat = targetWeapon;
+            weaponHandler.EquipBat();
+            
+            // Clear target
+            targetWeapon = null;
+            isSeekingWeapon = false;
+        }
     }
 
 }

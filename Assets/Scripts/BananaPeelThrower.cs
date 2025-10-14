@@ -5,9 +5,11 @@ public class BananaPeelThrower : MonoBehaviour
     [Header("Banana Peel Settings")]
     public float damage = 5f;
     public float range = 50f;
+    public float throwForce = 10f; // Simple throw force
 
     [Header("References")]
     public Camera fpsCam;
+    public Transform throwPoint; // Point from where the banana peel is thrown
     public GameObject bananaPeelPrefab; // Banana peel to spawn on enemy
     public GameObject throwEffect; // Particle effect when shooting
     public AudioSource m_shootingSound;
@@ -34,13 +36,7 @@ public class BananaPeelThrower : MonoBehaviour
 
     void Shoot()
     {
-        // Play throw effect
-        if (throwEffect != null)
-        {
-            Instantiate(throwEffect, transform.position, transform.rotation);
-        }
-
-        // Raycast to detect hit
+        // Raycast from gun to detect enemy hit
         RaycastHit hit;
 
         if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
@@ -51,13 +47,17 @@ public class BananaPeelThrower : MonoBehaviour
             EnemyDamage enemy = hit.transform.GetComponent<EnemyDamage>();
             if (enemy != null)
             {
-                // Spawn banana peel on the enemy
-                if (bananaPeelPrefab != null)
+                // Play throw effect
+                if (throwEffect != null)
                 {
-                    // Spawn banana peel at feet level (adjust y position)
-                    Vector3 spawnPosition = hit.transform.position;
-                    spawnPosition.y = 0.09f;
-                    Instantiate(bananaPeelPrefab, spawnPosition, Quaternion.LookRotation(hit.normal));
+                    Instantiate(throwEffect, throwPoint.position, throwPoint.rotation);
+                }
+
+                // Drop weapon if enemy has one
+                EnemyWeaponHandler weaponHandler = hit.transform.GetComponent<EnemyWeaponHandler>();
+                if (weaponHandler != null)
+                {
+                    weaponHandler.DropBat();
                 }
 
                 // Play animation on enemy and freeze movement
@@ -70,11 +70,48 @@ public class BananaPeelThrower : MonoBehaviour
 
                 // Deal damage
                 enemy.TakeDamage(damage);
+
+                // Calculate target position at enemy's feet level
+                Vector3 targetPosition = hit.transform.position;
+                targetPosition.y = 0.09f;
+
+                // Simple throw to enemy's feet
+                ThrowBananaPeel(targetPosition);
             }
+            // If we didn't hit an enemy, do nothing (don't throw projectile)
         }
     }
 
-    System.Collections.IEnumerator PlayBananaHitAnimation(GameObject enemy, Animator animator)
+    void ThrowBananaPeel(Vector3 targetPosition)
+    {
+        if (bananaPeelPrefab == null || throwPoint == null)
+        {
+            Debug.LogWarning("Banana peel prefab or throw point not assigned!");
+            return;
+        }
+
+        // Create the banana peel at throw point
+        GameObject bananaPeel = Instantiate(bananaPeelPrefab, throwPoint.position, Quaternion.identity);
+        
+        // Add Rigidbody if it doesn't have one
+        Rigidbody rb = bananaPeel.GetComponent<Rigidbody>();
+        if (rb == null)
+        {
+            rb = bananaPeel.AddComponent<Rigidbody>();
+        }
+
+        // Simple throw: point from throw point to target with throw force
+        Vector3 direction = (targetPosition - throwPoint.position).normalized;
+        Vector3 velocity = direction * throwForce;
+        
+        // Add a bit of upward arc
+        velocity.y += 5f;
+        
+        // Apply the velocity
+        rb.linearVelocity = velocity;
+    }
+
+    public System.Collections.IEnumerator PlayBananaHitAnimation(GameObject enemy, Animator animator)
     {
         // Freeze enemy movement by disabling the movement script
         SimplePatrol patrolScript = enemy.GetComponent<SimplePatrol>();
