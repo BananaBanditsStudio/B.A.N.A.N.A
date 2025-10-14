@@ -8,8 +8,6 @@ public class gun : MonoBehaviour
     public float range = 100f;
     public Camera fpsCam;
 
-    public GameObject grenadePrefab;
-    public Transform throwPoint;
     public GameObject gunEffect;
     public GameObject impactEffect;
     public AudioSource m_shootingSound;
@@ -37,12 +35,6 @@ public class gun : MonoBehaviour
         {
             m_shootingSound.Play();
             Shoot();
-        }
-
-        // G button for throwable testing
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            ThrowLethal();
         }
     }
 
@@ -84,21 +76,6 @@ public class gun : MonoBehaviour
         // Create bullet trail effect
         StartCoroutine(SpawnBulletTrail(GetBulletStartPosition(), bulletEndPoint));
     }
-
-    void ThrowLethal()
-    {
-        GameObject lethalPrefab = grenadePrefab;
-        GameObject throwable = Instantiate(lethalPrefab, throwPoint.position, Camera.main.transform.rotation);
-        Rigidbody rb = throwable.GetComponent<Rigidbody>();
-        rb.AddForce(Camera.main.transform.forward * 40f, ForceMode.Impulse);
-        throwable.GetComponent<Throwable>().hasBeenThrown = true;
-
-        if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out RaycastHit hit, range))
-        {
-            Debug.Log("Throwing towards: " + hit.collider.name);
-        }
-    }
-
 
     void CreateBulletImpactEffect(RaycastHit hit)
     {

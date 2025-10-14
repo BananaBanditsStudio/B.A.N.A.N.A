@@ -1,47 +1,114 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class FootStepSystem : MonoBehaviour
+public class Footsteps : MonoBehaviour
 {
-    public AudioSource audioSource;
+    [Header("Audio Sources")]
+    public AudioSource walkSound;
+    public AudioSource sprintSound;
+    public AudioSource jumpSound;
 
-    [Header("Footstep Sounds")]
-    public AudioClip concrete;
-    public AudioClip grass;
-    public AudioClip dirt;
-    public AudioClip rock;
+    [Header("Movement Settings")]
+    public float moveThreshold = 0.1f; // how much movement counts as "walking"
+    public float crouchVolumeMultiplier = 0.5f;
+    public float crouchPitchMultiplier = 0.85f;
 
-    [Header("Raycast Settings")]
-    public Transform rayStart;
-    public float range = 1f;
-    public LayerMask layerMask;
+    private CharacterController controller;
+    private bool isMoving;
+    private bool wasGrounded;
+    private bool isCrouching;
 
-    private RaycastHit hit;
-
-    public void Footstep()
+    void Start()
     {
-        if (Physics.Raycast(rayStart.position, Vector3.down, out hit, range, layerMask))
+        controller = GetComponent<CharacterController>();
+        wasGrounded = controller ? controller.isGrounded : true;
+    }
+
+    void Update()
+    {
+        HandleCrouchToggle();
+        HandleMovementSounds();
+        HandleJumpSound();
+    }
+
+    void HandleCrouchToggle()
+    {
+        if (Input.GetKeyDown(KeyCode.C))
         {
-            if (hit.collider.CompareTag("concrete"))
-                PlayFootstep(concrete);
-            else if (hit.collider.CompareTag("grass"))
-                PlayFootstep(grass);
-            else if (hit.collider.CompareTag("dirt"))
-                PlayFootstep(dirt);
-            else if (hit.collider.CompareTag("rock"))
-                PlayFootstep(rock);
+            isCrouching = !isCrouching;
         }
     }
 
-    void PlayFootstep(AudioClip clip)
+    void HandleMovementSounds()
     {
-        audioSource.pitch = Random.Range(0.8f, 1f);
-        audioSource.volume = Random.Range(0.9f, 1f);
-        audioSource.PlayOneShot(clip);
-    }
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.F))
-            Footstep();
+        float horizontal = Input.GetAxis("Horizontal");
+        float vertical = Input.GetAxis("Vertical");
+        isMoving = Mathf.Abs(horizontal) > moveThreshold || Mathf.Abs(vertical) > moveThreshold;
+
+        bool isSprinting = Input.GetKey(KeyCode.LeftShift);
+
+        // ✅ Only play movement sounds if grounded
+        bool isGrounded = controller ? controller.isGrounded : true;
+
+        if (isGrounded && isMoving)
+        {
+            if (isSprinting && !isCrouching)
+            {
+                if (!sprintSound.isPlaying)
+                {
+                    walkSound.Stop();
+                    sprintSound.Play();
+                }
+                sprintSound.volume = 1f;
+                sprintSound.pitch = 1f;
+            }
+            else
+            {
+                if (!walkSound.isPlaying)
+                {
+                    sprintSound.Stop();
+                    walkSound.Play();
+                }
+
+                if (isCrouching)
+                {
+                    walkSound.volume = 1f * crouchVolumeMultiplier;
+                    walkSound.pitch = 1f * crouchPitchMultiplier;
+                }
+                else
+                {
+                    walkSound.volume = 1f;
+                    walkSound.pitch = 1f;
+                }
+            }
+        }
+        else
+        {
+            // stop footsteps if not grounded or not moving
+            if (walkSound.isPlaying) walkSound.Stop();
+            if (sprintSound.isPlaying) sprintSound.Stop();
+        }
     }
 
+    void HandleJumpSound()
+    {
+        if (controller)
+        {
+            // play jump sound when player leaves the ground
+            if (!controller.isGrounded && wasGrounded)
+            {
+                jumpSound.Play();
+            }
+
+            wasGrounded = controller.isGrounded;
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                jumpSound.Play();
+            }
+        }
+    }
 }

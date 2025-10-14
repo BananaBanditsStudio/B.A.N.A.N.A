@@ -2700,7 +2700,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
-  m_Intensity: 1
+  m_Intensity: 0.1
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -2875,7 +2875,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BananaPeelThrower
   damage: 5
   range: 50
+  throwForce: 10
   fpsCam: {fileID: 957708237}
+  throwPoint: {fileID: 773963350}
   bananaPeelPrefab: {fileID: 5314046136403259996, guid: cd9e9fd26874f47b2be077bd97f5389c, type: 3}
   throwEffect: {fileID: 0}
   m_shootingSound: {fileID: 0}
@@ -3191,6 +3193,7 @@ GameObject:
   - component: {fileID: 507150962}
   - component: {fileID: 507150963}
   - component: {fileID: 507150964}
+  - component: {fileID: 507150965}
   m_Layer: 6
   m_Name: Benny
   m_TagString: Player
@@ -3652,6 +3655,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &507150965
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 507150955}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b9276c34b05e4a74a3138103187b3ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Grenade
+  range: 100
+  grenadePrefab: {fileID: 7430179988462413191, guid: a1cd9676ca3247247b8e5b06f6929765, type: 3}
+  throwPoint: {fileID: 773963350}
+  fpsCam: {fileID: 957708237}
 --- !u!1001 &518936489
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16942,8 +16961,6 @@ MonoBehaviour:
   damage: 10
   range: 100
   fpsCam: {fileID: 957708237}
-  grenadePrefab: {fileID: 7430179988462413191, guid: a1cd9676ca3247247b8e5b06f6929765, type: 3}
-  throwPoint: {fileID: 773963350}
   gunEffect: {fileID: 1000010254994808, guid: 9defeac88977c0d448aa4541073ee9e4, type: 3}
   impactEffect: {fileID: 8771972552311404799, guid: bbf9e36a48d6c5648a13889afab076fd, type: 3}
   m_shootingSound: {fileID: 0}
