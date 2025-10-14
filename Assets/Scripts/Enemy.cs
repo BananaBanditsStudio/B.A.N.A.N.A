@@ -44,6 +44,10 @@ public class SimplePatrol : MonoBehaviour
     public float damage = 10f;
     public GameObject player;
     private PlayerHealth playerHealth;
+    
+    // Attack state tracking
+    private bool isAttackInProgress = false;
+    private Coroutine currentAttackCoroutine = null;
 
     int index = 0, dir = 1;
     public bool loop = true;
@@ -135,16 +139,17 @@ public class SimplePatrol : MonoBehaviour
             float distanceToTarget = to.magnitude;
 
             // Check if we're close enough to attack
-            if (distanceToTarget <= attackRange && Time.time - lastAttackTime >= attackCooldown)
+            if (distanceToTarget <= attackRange && Time.time - lastAttackTime >= attackCooldown && !isAttackInProgress)
             {
                 // Start attack
                 IsAttacking = true;
+                isAttackInProgress = true;
                 UpdateAttackAnimation();
                 lastAttackTime = Time.time;
 
                 // Stop moving during attack
-                // You can add attack logic here (damage, etc.)
-                StartCoroutine(DealDamageAfterDelay(1.3f));
+                // Start damage coroutine and store reference
+                currentAttackCoroutine = StartCoroutine(DealDamageAfterDelay(1.3f));
             }
             else if (distanceToTarget > attackRange)
             {
@@ -152,9 +157,20 @@ public class SimplePatrol : MonoBehaviour
                 Vector3 step = to.normalized * chaseSpeed * Time.deltaTime;
                 transform.position += step;
 
-                // Stop attacking when moving
-                IsAttacking = false;
-                UpdateAttackAnimation();
+                // Stop attacking when moving and cancel damage if attack was interrupted
+                if (isAttackInProgress)
+                {
+                    IsAttacking = false;
+                    isAttackInProgress = false;
+                    UpdateAttackAnimation();
+                    
+                    // Stop the damage coroutine if it's still running
+                    if (currentAttackCoroutine != null)
+                    {
+                        StopCoroutine(currentAttackCoroutine);
+                        currentAttackCoroutine = null;
+                    }
+                }
             }
 
             // Face the target
@@ -178,8 +194,19 @@ public class SimplePatrol : MonoBehaviour
             else
             {
                 // Lost the player, return to patrol
-                IsAttacking = false;
-                UpdateAttackAnimation();
+                if (isAttackInProgress)
+                {
+                    IsAttacking = false;
+                    isAttackInProgress = false;
+                    UpdateAttackAnimation();
+                    
+                    // Stop the damage coroutine if it's still running
+                    if (currentAttackCoroutine != null)
+                    {
+                        StopCoroutine(currentAttackCoroutine);
+                        currentAttackCoroutine = null;
+                    }
+                }
                 StopChasing();
             }
         }
@@ -281,8 +308,21 @@ public class SimplePatrol : MonoBehaviour
         isChasing = false;
         currentTarget = null;
         timeSinceLastSeen = 0f;
-        IsAttacking = false;
-        UpdateAttackAnimation();
+        
+        // Stop any ongoing attack
+        if (isAttackInProgress)
+        {
+            IsAttacking = false;
+            isAttackInProgress = false;
+            UpdateAttackAnimation();
+            
+            // Stop the damage coroutine if it's still running
+            if (currentAttackCoroutine != null)
+            {
+                StopCoroutine(currentAttackCoroutine);
+                currentAttackCoroutine = null;
+            }
+        }
 
         //  stop chase sound
         if (chaseAudio && chaseAudio.isPlaying)
@@ -303,7 +343,16 @@ public class SimplePatrol : MonoBehaviour
     private IEnumerator DealDamageAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        playerHealth.TakeDamage(damage);
+        
+        // Only deal damage if the attack is still in progress
+        if (isAttackInProgress && playerHealth != null)
+        {
+            playerHealth.TakeDamage(damage);
+        }
+        
+        // Reset attack state after damage is dealt
+        isAttackInProgress = false;
+        currentAttackCoroutine = null;
     }
 
     IEnumerator FadeOut(AudioSource source, float fadeSpeed)
