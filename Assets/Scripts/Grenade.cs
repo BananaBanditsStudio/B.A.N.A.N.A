@@ -15,9 +15,8 @@ public class Grenade : MonoBehaviour
     }
     void Update()
     {
-
-        // G button for throwable testing
-        if (Input.GetKeyDown(KeyCode.G))
+        // Check if input is allowed (not paused or game over)
+        if (Input.GetKeyDown(KeyCode.G) && GameStateManager.CanShootStatic())
         {
             ThrowLethal();
         }

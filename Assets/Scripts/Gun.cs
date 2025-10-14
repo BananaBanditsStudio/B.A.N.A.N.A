@@ -31,7 +31,8 @@ public class gun : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetButtonDown("Fire1"))
+        // Check if input is allowed (not paused or game over)
+        if (Input.GetButtonDown("Fire1") && GameStateManager.CanShootStatic())
         {
             m_shootingSound.Play();
             Shoot();
@@ -64,7 +65,18 @@ public class gun : MonoBehaviour
             if (target != null)
             {
                 Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-                target.TakeDamage(damage);
+                
+                // Check if enemy is slipping and handle appropriately
+                if (target.IsSlipping())
+                {
+                    // If enemy is slipping, just deal damage without additional effects
+                    target.TakeDamage(damage);
+                }
+                else
+                {
+                    // Normal damage dealing
+                    target.TakeDamage(damage);
+                }
             }
         }
         else

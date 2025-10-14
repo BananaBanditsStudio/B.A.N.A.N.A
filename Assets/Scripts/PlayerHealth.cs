@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class PlayerHealth : MonoBehaviour
 {
-    private float health;
+    [SerializeField] private float health;
     private float lerpTimer;
     [Header("Health")]
     [SerializeField]
@@ -89,5 +89,17 @@ public class PlayerHealth : MonoBehaviour
         health += healAmount;
         health = Mathf.Clamp(health, 0, maxHealth);
         lerpTimer = 0f;
+    }
+    
+    // Public getter for health value
+    public float GetHealth()
+    {
+        return health;
+    }
+    
+    // Public getter for health property (for GameOverManager)
+    public float Health
+    {
+        get { return health; }
     }
 }

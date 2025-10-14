@@ -44,7 +44,8 @@ public class BananaPeelThrower : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetButtonDown("Fire1"))
+        // Check if input is allowed (not paused or game over)
+        if (Input.GetButtonDown("Fire1") && GameStateManager.CanShootStatic())
         {
             m_shootingSound.Play();
             Shoot();
@@ -77,13 +78,25 @@ public class BananaPeelThrower : MonoBehaviour
                 if (weaponHandler != null)
                     weaponHandler.DropBat();
 
-                // Play animation on enemy and freeze movement
-                Animator enemyAnimator = hit.transform.GetComponentInChildren<Animator>();
-                if (enemyAnimator != null)
-                    StartCoroutine(PlayBananaHitAnimation(enemy.gameObject, enemyAnimator));
+                // Check if enemy is already slipping or dead
+                if (enemy.IsSlipping() || enemy.health <= 0)
+                {
+                    // If already slipping or dead, just deal damage without animation
+                    enemy.TakeDamage(damage);
+                }
+                else
+                {
+                    // Set slipping state before animation
+                    enemy.SetSlippingState(true);
+                    
+                    // Play animation on enemy and freeze movement
+                    Animator enemyAnimator = hit.transform.GetComponentInChildren<Animator>();
+                    if (enemyAnimator != null)
+                        StartCoroutine(PlayBananaHitAnimation(enemy.gameObject, enemyAnimator));
 
-                // Deal damage
-                enemy.TakeDamage(damage);
+                    // Deal damage
+                    enemy.TakeDamage(damage);
+                }
 
                 // Throw peel to enemy’s feet
                 Vector3 targetPosition = hit.transform.position;
@@ -107,26 +120,22 @@ public class BananaPeelThrower : MonoBehaviour
         // Create the banana peel at throw point
         GameObject bananaPeel = Instantiate(bananaPeelPrefab, throwPoint.position, Quaternion.identity);
 
-        // Add Rigidbody if it doesn't have one
-        Rigidbody rb = bananaPeel.GetComponent<Rigidbody>();
-        if (rb == null)
+        // Add manual throw script instead of rigidbody
+        BananaPeelThrow throwScript = bananaPeel.GetComponent<BananaPeelThrow>();
+        if (throwScript == null)
         {
-            rb = bananaPeel.AddComponent<Rigidbody>();
+            throwScript = bananaPeel.AddComponent<BananaPeelThrow>();
         }
 
-        // Simple throw: point from throw point to target with throw force
-        Vector3 direction = (targetPosition - throwPoint.position).normalized;
-        Vector3 velocity = direction * throwForce;
-
-        // Add a bit of upward arc
-        velocity.y += 5f;
-
-        // Apply the velocity
-        rb.linearVelocity = velocity;
+        // Configure the throw
+        throwScript.InitializeThrow(throwPoint.position, targetPosition, throwForce);
     }
 
     public System.Collections.IEnumerator PlayBananaHitAnimation(GameObject enemy, Animator animator)
     {
+        // Get enemy damage component to track slipping state
+        EnemyDamage enemyDamage = enemy.GetComponent<EnemyDamage>();
+        
         // Freeze enemy movement by disabling the movement script
         SimplePatrol patrolScript = enemy.GetComponent<SimplePatrol>();
         bool hadPatrolScript = patrolScript != null && patrolScript.enabled;
@@ -135,6 +144,30 @@ public class BananaPeelThrower : MonoBehaviour
         {
             patrolScript.enabled = false; // Disable movement
         }
+        
+        // Disable NavMeshAgent if present to prevent movement conflicts
+        UnityEngine.AI.NavMeshAgent navAgent = enemy.GetComponent<UnityEngine.AI.NavMeshAgent>();
+        bool hadNavAgent = navAgent != null && navAgent.enabled;
+        if (hadNavAgent)
+        {
+            navAgent.enabled = false;
+        }
+        
+        // Disable CharacterController to allow animation to move the collider
+        CharacterController characterController = enemy.GetComponent<CharacterController>();
+        bool hadCharacterController = characterController != null && characterController.enabled;
+        if (hadCharacterController)
+        {
+            characterController.enabled = false;
+        }
+        
+        // Enable animation collider sync if present
+        AnimationColliderSync colliderSync = enemy.GetComponent<AnimationColliderSync>();
+        if (colliderSync == null)
+        {
+            colliderSync = enemy.AddComponent<AnimationColliderSync>();
+        }
+        colliderSync.enabled = true;
 
         // Play the banana hit animation
         animator.SetTrigger(enemyAnimationTrigger);
@@ -145,25 +178,51 @@ public class BananaPeelThrower : MonoBehaviour
         }
 
         // Wait for animation to complete
-
-
-        // Wait for animation to complete
         yield return new WaitForSeconds(animationDuration);
 
-        // Smoothly transition back to default animation using CrossFade
-        animator.CrossFade(defaultAnimationState, transitionDuration);
-
-        // Make sure these are reset
-        animator.SetBool("IsLookingAround", false);
-        animator.SetBool("IsAttacking", false);
-
-        // Wait for the crossfade to complete
-        yield return new WaitForSeconds(transitionDuration);
-
-        // Re-enable movement
-        if (hadPatrolScript && patrolScript != null)
+        // Check if enemy is still alive and not dead
+        if (enemyDamage != null && enemyDamage.health > 0)
         {
-            patrolScript.enabled = true; // Re-enable movement
+            // Smoothly transition back to default animation using CrossFade
+            animator.CrossFade(defaultAnimationState, transitionDuration);
+
+            // Make sure these are reset
+            animator.SetBool("IsLookingAround", false);
+            animator.SetBool("IsAttacking", false);
+
+            // Wait for the crossfade to complete
+            yield return new WaitForSeconds(transitionDuration);
+
+            // Re-enable movement components only if enemy is still alive
+            if (enemyDamage.health > 0)
+            {
+                if (hadPatrolScript && patrolScript != null)
+                {
+                    patrolScript.enabled = true; // Re-enable movement
+                }
+                
+                if (hadNavAgent && navAgent != null)
+                {
+                    navAgent.enabled = true; // Re-enable NavMeshAgent
+                }
+                
+                if (hadCharacterController && characterController != null)
+                {
+                    characterController.enabled = true; // Re-enable CharacterController
+                }
+            }
+        }
+        
+        // Reset slipping state
+        if (enemyDamage != null)
+        {
+            enemyDamage.SetSlippingState(false);
+        }
+        
+        // Disable animation collider sync
+        if (colliderSync != null)
+        {
+            colliderSync.enabled = false;
         }
     }
 }

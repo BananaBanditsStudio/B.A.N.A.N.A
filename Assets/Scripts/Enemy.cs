@@ -8,6 +8,7 @@
 
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class SimplePatrol : MonoBehaviour
 {
@@ -29,8 +30,17 @@ public class SimplePatrol : MonoBehaviour
     
     [Header("Movement")]
     private CharacterController characterController;
+    private NavMeshAgent navMeshAgent;
     private Vector3 lastMoveDirection = Vector3.zero;
     private float moveSmoothing = 10f;
+    
+    [Header("Navigation")]
+    public bool useNavMesh = true;
+    public float navMeshSpeed = 2.5f;
+    public float navMeshAcceleration = 8f;
+    public float navMeshAngularSpeed = 360f; // Increased for tighter turns
+    public float navMeshStoppingDistance = 0.1f;
+    public float rotationSpeed = 720f; // Manual rotation speed
 
     [Header("Chase Behavior")]
     public float chaseSpeed = 4f; // Base chase speed (walking)
@@ -78,6 +88,28 @@ public class SimplePatrol : MonoBehaviour
     {
         // Get CharacterController component
         characterController = GetComponent<CharacterController>();
+        
+        // Get or add NavMeshAgent component
+        navMeshAgent = GetComponent<NavMeshAgent>();
+        if (navMeshAgent == null && useNavMesh)
+        {
+            navMeshAgent = gameObject.AddComponent<NavMeshAgent>();
+        }
+        
+        // Configure NavMeshAgent
+        if (navMeshAgent != null)
+        {
+            navMeshAgent.speed = navMeshSpeed;
+            navMeshAgent.acceleration = navMeshAcceleration;
+            navMeshAgent.angularSpeed = navMeshAngularSpeed;
+            navMeshAgent.stoppingDistance = navMeshStoppingDistance;
+            navMeshAgent.radius = 0.3f; // Reduced radius for tighter movement
+            navMeshAgent.height = 2f;
+            navMeshAgent.autoBraking = true;
+            navMeshAgent.updateRotation = false; // We'll handle rotation manually
+            navMeshAgent.updateUpAxis = true;
+            navMeshAgent.obstacleAvoidanceType = ObstacleAvoidanceType.GoodQualityObstacleAvoidance; // Better obstacle avoidance
+        }
         
         // Disable root motion to prevent animation from affecting position
         if (animator != null)
@@ -128,7 +160,6 @@ public class SimplePatrol : MonoBehaviour
 
     void Patrol()
     {
-        
         Vector3 tgt = waypoints[index].position;
         Vector3 pos = transform.position;
         Vector3 to = (tgt - pos); to.y = 0f;
@@ -139,16 +170,33 @@ public class SimplePatrol : MonoBehaviour
         // Only move if we haven't arrived yet and we're not busy (not in AtPoint coroutine)
         if (!hasArrived && !busy)
         {
-            // Move using the new movement system
-            if (to.sqrMagnitude > 0.0001f)
+            if (useNavMesh && navMeshAgent != null)
             {
-                Vector3 moveDirection = to.normalized;
-                MoveCharacter(moveDirection, moveSpeed);
+                // Use NavMesh for pathfinding
+                if (!navMeshAgent.pathPending && navMeshAgent.remainingDistance < 0.5f)
+                {
+                    navMeshAgent.SetDestination(tgt);
+                }
                 
-                // Face movement direction
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(to), 720f * Time.deltaTime);
+                // Face the waypoint direction
+                SmoothLookAt(to);
+                
                 // Set animation to moving (not looking around)
                 SetLookingAroundAnimation(false);
+            }
+            else
+            {
+                // Use direct movement (old system)
+                if (to.sqrMagnitude > 0.0001f)
+                {
+                    Vector3 moveDirection = to.normalized;
+                    MoveCharacter(moveDirection, moveSpeed);
+                    
+                    // Face movement direction
+                    SmoothLookAt(to);
+                    // Set animation to moving (not looking around)
+                    SetLookingAroundAnimation(false);
+                }
             }
         }
 
@@ -194,12 +242,32 @@ public class SimplePatrol : MonoBehaviour
             else if (distanceToTarget > attackRange)
             {
                 // Move towards target if not in attack range
-                if (to.sqrMagnitude > 0.0001f)
+                if (useNavMesh && navMeshAgent != null)
+                {
+                    // Use NavMesh for pathfinding to target
+                    UpdateNavMeshDestination(currentTarget.position);
+                    navMeshAgent.speed = IsRunning ? runningSpeed : chaseSpeed;
+                    
+                    // Face the direction the NavMesh agent is actually moving
+                    if (navMeshAgent.velocity.sqrMagnitude > 0.1f)
+                    {
+                        ResponsiveLookAt(navMeshAgent.velocity);
+                    }
+                    else
+                    {
+                        // Fallback to facing target if not moving
+                        ResponsiveLookAt(to);
+                    }
+                }
+                else if (to.sqrMagnitude > 0.0001f)
                 {
                     Vector3 moveDirection = to.normalized;
                     // Use running speed when running animation is active
                     float currentSpeed = IsRunning ? runningSpeed : chaseSpeed;
                     MoveCharacter(moveDirection, currentSpeed);
+                    
+                    // Face movement direction
+                    SmoothLookAt(to);
                 }
 
                 // Set running animation when chasing (only if not already running)
@@ -263,7 +331,24 @@ public class SimplePatrol : MonoBehaviour
             // Continue moving towards last known position for a short time
             if (timeSinceLastSeen <= losePlayerTime)
             {
-                if (to.sqrMagnitude > 0.0001f)
+                if (useNavMesh && navMeshAgent != null)
+                {
+                    // Use NavMesh for pathfinding to last known position
+                    UpdateNavMeshDestination(currentTarget.position);
+                    navMeshAgent.speed = IsRunning ? runningSpeed : chaseSpeed;
+                    
+                    // Face the direction the NavMesh agent is actually moving
+                    if (navMeshAgent.velocity.sqrMagnitude > 0.1f)
+                    {
+                        ResponsiveLookAt(navMeshAgent.velocity);
+                    }
+                    else
+                    {
+                        // Fallback to facing last known position if not moving
+                        ResponsiveLookAt(to);
+                    }
+                }
+                else if (to.sqrMagnitude > 0.0001f)
                 {
                     Vector3 moveDirection = to.normalized;
                     // Use running speed when running animation is active
@@ -271,7 +356,7 @@ public class SimplePatrol : MonoBehaviour
                     MoveCharacter(moveDirection, currentSpeed);
                     
                     // Face movement direction
-                    transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(to), 720f * Time.deltaTime);
+                    SmoothLookAt(to);
                 }
 
                 // Keep running animation when moving towards last known position (only if not already running)
@@ -341,6 +426,12 @@ public class SimplePatrol : MonoBehaviour
         if (loop) index = (index + 1) % waypoints.Length;
         else { if (index == 0) dir = 1; else if (index == waypoints.Length - 1) dir = -1; index += dir; }
 
+        // Stop NavMesh agent when reaching waypoint
+        if (useNavMesh && navMeshAgent != null)
+        {
+            navMeshAgent.ResetPath();
+        }
+
         busy = false;
     }
 
@@ -407,6 +498,42 @@ public class SimplePatrol : MonoBehaviour
         }
     }
 
+    void SmoothLookAt(Vector3 targetDirection, float customRotationSpeed = -1f)
+    {
+        if (targetDirection.sqrMagnitude > 0.0001f)
+        {
+            float speed = customRotationSpeed > 0 ? customRotationSpeed : rotationSpeed;
+            Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, speed * Time.deltaTime);
+        }
+    }
+
+    void ResponsiveLookAt(Vector3 targetDirection)
+    {
+        if (targetDirection.sqrMagnitude > 0.0001f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(targetDirection);
+            float angle = Quaternion.Angle(transform.rotation, targetRotation);
+            
+            // Use faster rotation for sharp turns
+            float speed = angle > 90f ? rotationSpeed * 1.5f : rotationSpeed;
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, speed * Time.deltaTime);
+        }
+    }
+
+    void UpdateNavMeshDestination(Vector3 destination)
+    {
+        if (navMeshAgent != null && useNavMesh)
+        {
+            // Only update destination if it's significantly different to avoid path recalculation
+            float distance = Vector3.Distance(navMeshAgent.destination, destination);
+            if (distance > 1f || !navMeshAgent.hasPath)
+            {
+                navMeshAgent.SetDestination(destination);
+            }
+        }
+    }
+
     void OnPlayerDetected(bool isDetected)
     {
         if (isDetected && fieldOfView != null && fieldOfView.visibleTargets.Count > 0)
@@ -439,6 +566,12 @@ public class SimplePatrol : MonoBehaviour
         isChasing = false;
         currentTarget = null;
         timeSinceLastSeen = 0f;
+        
+        // Stop NavMesh agent if using NavMesh
+        if (useNavMesh && navMeshAgent != null)
+        {
+            navMeshAgent.ResetPath();
+        }
         
         // Stop running animation
         IsRunning = false;
@@ -567,13 +700,30 @@ public class SimplePatrol : MonoBehaviour
         else
         {
             // Move towards the weapon
-            if (to.sqrMagnitude > 0.0001f)
+            if (useNavMesh && navMeshAgent != null)
+            {
+                // Use NavMesh for pathfinding to weapon
+                UpdateNavMeshDestination(targetWeapon.transform.position);
+                navMeshAgent.speed = moveSpeed;
+                
+                // Face the direction the NavMesh agent is actually moving
+                if (navMeshAgent.velocity.sqrMagnitude > 0.1f)
+                {
+                    ResponsiveLookAt(navMeshAgent.velocity);
+                }
+                else
+                {
+                    // Fallback to facing weapon if not moving
+                    ResponsiveLookAt(to);
+                }
+            }
+            else if (to.sqrMagnitude > 0.0001f)
             {
                 Vector3 moveDirection = to.normalized;
                 MoveCharacter(moveDirection, moveSpeed);
                 
                 // Face the weapon
-                transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(to), 720f * Time.deltaTime);
+                SmoothLookAt(to);
             }
         }
     }

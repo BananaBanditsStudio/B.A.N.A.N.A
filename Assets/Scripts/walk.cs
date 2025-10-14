@@ -43,6 +43,15 @@ public class walk : MonoBehaviour
     
     void HandleMovement()
     {
+        // Check if movement is allowed (not paused or game over)
+        if (!GameStateManager.CanMoveStatic())
+        {
+            // Reset movement when input is blocked
+            inputVector = Vector2.zero;
+            isMoving = false;
+            return;
+        }
+        
         // Get input from Input System
         float horizontal = inputVector.x;
         float vertical = inputVector.y;

@@ -31,7 +31,7 @@ public class PlayerInteract : MonoBehaviour
             Interactable interactable = hitInfo.collider.GetComponent<Interactable>();
             if (interactable != null){
                 playerUI.UpdateText(interactable.promptMessage);
-                if (Keyboard.current.eKey.wasPressedThisFrame)
+                if (Keyboard.current.eKey.wasPressedThisFrame && GameStateManager.CanInteractStatic())
                 {
                     interactable.BaseInteract();
                 }

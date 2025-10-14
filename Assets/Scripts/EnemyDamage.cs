@@ -6,6 +6,7 @@ public class EnemyDamage : MonoBehaviour
     public float maxHealth = 50f;
     public float health = 50f;
     private bool isDead = false;
+    private bool isSlipping = false;
     private Animator animator;
 
     public Transform healthBarUI;
@@ -42,6 +43,18 @@ public class EnemyDamage : MonoBehaviour
             Die();
         }
     }
+    
+    // Method to set slipping state (called by BananaPeelThrower)
+    public void SetSlippingState(bool slipping)
+    {
+        isSlipping = slipping;
+    }
+    
+    // Method to check if enemy is currently slipping
+    public bool IsSlipping()
+    {
+        return isSlipping;
+    }
 
     public void UpdateHealthBar()
     {
@@ -53,12 +66,33 @@ public class EnemyDamage : MonoBehaviour
     {
         if (isDead) return; // Prevent multiple death calls
         isDead = true;
+        
+        // Stop any slipping animation if enemy is slipping
+        if (isSlipping)
+        {
+            StopAllCoroutines(); // Stop any running slipping coroutines
+            isSlipping = false;
+        }
 
-        // Disable enemy movement script
+        // Disable enemy movement script (only if not already disabled)
         SimplePatrol patrolScript = GetComponent<SimplePatrol>();
-        if (patrolScript != null)
+        if (patrolScript != null && patrolScript.enabled)
         {
             patrolScript.enabled = false;
+        }
+        
+        // Disable NavMeshAgent if present
+        UnityEngine.AI.NavMeshAgent navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (navAgent != null && navAgent.enabled)
+        {
+            navAgent.enabled = false;
+        }
+        
+        // Disable CharacterController if present
+        CharacterController characterController = GetComponent<CharacterController>();
+        if (characterController != null && characterController.enabled)
+        {
+            characterController.enabled = false;
         }
 
         // Immediately destroy the vision fan (FieldOfView3D component)

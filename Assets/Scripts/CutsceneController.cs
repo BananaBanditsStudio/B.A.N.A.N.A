@@ -20,12 +20,14 @@ public class CutsceneController : MonoBehaviour
     public Button skipButton;
     public CanvasGroup fadeGroup;
     public AudioSource audioSource;
+    public Image blackBackground;
 
     [Header("Slide Data")]
     public Slide[] slides;
 
     [Header("Transition Settings")]
     public float fadeDuration = 0.8f;
+    public float blackScreenDuration = 0.3f;
     public float typeSpeed = 0.03f;
     public float audioFadeDuration = 0.5f;
 
@@ -39,6 +41,12 @@ public class CutsceneController : MonoBehaviour
     {
         skipButton.onClick.AddListener(SkipCutscene);
         fadeGroup.alpha = 1f;
+        
+        // Ensure black background is hidden initially
+        if (blackBackground != null)
+        {
+            blackBackground.gameObject.SetActive(false);
+        }
 
         ShowSlide(currentIndex, true);
         PlayNarration(currentIndex);
@@ -85,7 +93,11 @@ public class CutsceneController : MonoBehaviour
             StopCoroutine(typingCoroutine);
         yield return StartCoroutine(FadeOutNarration());
 
-        // Fade out the current slide
+        // Show black background and fade out to black
+        if (blackBackground != null)
+        {
+            blackBackground.gameObject.SetActive(true);
+        }
         yield return StartCoroutine(Fade(1f, 0f));
 
         currentIndex++;
@@ -98,6 +110,12 @@ public class CutsceneController : MonoBehaviour
         // Show and fade in next slide
         ShowSlide(currentIndex, false);
         yield return StartCoroutine(Fade(0f, 1f));
+
+        // Hide black background after fade in
+        if (blackBackground != null)
+        {
+            blackBackground.gameObject.SetActive(false);
+        }
 
         // Start new narration + typewriter
         PlayNarration(currentIndex);
