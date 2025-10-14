@@ -12,7 +12,19 @@ public class BananaPeelThrower : MonoBehaviour
     public Transform throwPoint; // Point from where the banana peel is thrown
     public GameObject bananaPeelPrefab; // Banana peel to spawn on enemy
     public GameObject throwEffect; // Particle effect when shooting
+
+    [Header("Hit Sound")]
+    public AudioClip bananaHitSound; // sound to play when you hit an enemy
+    public AudioSource audioSource; // can be same one or separate
+
     public AudioSource m_shootingSound;
+
+    [Header("Slip Sound")]
+    public AudioClip slipSound; // the sound that plays when enemy slips
+    public AudioSource slipAudioSource; // can reuse existing one or be separate
+
+
+
 
     [Header("Animation")]
     public string enemyAnimationTrigger = "Slip"; // Animation trigger name
@@ -22,8 +34,13 @@ public class BananaPeelThrower : MonoBehaviour
 
     void Start()
     {
-        m_shootingSound = GetComponent<AudioSource>();
+        if (audioSource == null)
+            audioSource = GetComponent<AudioSource>();
+
+        if (slipAudioSource == null)
+            slipAudioSource = GetComponent<AudioSource>();
     }
+
 
     void Update()
     {
@@ -47,37 +64,34 @@ public class BananaPeelThrower : MonoBehaviour
             EnemyDamage enemy = hit.transform.GetComponent<EnemyDamage>();
             if (enemy != null)
             {
+                // ✅ Play banana hit sound
+                if (bananaHitSound != null && audioSource != null)
+                    audioSource.PlayOneShot(bananaHitSound);
+
                 // Play throw effect
                 if (throwEffect != null)
-                {
                     Instantiate(throwEffect, throwPoint.position, throwPoint.rotation);
-                }
 
                 // Drop weapon if enemy has one
                 EnemyWeaponHandler weaponHandler = hit.transform.GetComponent<EnemyWeaponHandler>();
                 if (weaponHandler != null)
-                {
                     weaponHandler.DropBat();
-                }
 
                 // Play animation on enemy and freeze movement
                 Animator enemyAnimator = hit.transform.GetComponentInChildren<Animator>();
-                Debug.Log("Enemy Animator: " + enemyAnimator);
                 if (enemyAnimator != null)
-                {
                     StartCoroutine(PlayBananaHitAnimation(enemy.gameObject, enemyAnimator));
-                }
 
                 // Deal damage
                 enemy.TakeDamage(damage);
 
-                // Calculate target position at enemy's feet level
+                // Throw peel to enemy’s feet
                 Vector3 targetPosition = hit.transform.position;
                 targetPosition.y = 0.09f;
-
-                // Simple throw to enemy's feet
                 ThrowBananaPeel(targetPosition);
             }
+
+
             // If we didn't hit an enemy, do nothing (don't throw projectile)
         }
     }
@@ -92,7 +106,7 @@ public class BananaPeelThrower : MonoBehaviour
 
         // Create the banana peel at throw point
         GameObject bananaPeel = Instantiate(bananaPeelPrefab, throwPoint.position, Quaternion.identity);
-        
+
         // Add Rigidbody if it doesn't have one
         Rigidbody rb = bananaPeel.GetComponent<Rigidbody>();
         if (rb == null)
@@ -103,10 +117,10 @@ public class BananaPeelThrower : MonoBehaviour
         // Simple throw: point from throw point to target with throw force
         Vector3 direction = (targetPosition - throwPoint.position).normalized;
         Vector3 velocity = direction * throwForce;
-        
+
         // Add a bit of upward arc
         velocity.y += 5f;
-        
+
         // Apply the velocity
         rb.linearVelocity = velocity;
     }
@@ -124,6 +138,14 @@ public class BananaPeelThrower : MonoBehaviour
 
         // Play the banana hit animation
         animator.SetTrigger(enemyAnimationTrigger);
+        if (slipSound != null && slipAudioSource != null)
+        {
+            slipAudioSource.pitch = Random.Range(0.9f, 1.1f);
+            slipAudioSource.PlayOneShot(slipSound);
+        }
+
+        // Wait for animation to complete
+
 
         // Wait for animation to complete
         yield return new WaitForSeconds(animationDuration);
