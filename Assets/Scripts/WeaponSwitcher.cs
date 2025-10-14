@@ -50,6 +50,12 @@ public class WeaponSwitcher : MonoBehaviour
         // Validate index
         if (index < 0 || index >= weapons.Length) return;
 
+        // Recover any slipping enemies when switching weapons
+        if (SlippingRecoveryManager.Instance != null)
+        {
+            SlippingRecoveryManager.Instance.ForceRecoverAllSlippingEnemies();
+        }
+
         // Deactivate all weapons
         for (int i = 0; i < weapons.Length; i++)
         {

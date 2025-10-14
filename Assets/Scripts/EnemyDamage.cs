@@ -8,6 +8,7 @@ public class EnemyDamage : MonoBehaviour
     private bool isDead = false;
     private bool isSlipping = false;
     private Animator animator;
+    private Coroutine slippingRecoveryCoroutine;
 
     public Transform healthBarUI;
     public Image healthBarSprite;
@@ -48,12 +49,88 @@ public class EnemyDamage : MonoBehaviour
     public void SetSlippingState(bool slipping)
     {
         isSlipping = slipping;
+        
+        if (slipping)
+        {
+            // Start recovery timer in case coroutine gets interrupted
+            if (slippingRecoveryCoroutine != null)
+                StopCoroutine(slippingRecoveryCoroutine);
+            slippingRecoveryCoroutine = StartCoroutine(SlippingRecoveryTimer());
+        }
+        else
+        {
+            // Stop recovery timer if slipping is manually ended
+            if (slippingRecoveryCoroutine != null)
+            {
+                StopCoroutine(slippingRecoveryCoroutine);
+                slippingRecoveryCoroutine = null;
+            }
+        }
     }
     
     // Method to check if enemy is currently slipping
     public bool IsSlipping()
     {
         return isSlipping;
+    }
+    
+    // Recovery timer in case slipping animation gets interrupted
+    System.Collections.IEnumerator SlippingRecoveryTimer()
+    {
+        // Wait for the maximum slipping duration plus some buffer
+        yield return new WaitForSeconds(6f); // 4.5s animation + 0.5s transition + 1s buffer
+        
+        // If still slipping after timeout, force recovery
+        if (isSlipping && !isDead)
+        {
+            Debug.Log("Enemy slipping animation interrupted - forcing recovery");
+            ForceSlippingRecovery();
+        }
+    }
+    
+    // Force recovery from slipping state
+    public void ForceSlippingRecovery()
+    {
+        if (!isSlipping || isDead) return;
+        
+        Debug.Log("Forcing enemy slipping recovery");
+        
+        // Reset slipping state
+        isSlipping = false;
+        
+        // Re-enable movement components
+        SimplePatrol patrolScript = GetComponent<SimplePatrol>();
+        if (patrolScript != null && !patrolScript.enabled)
+        {
+            patrolScript.enabled = true;
+        }
+        
+        UnityEngine.AI.NavMeshAgent navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+        if (navAgent != null && !navAgent.enabled)
+        {
+            navAgent.enabled = true;
+        }
+        
+        CharacterController characterController = GetComponent<CharacterController>();
+        if (characterController != null && !characterController.enabled)
+        {
+            characterController.enabled = true;
+        }
+        
+        // Reset animation to default state
+        if (animator != null)
+        {
+            animator.CrossFade("Walk", 0.5f);
+            animator.SetBool("IsLookingAround", false);
+            animator.SetBool("IsAttacking", false);
+        }
+        
+        // Stop recovery timer
+        if (slippingRecoveryCoroutine != null)
+        {
+            StopCoroutine(slippingRecoveryCoroutine);
+            slippingRecoveryCoroutine = null;
+        }
     }
 
     public void UpdateHealthBar()
@@ -72,6 +149,13 @@ public class EnemyDamage : MonoBehaviour
         {
             StopAllCoroutines(); // Stop any running slipping coroutines
             isSlipping = false;
+        }
+        
+        // Stop recovery timer
+        if (slippingRecoveryCoroutine != null)
+        {
+            StopCoroutine(slippingRecoveryCoroutine);
+            slippingRecoveryCoroutine = null;
         }
 
         // Disable enemy movement script (only if not already disabled)
