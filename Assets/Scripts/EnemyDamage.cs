@@ -5,8 +5,8 @@ public class EnemyDamage : MonoBehaviour
 {
     public float maxHealth = 50f;
     public float health = 50f;
-    public float deathAnimationDuration = 2f; // Duration of death animation
     private bool isDead = false;
+    private Animator animator;
 
     public Transform healthBarUI;
     public Image healthBarSprite;
@@ -19,6 +19,7 @@ public class EnemyDamage : MonoBehaviour
     {
         health = maxHealth;
         cameraMain = Camera.main;
+        animator = GetComponentInChildren<Animator>();
         UpdateHealthBar();
     }
 
@@ -60,8 +61,14 @@ public class EnemyDamage : MonoBehaviour
             patrolScript.enabled = false;
         }
 
+        // Immediately destroy the vision fan (FieldOfView3D component)
+        FieldOfView3D fieldOfView = GetComponentInChildren<FieldOfView3D>();
+        if (fieldOfView != null)
+        {
+            Destroy(fieldOfView.gameObject);
+        }
+
         // Play death animation
-        Animator animator = GetComponentInChildren<Animator>();
         if (animator != null)
         {
             animator.SetTrigger("isDead"); // Use trigger to transition to Death state
@@ -73,10 +80,21 @@ public class EnemyDamage : MonoBehaviour
 
     System.Collections.IEnumerator DestroyAfterAnimation()
     {
-        // Wait for death animation to complete
-        yield return new WaitForSeconds(deathAnimationDuration);
+        if (animator != null)
+        {
+            // Wait for the death animation to start
+            yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).IsName("Death"));
+            
+            // Wait for the death animation to complete
+            yield return new WaitUntil(() => animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1.0f);
+        }
+        else
+        {
+            // Fallback: if no animator, wait a short time then destroy
+            yield return new WaitForSeconds(0.5f);
+        }
 
-        // Destroy the game object
+        // Destroy the game object immediately after animation completes
         Destroy(gameObject);
     }
 }

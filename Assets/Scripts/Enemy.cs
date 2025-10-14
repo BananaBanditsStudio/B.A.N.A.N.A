@@ -172,6 +172,20 @@ public class SimplePatrol : MonoBehaviour
                     }
                 }
             }
+            else if (isAttackInProgress && distanceToTarget > attackRange)
+            {
+                // Player moved out of range during attack - cancel the attack
+                IsAttacking = false;
+                isAttackInProgress = false;
+                UpdateAttackAnimation();
+                
+                // Stop the damage coroutine if it's still running
+                if (currentAttackCoroutine != null)
+                {
+                    StopCoroutine(currentAttackCoroutine);
+                    currentAttackCoroutine = null;
+                }
+            }
 
             // Face the target
             if (to.sqrMagnitude > 0.0001f)
