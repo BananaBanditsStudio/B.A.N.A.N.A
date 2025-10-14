@@ -35,6 +35,7 @@ public class SimplePatrol : MonoBehaviour
     public AudioSource chaseAudio;
     public AudioClip chaseClip;
     public float fadeSpeed = 2f;
+    public static bool isChaseAudioPlaying = false;
 
 
     [Header("Attack Behavior")]
@@ -52,7 +53,7 @@ public class SimplePatrol : MonoBehaviour
     private GameObject targetWeapon = null;
     private bool isSeekingWeapon = false;
     private EnemyWeaponHandler weaponHandler;
-    
+
     // Attack state tracking
     private bool isAttackInProgress = false;
     private Coroutine currentAttackCoroutine = null;
@@ -104,7 +105,7 @@ public class SimplePatrol : MonoBehaviour
             {
                 CheckForNearbyWeapons();
             }
-            
+
             Patrol();
         }
     }
@@ -183,7 +184,7 @@ public class SimplePatrol : MonoBehaviour
                     IsAttacking = false;
                     isAttackInProgress = false;
                     UpdateAttackAnimation();
-                    
+
                     // Stop the damage coroutine if it's still running
                     if (currentAttackCoroutine != null)
                     {
@@ -198,7 +199,7 @@ public class SimplePatrol : MonoBehaviour
                 IsAttacking = false;
                 isAttackInProgress = false;
                 UpdateAttackAnimation();
-                
+
                 // Stop the damage coroutine if it's still running
                 if (currentAttackCoroutine != null)
                 {
@@ -233,7 +234,7 @@ public class SimplePatrol : MonoBehaviour
                     IsAttacking = false;
                     isAttackInProgress = false;
                     UpdateAttackAnimation();
-                    
+
                     // Stop the damage coroutine if it's still running
                     if (currentAttackCoroutine != null)
                     {
@@ -322,12 +323,12 @@ public class SimplePatrol : MonoBehaviour
             busy = false;
             SetLookingAroundAnimation(false);
 
-            //  start chase sound
-            if (chaseAudio && chaseClip)
+            // Start chase sound only if not already playing
+            if (!isChaseAudioPlaying && chaseAudio && chaseClip)
             {
                 chaseAudio.clip = chaseClip;
-                if (!chaseAudio.isPlaying)
-                    chaseAudio.Play();
+                chaseAudio.Play();
+                isChaseAudioPlaying = true;
             }
         }
         else if (!isDetected && isChasing)
@@ -337,20 +338,20 @@ public class SimplePatrol : MonoBehaviour
     }
 
 
+
     void StopChasing()
     {
         isChasing = false;
         currentTarget = null;
         timeSinceLastSeen = 0f;
-        
+
         // Stop any ongoing attack
         if (isAttackInProgress)
         {
             IsAttacking = false;
             isAttackInProgress = false;
             UpdateAttackAnimation();
-            
-            // Stop the damage coroutine if it's still running
+
             if (currentAttackCoroutine != null)
             {
                 StopCoroutine(currentAttackCoroutine);
@@ -358,11 +359,14 @@ public class SimplePatrol : MonoBehaviour
             }
         }
 
-        //  stop chase sound
-        if (chaseAudio && chaseAudio.isPlaying)
+        // Stop chase sound (but only once)
+        if (isChaseAudioPlaying && chaseAudio && chaseAudio.isPlaying)
+        {
             StartCoroutine(FadeOut(chaseAudio, fadeSpeed));
-
+            isChaseAudioPlaying = false;
+        }
     }
+
 
 
     void OnDestroy()
@@ -377,13 +381,13 @@ public class SimplePatrol : MonoBehaviour
     private IEnumerator DealDamageAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        
+
         // Only deal damage if the attack is still in progress
         if (isAttackInProgress && playerHealth != null)
         {
             playerHealth.TakeDamage(damage);
         }
-        
+
         // Reset attack state after damage is dealt
         isAttackInProgress = false;
         currentAttackCoroutine = null;
@@ -404,10 +408,10 @@ public class SimplePatrol : MonoBehaviour
     {
         // Find all colliders within weapon detection range
         Collider[] nearbyColliders = Physics.OverlapSphere(transform.position, weaponDetectionRange, weaponLayerMask);
-        
+
         GameObject closestWeapon = null;
         float closestDistance = float.MaxValue;
-        
+
         foreach (Collider col in nearbyColliders)
         {
             // Check if this is a weapon (has Rigidbody and is not kinematic)
@@ -422,7 +426,7 @@ public class SimplePatrol : MonoBehaviour
                 }
             }
         }
-        
+
         if (closestWeapon != null)
         {
             targetWeapon = closestWeapon;
@@ -459,9 +463,9 @@ public class SimplePatrol : MonoBehaviour
         {
             // Move towards the weapon
             Vector3 step = to.normalized * moveSpeed * Time.deltaTime;
-            if (step.sqrMagnitude >= to.sqrMagnitude) 
+            if (step.sqrMagnitude >= to.sqrMagnitude)
                 transform.position = targetWeapon.transform.position;
-            else 
+            else
                 transform.position += step;
 
             // Face the weapon
@@ -479,7 +483,7 @@ public class SimplePatrol : MonoBehaviour
             // Set the weapon as the bat and equip it
             weaponHandler.bat = targetWeapon;
             weaponHandler.EquipBat();
-            
+
             // Clear target
             targetWeapon = null;
             isSeekingWeapon = false;
