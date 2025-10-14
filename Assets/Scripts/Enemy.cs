@@ -31,18 +31,6 @@ public class SimplePatrol : MonoBehaviour
     private CharacterController characterController;
     private Vector3 lastMoveDirection = Vector3.zero;
     private float moveSmoothing = 10f;
-    public bool IsRunning = false;
-    
-    [Header("Movement")]
-    private CharacterController characterController;
-    private Vector3 lastMoveDirection = Vector3.zero;
-    private float moveSmoothing = 10f;
-    public bool IsRunning = false;
-    
-    [Header("Movement")]
-    private CharacterController characterController;
-    private Vector3 lastMoveDirection = Vector3.zero;
-    private float moveSmoothing = 10f;
 
     [Header("Chase Behavior")]
     public float chaseSpeed = 4f; // Base chase speed (walking)
@@ -208,7 +196,6 @@ public class SimplePatrol : MonoBehaviour
                 // Move towards target if not in attack range
                 if (to.sqrMagnitude > 0.0001f)
                 {
-<<<<<<< HEAD
                     Vector3 moveDirection = to.normalized;
                     // Use running speed when running animation is active
                     float currentSpeed = IsRunning ? runningSpeed : chaseSpeed;
@@ -228,14 +215,6 @@ public class SimplePatrol : MonoBehaviour
                 {
                     // Only interrupt if the attack has been going for a while (not just started)
                     if (Time.time - lastAttackTime > 0.5f)
-=======
-                    IsAttacking = false;
-                    isAttackInProgress = false;
-                    UpdateAttackAnimation();
-
-                    // Stop the damage coroutine if it's still running
-                    if (currentAttackCoroutine != null)
->>>>>>> 184f8a77056b9bd65067f417fc8279d4c1e6220c
                     {
                         IsAttacking = false;
                         isAttackInProgress = false;
@@ -256,7 +235,6 @@ public class SimplePatrol : MonoBehaviour
                 IsAttacking = false;
                 isAttackInProgress = false;
                 UpdateAttackAnimation();
-<<<<<<< HEAD
                 
                 // Resume running animation (only if not already running)
                 if (!IsRunning)
@@ -265,9 +243,6 @@ public class SimplePatrol : MonoBehaviour
                     UpdateRunningAnimation();
                 }
                 
-=======
-
->>>>>>> 184f8a77056b9bd65067f417fc8279d4c1e6220c
                 // Stop the damage coroutine if it's still running
                 if (currentAttackCoroutine != null)
                 {
@@ -464,7 +439,6 @@ public class SimplePatrol : MonoBehaviour
         isChasing = false;
         currentTarget = null;
         timeSinceLastSeen = 0f;
-<<<<<<< HEAD
         
         // Stop running animation
         IsRunning = false;
@@ -480,21 +454,6 @@ public class SimplePatrol : MonoBehaviour
         {
             StopCoroutine(currentAttackCoroutine);
             currentAttackCoroutine = null;
-=======
-
-        // Stop any ongoing attack
-        if (isAttackInProgress)
-        {
-            IsAttacking = false;
-            isAttackInProgress = false;
-            UpdateAttackAnimation();
-
-            if (currentAttackCoroutine != null)
-            {
-                StopCoroutine(currentAttackCoroutine);
-                currentAttackCoroutine = null;
-            }
->>>>>>> 184f8a77056b9bd65067f417fc8279d4c1e6220c
         }
         
         // Reset attack timer to prevent immediate re-attack
@@ -608,16 +567,6 @@ public class SimplePatrol : MonoBehaviour
         else
         {
             // Move towards the weapon
-<<<<<<< HEAD
-=======
-            Vector3 step = to.normalized * moveSpeed * Time.deltaTime;
-            if (step.sqrMagnitude >= to.sqrMagnitude)
-                transform.position = targetWeapon.transform.position;
-            else
-                transform.position += step;
-
-            // Face the weapon
->>>>>>> 184f8a77056b9bd65067f417fc8279d4c1e6220c
             if (to.sqrMagnitude > 0.0001f)
             {
                 Vector3 moveDirection = to.normalized;
