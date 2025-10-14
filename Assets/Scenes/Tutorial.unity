@@ -4095,7 +4095,7 @@ MonoBehaviour:
   bananaHitSound: {fileID: 8300000, guid: 7daf3bb3d473756418300fbb1e3d5701, type: 3}
   audioSource: {fileID: 486666646}
   m_shootingSound: {fileID: 486666646}
-  slipSound: {fileID: 8300000, guid: 7daf3bb3d473756418300fbb1e3d5701, type: 3}
+  slipSound: {fileID: 8300000, guid: 9ab87c4e44ce22b48a1913f137eb13eb, type: 3}
   slipAudioSource: {fileID: 486666649}
   enemyAnimationTrigger: isSlipping
   defaultAnimationState: Walk
