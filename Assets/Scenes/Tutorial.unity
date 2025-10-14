@@ -13685,7 +13685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f445e6388eef76e419bd9dec7872e84a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BananaPickup
-  pickupSound: {fileID: 0}
+  pickupSound: {fileID: 8300000, guid: 70031618af8693741973db55266be2b5, type: 3}
   pickupVFX: {fileID: 0}
   bananaValue: 1
 --- !u!1 &1119672522
@@ -21977,6 +21977,18 @@ PrefabInstance:
     - target: {fileID: 7093660499286963764, guid: ee3d910545b206946a646dfdbb9b8c71, type: 3}
       propertyPath: m_Name
       value: SM_Sandbox_02
+      objectReference: {fileID: 0}
+    - target: {fileID: 7582493935273536654, guid: ee3d910545b206946a646dfdbb9b8c71, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7582493935273536654, guid: ee3d910545b206946a646dfdbb9b8c71, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7582493935273536654, guid: ee3d910545b206946a646dfdbb9b8c71, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7582493935273536654, guid: ee3d910545b206946a646dfdbb9b8c71, type: 3}
       propertyPath: m_LocalPosition.x
