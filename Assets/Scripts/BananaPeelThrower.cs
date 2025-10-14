@@ -60,6 +60,13 @@ public class BananaPeelThrower : MonoBehaviour
                     Instantiate(bananaPeelPrefab, spawnPosition, Quaternion.LookRotation(hit.normal));
                 }
 
+                // Drop weapon if enemy has one
+                EnemyWeaponHandler weaponHandler = hit.transform.GetComponent<EnemyWeaponHandler>();
+                if (weaponHandler != null)
+                {
+                    weaponHandler.DropBat();
+                }
+
                 // Play animation on enemy and freeze movement
                 Animator enemyAnimator = hit.transform.GetComponentInChildren<Animator>();
                 Debug.Log("Enemy Animator: " + enemyAnimator);
