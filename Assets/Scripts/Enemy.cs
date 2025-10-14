@@ -25,9 +25,28 @@ public class SimplePatrol : MonoBehaviour
     [Header("Animation")]
     public Animator animator;
     public bool IsAttacking = false;
+    public bool IsRunning = false;
+    
+    [Header("Movement")]
+    private CharacterController characterController;
+    private Vector3 lastMoveDirection = Vector3.zero;
+    private float moveSmoothing = 10f;
+    public bool IsRunning = false;
+    
+    [Header("Movement")]
+    private CharacterController characterController;
+    private Vector3 lastMoveDirection = Vector3.zero;
+    private float moveSmoothing = 10f;
+    public bool IsRunning = false;
+    
+    [Header("Movement")]
+    private CharacterController characterController;
+    private Vector3 lastMoveDirection = Vector3.zero;
+    private float moveSmoothing = 10f;
 
     [Header("Chase Behavior")]
-    public float chaseSpeed = 4f;
+    public float chaseSpeed = 4f; // Base chase speed (walking)
+    public float runningSpeed = 6f; // Speed when running animation is active
     public float chaseArriveDist = 1.5f;
     public float losePlayerTime = 3f; // How long to chase after losing sight
 
@@ -69,6 +88,15 @@ public class SimplePatrol : MonoBehaviour
 
     void Start()
     {
+        // Get CharacterController component
+        characterController = GetComponent<CharacterController>();
+        
+        // Disable root motion to prevent animation from affecting position
+        if (animator != null)
+        {
+            animator.applyRootMotion = false;
+        }
+        
         // Look for FieldOfView3D in children since it's on a child GameObject
         fieldOfView = GetComponentInChildren<FieldOfView3D>();
         if (fieldOfView != null)
@@ -112,6 +140,7 @@ public class SimplePatrol : MonoBehaviour
 
     void Patrol()
     {
+        
         Vector3 tgt = waypoints[index].position;
         Vector3 pos = transform.position;
         Vector3 to = (tgt - pos); to.y = 0f;
@@ -122,14 +151,13 @@ public class SimplePatrol : MonoBehaviour
         // Only move if we haven't arrived yet and we're not busy (not in AtPoint coroutine)
         if (!hasArrived && !busy)
         {
-            // move
-            Vector3 step = to.normalized * moveSpeed * Time.deltaTime;
-            if (step.sqrMagnitude >= to.sqrMagnitude) transform.position = tgt;
-            else transform.position += step;
-
-            // face movement
+            // Move using the new movement system
             if (to.sqrMagnitude > 0.0001f)
             {
+                Vector3 moveDirection = to.normalized;
+                MoveCharacter(moveDirection, moveSpeed);
+                
+                // Face movement direction
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(to), 720f * Time.deltaTime);
                 // Set animation to moving (not looking around)
                 SetLookingAroundAnimation(false);
@@ -159,10 +187,13 @@ public class SimplePatrol : MonoBehaviour
 
             float distanceToTarget = to.magnitude;
 
-            // Check if we're close enough to attack
-            if (distanceToTarget <= attackRange && Time.time - lastAttackTime >= attackCooldown && !isAttackInProgress)
+            // Check if we're close enough to attack (only if we're actually chasing)
+            if (distanceToTarget <= attackRange && Time.time - lastAttackTime >= attackCooldown && !isAttackInProgress && isChasing)
             {
-                // Start attack
+                // Stop running and start attack
+                IsRunning = false;
+                UpdateRunningAnimation();
+                
                 IsAttacking = true;
                 isAttackInProgress = true;
                 UpdateAttackAnimation();
@@ -175,31 +206,68 @@ public class SimplePatrol : MonoBehaviour
             else if (distanceToTarget > attackRange)
             {
                 // Move towards target if not in attack range
-                Vector3 step = to.normalized * chaseSpeed * Time.deltaTime;
-                transform.position += step;
-
-                // Stop attacking when moving and cancel damage if attack was interrupted
-                if (isAttackInProgress)
+                if (to.sqrMagnitude > 0.0001f)
                 {
+<<<<<<< HEAD
+                    Vector3 moveDirection = to.normalized;
+                    // Use running speed when running animation is active
+                    float currentSpeed = IsRunning ? runningSpeed : chaseSpeed;
+                    MoveCharacter(moveDirection, currentSpeed);
+                }
+
+                // Set running animation when chasing (only if not already running)
+                if (!IsRunning)
+                {
+                    IsRunning = true;
+                    UpdateRunningAnimation();
+                }
+
+                // Only stop attacking if we were previously attacking but now need to move
+                // This prevents interrupting an attack that just started
+                if (isAttackInProgress && IsAttacking)
+                {
+                    // Only interrupt if the attack has been going for a while (not just started)
+                    if (Time.time - lastAttackTime > 0.5f)
+=======
                     IsAttacking = false;
                     isAttackInProgress = false;
                     UpdateAttackAnimation();
 
                     // Stop the damage coroutine if it's still running
                     if (currentAttackCoroutine != null)
+>>>>>>> 184f8a77056b9bd65067f417fc8279d4c1e6220c
                     {
-                        StopCoroutine(currentAttackCoroutine);
-                        currentAttackCoroutine = null;
+                        IsAttacking = false;
+                        isAttackInProgress = false;
+                        UpdateAttackAnimation();
+                        
+                        // Stop the damage coroutine if it's still running
+                        if (currentAttackCoroutine != null)
+                        {
+                            StopCoroutine(currentAttackCoroutine);
+                            currentAttackCoroutine = null;
+                        }
                     }
                 }
             }
             else if (isAttackInProgress && distanceToTarget > attackRange)
             {
-                // Player moved out of range during attack - cancel the attack
+                // Player moved out of range during attack - cancel the attack and resume running
                 IsAttacking = false;
                 isAttackInProgress = false;
                 UpdateAttackAnimation();
+<<<<<<< HEAD
+                
+                // Resume running animation (only if not already running)
+                if (!IsRunning)
+                {
+                    IsRunning = true;
+                    UpdateRunningAnimation();
+                }
+                
+=======
 
+>>>>>>> 184f8a77056b9bd65067f417fc8279d4c1e6220c
                 // Stop the damage coroutine if it's still running
                 if (currentAttackCoroutine != null)
                 {
@@ -220,11 +288,23 @@ public class SimplePatrol : MonoBehaviour
             // Continue moving towards last known position for a short time
             if (timeSinceLastSeen <= losePlayerTime)
             {
-                Vector3 step = to.normalized * chaseSpeed * Time.deltaTime;
-                transform.position += step;
-
                 if (to.sqrMagnitude > 0.0001f)
+                {
+                    Vector3 moveDirection = to.normalized;
+                    // Use running speed when running animation is active
+                    float currentSpeed = IsRunning ? runningSpeed : chaseSpeed;
+                    MoveCharacter(moveDirection, currentSpeed);
+                    
+                    // Face movement direction
                     transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(to), 720f * Time.deltaTime);
+                }
+
+                // Keep running animation when moving towards last known position (only if not already running)
+                if (!IsRunning)
+                {
+                    IsRunning = true;
+                    UpdateRunningAnimation();
+                }
             }
             else
             {
@@ -242,6 +322,11 @@ public class SimplePatrol : MonoBehaviour
                         currentAttackCoroutine = null;
                     }
                 }
+                
+                // Stop running animation when returning to patrol
+                IsRunning = false;
+                UpdateRunningAnimation();
+                
                 StopChasing();
             }
         }
@@ -312,6 +397,41 @@ public class SimplePatrol : MonoBehaviour
         }
     }
 
+    void UpdateRunningAnimation()
+    {
+        if (animator != null)
+        {
+            animator.SetBool("IsRunning", IsRunning);
+        }
+    }
+
+    void MoveCharacter(Vector3 direction, float speed)
+    {
+        // Only move if we have a valid direction
+        if (direction.magnitude < 0.1f) 
+        {
+            lastMoveDirection = Vector3.zero;
+            return;
+        }
+        
+        // Smooth the movement direction
+        Vector3 targetDirection = direction.normalized;
+        lastMoveDirection = Vector3.Lerp(lastMoveDirection, targetDirection, moveSmoothing * Time.deltaTime);
+        
+        Vector3 movement = lastMoveDirection * speed * Time.deltaTime;
+        
+        if (characterController != null)
+        {
+            // Use CharacterController for smooth movement
+            characterController.Move(movement);
+        }
+        else
+        {
+            // Fallback to direct transform movement
+            transform.position += movement;
+        }
+    }
+
     void OnPlayerDetected(bool isDetected)
     {
         if (isDetected && fieldOfView != null && fieldOfView.visibleTargets.Count > 0)
@@ -344,6 +464,23 @@ public class SimplePatrol : MonoBehaviour
         isChasing = false;
         currentTarget = null;
         timeSinceLastSeen = 0f;
+<<<<<<< HEAD
+        
+        // Stop running animation
+        IsRunning = false;
+        UpdateRunningAnimation();
+        
+        // Force stop any ongoing attack and reset all attack states
+        IsAttacking = false;
+        isAttackInProgress = false;
+        UpdateAttackAnimation();
+        
+        // Stop the damage coroutine if it's still running
+        if (currentAttackCoroutine != null)
+        {
+            StopCoroutine(currentAttackCoroutine);
+            currentAttackCoroutine = null;
+=======
 
         // Stop any ongoing attack
         if (isAttackInProgress)
@@ -357,7 +494,14 @@ public class SimplePatrol : MonoBehaviour
                 StopCoroutine(currentAttackCoroutine);
                 currentAttackCoroutine = null;
             }
+>>>>>>> 184f8a77056b9bd65067f417fc8279d4c1e6220c
         }
+        
+        // Reset attack timer to prevent immediate re-attack
+        lastAttackTime = Time.time;
+        
+        // Force reset all movement and animation states
+        lastMoveDirection = Vector3.zero;
 
         // Stop chase sound (but only once)
         if (isChaseAudioPlaying && chaseAudio && chaseAudio.isPlaying)
@@ -389,7 +533,9 @@ public class SimplePatrol : MonoBehaviour
         }
 
         // Reset attack state after damage is dealt
+        IsAttacking = false;
         isAttackInProgress = false;
+        UpdateAttackAnimation();
         currentAttackCoroutine = null;
     }
 
@@ -462,6 +608,8 @@ public class SimplePatrol : MonoBehaviour
         else
         {
             // Move towards the weapon
+<<<<<<< HEAD
+=======
             Vector3 step = to.normalized * moveSpeed * Time.deltaTime;
             if (step.sqrMagnitude >= to.sqrMagnitude)
                 transform.position = targetWeapon.transform.position;
@@ -469,8 +617,13 @@ public class SimplePatrol : MonoBehaviour
                 transform.position += step;
 
             // Face the weapon
+>>>>>>> 184f8a77056b9bd65067f417fc8279d4c1e6220c
             if (to.sqrMagnitude > 0.0001f)
             {
+                Vector3 moveDirection = to.normalized;
+                MoveCharacter(moveDirection, moveSpeed);
+                
+                // Face the weapon
                 transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(to), 720f * Time.deltaTime);
             }
         }
