@@ -294,7 +294,7 @@ MonoBehaviour:
   fadeGroup: {fileID: 1308102826}
   audioSource: {fileID: 488731589}
   slides:
-  - image: {fileID: 2800000, guid: ec47feac9d4198040bf760a79da88ebb, type: 3}
+  - image: {fileID: 2800000, guid: 67ccaceea6b3200469da80e1cbb95d95, type: 3}
     text: No one knows how it happened. A solar flare, a chunk of glowing space rock,
       a science experiment that went... right? Whatever it was, the world didn't
       end. It just got a whole lot hairier.
@@ -1214,7 +1214,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: ec47feac9d4198040bf760a79da88ebb, type: 3}
+  m_Texture: {fileID: 2800000, guid: 67ccaceea6b3200469da80e1cbb95d95, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
