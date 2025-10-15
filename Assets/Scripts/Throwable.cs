@@ -3,7 +3,7 @@ using UnityEngine;
 public class Throwable : MonoBehaviour
 {
     [SerializeField]
-    float delay = 3f;
+    float delay = 2f;
     [SerializeField]
     float damageRadius = 20f;
     [SerializeField]

@@ -65,6 +65,22 @@ public class ChasePlayer : MonoBehaviour
             agent.acceleration = 12f;
             agent.angularSpeed = 720f;
             agent.stoppingDistance = attackRange;
+            
+            // Ensure agent is properly placed on NavMesh
+            if (!agent.isOnNavMesh)
+            {
+                // Try to warp the agent to the nearest NavMesh position
+                NavMeshHit hit;
+                if (NavMesh.SamplePosition(transform.position, out hit, 10f, NavMesh.AllAreas))
+                {
+                    agent.Warp(hit.position);
+                    Debug.Log("Warped NavMeshAgent to valid NavMesh position");
+                }
+                else
+                {
+                    Debug.LogError("NavMeshAgent cannot be placed on NavMesh. Make sure NavMesh is baked and agent is near walkable area.");
+                }
+            }
         }
         
         // Disable root motion to prevent animation from affecting position
@@ -78,8 +94,18 @@ public class ChasePlayer : MonoBehaviour
     {
         if (player == null || agent == null) return;
         
-        // Set destination to player
-        agent.SetDestination(player.position);
+        // Check if agent is active and on NavMesh before setting destination
+        if (agent.isActiveAndEnabled && agent.isOnNavMesh)
+        {
+            agent.SetDestination(player.position);
+        }
+        else
+        {
+            // If agent is not properly set up, disable this script
+            Debug.LogWarning("NavMeshAgent is not active or not on NavMesh. Disabling ChasePlayer script.");
+            enabled = false;
+            return;
+        }
         
         // Check if we can attack - only if we have a valid path to the player
         bool canReachPlayer = agent.hasPath && !agent.pathPending && agent.pathStatus == UnityEngine.AI.NavMeshPathStatus.PathComplete;

@@ -104,7 +104,6 @@ public class SimplePatrol : MonoBehaviour
             navMeshAgent.angularSpeed = navMeshAngularSpeed;
             navMeshAgent.stoppingDistance = navMeshStoppingDistance;
             navMeshAgent.radius = 0.3f; // Reduced radius for tighter movement
-            navMeshAgent.height = 2f;
             navMeshAgent.autoBraking = true;
             navMeshAgent.updateRotation = false; // We'll handle rotation manually
             navMeshAgent.updateUpAxis = true;
