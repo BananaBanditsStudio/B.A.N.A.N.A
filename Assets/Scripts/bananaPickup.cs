@@ -6,7 +6,7 @@ public class BananaPickup : MonoBehaviour
     public AudioClip pickupSound;
     public GameObject pickupVFX; // Optional particle effect
     public int bananaValue = 1;
-    
+
     [Header("Enemy Spawning")]
     public GameObject enemyPrefab;
     public int enemyCount = 5;
@@ -49,6 +49,9 @@ public class BananaPickup : MonoBehaviour
 
             Debug.Log("🍌 Destroying banana...");
             Destroy(gameObject, 0.1f);
+            PlayerInventory.hasBanana = true;
+
+
         }
     }
 
@@ -64,12 +67,12 @@ public class BananaPickup : MonoBehaviour
                 1.2f,
                 Random.Range(-spawnRadius, spawnRadius)
             );
-            
+
             Vector3 spawnPosition = spawnCenter.position + randomOffset;
-            
+
             // Instantiate enemy
             GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-            
+
             Debug.Log($"Spawned enemy {i + 1} at {spawnPosition}");
         }
     }

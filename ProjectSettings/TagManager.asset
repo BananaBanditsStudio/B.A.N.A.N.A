@@ -8,6 +8,7 @@ TagManager:
   - Target
   - FxTemporaire
   - rock
+  - Car
   layers:
   - Default
   - TransparentFX
