@@ -22009,6 +22009,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2406843180618362374, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+      propertyPath: m_BaseOffset
+      value: 0.88
+      objectReference: {fileID: 0}
     - target: {fileID: 3651299852246373452, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.058
@@ -32612,6 +32616,10 @@ PrefabInstance:
     - target: {fileID: 38916637956065444, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2406843180618362374, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+      propertyPath: m_BaseOffset
+      value: 0.88
       objectReference: {fileID: 0}
     - target: {fileID: 3651299852246373452, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_LocalPosition.x
@@ -46989,6 +46997,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2406843180618362374, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+      propertyPath: m_BaseOffset
+      value: 0.88
+      objectReference: {fileID: 0}
     - target: {fileID: 3651299852246373452, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.058
@@ -57082,6 +57094,10 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 478800151}
+    - target: {fileID: 2406843180618362374, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+      propertyPath: m_BaseOffset
+      value: 0.88
+      objectReference: {fileID: 0}
     - target: {fileID: 7034251830636075039, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_LocalPosition.x
       value: -13.06
@@ -59371,7 +59387,7 @@ MonoBehaviour:
   m_OverrideTileSize: 0
   m_TileSize: 256
   m_OverrideVoxelSize: 0
-  m_VoxelSize: 0.26333335
+  m_VoxelSize: 0.2
   m_MinRegionArea: 2
   m_NavMeshData: {fileID: 23800000, guid: 1eed6872479a02e47a854dcfdc080575, type: 2}
   m_BuildHeightMesh: 0
