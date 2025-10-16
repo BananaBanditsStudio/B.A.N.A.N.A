@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+
 
 public class BananaPickup : MonoBehaviour
 {
@@ -13,31 +15,73 @@ public class BananaPickup : MonoBehaviour
     public Transform spawnCenter;
     public float spawnRadius = 3f;
 
+
+    public ObjectiveMarker bananaMarker;
+    public ObjectiveMarker carMarker;
+    public GameObject carTrigger;
+
+
+    private bool canBeCollected = false;
     private bool isCollected = false;
+
+    void Start()
+    {
+        // Wait 1 second before banana can be collected
+        StartCoroutine(EnableCollectionAfterDelay(1f));
+
+        // Set initial marker visibility
+        if (bananaMarker != null)
+            bananaMarker.gameObject.SetActive(true);
+
+        if (carMarker != null)
+            carMarker.gameObject.SetActive(false);
+    }
+
+    IEnumerator EnableCollectionAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        canBeCollected = true;
+    }
 
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Player touched banana");
-
-        if (isCollected) return;
+        // Prevent multiple triggers or early collection
+        if (!canBeCollected || isCollected)
+            return;
 
         if (other.CompareTag("Player"))
         {
-            Debug.Log("✅ Player tag confirmed!");
+            Debug.Log("Player touched banana!");
 
             isCollected = true;
 
+            // Toggle markers
+            if (bananaMarker != null)
+            {
+                bananaMarker.gameObject.SetActive(false);
+                Debug.Log("Banana marker hidden");
+            }
+
+            if (carMarker != null)
+            {
+                carMarker.gameObject.SetActive(true);
+                Debug.Log("Car marker shown");
+            }
+
+            // Handle inventory
             PlayerInventory inventory = other.GetComponent<PlayerInventory>();
             if (inventory != null)
             {
-                Debug.Log("Bananas stolen: " + bananaValue);
                 inventory.AddBananas(bananaValue);
+                PlayerInventory.hasBanana = true;
+                Debug.Log("Bananas stolen: " + bananaValue);
             }
             else
             {
-                Debug.Log("🚫 No PlayerInventory found on Player!");
+                Debug.LogWarning("No PlayerInventory found on Player!");
             }
 
+            // Play sound and VFX
             if (pickupSound != null)
                 AudioSource.PlayClipAtPoint(pickupSound, transform.position);
 
@@ -47,13 +91,12 @@ public class BananaPickup : MonoBehaviour
             // Spawn enemies
             SpawnEnemies();
 
-            Debug.Log("🍌 Destroying banana...");
-            Destroy(gameObject, 0.1f);
-            PlayerInventory.hasBanana = true;
-
-
+            Debug.Log("Destroying banana...");
+            Destroy(gameObject, 0.2f);
         }
     }
+
+
 
     void SpawnEnemies()
     {

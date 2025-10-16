@@ -44754,7 +44754,7 @@ Transform:
   m_GameObject: {fileID: 1029057458}
   serializedVersion: 2
   m_LocalRotation: {x: 1.1102228e-17, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -32.65, y: 0.01, z: -25.21}
+  m_LocalPosition: {x: -32.65, y: 0.25, z: -25.21}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -46429,6 +46429,7 @@ MonoBehaviour:
   spawnRadius: 10
   bananaMarker: {fileID: 1921988790}
   carMarker: {fileID: 1362534642}
+  carTrigger: {fileID: 0}
 --- !u!4 &1118154691 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -3910990755373119420, guid: aa14ab3445aa59741a94e99acc27d5b8, type: 3}
@@ -64576,6 +64577,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 479039470095858415, guid: 60010b3554c3c45ceaca20f9384806b1, type: 3}
+      propertyPath: MinDistance
+      value: 0.9087707
+      objectReference: {fileID: 0}
     - target: {fileID: 2570471413142180981, guid: 60010b3554c3c45ceaca20f9384806b1, type: 3}
       propertyPath: promptText
       value: 
