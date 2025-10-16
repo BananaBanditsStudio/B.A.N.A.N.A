@@ -149,6 +149,15 @@ public class GameStateManager : MonoBehaviour
         inputBlocked = false;
         Time.timeScale = 1f;
         
+        // Reset input flags to allow input (these flags are confusingly named - they should be true to allow input)
+        blockMovement = true;
+        blockShooting = true;
+        blockInteraction = true;
+        blockWeaponSwitching = true;
+        
+        // Don't force cursor state here - let individual scenes handle their own cursor state
+        // This was causing issues with gameplay scenes
+        
         // Debug log to confirm reset
         Debug.Log("GameStateManager: State reset - All input should be enabled");
     }
