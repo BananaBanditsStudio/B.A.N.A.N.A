@@ -6,6 +6,16 @@ public class WeaponSwitcher : MonoBehaviour
     [Header("Weapons")]
     public GameObject[] weapons; // Array of weapon GameObjects (Gun, BananaPeelThrower, etc.)
 
+    [System.Serializable]
+    public class WeaponData
+    {
+        public GameObject weapon;
+        public GameObject[] arms;
+    }
+
+    [Header("Weapon Arms")]
+    public WeaponData[] weaponData; // Array of weapon data (weapon + arms)
+
     [Header("UI Slots")]
     public Image[] weaponSlots; // Array of UI Image components for weapon slots
 
@@ -56,12 +66,24 @@ public class WeaponSwitcher : MonoBehaviour
             SlippingRecoveryManager.Instance.ForceRecoverAllSlippingEnemies();
         }
 
-        // Deactivate all weapons
+        // Deactivate all weapons and their corresponding arms
         for (int i = 0; i < weapons.Length; i++)
         {
             if (weapons[i] != null)
             {
                 weapons[i].SetActive(false);
+            }
+            
+            // Deactivate arms for this weapon using weaponData
+            if (i < weaponData.Length && weaponData[i] != null && weaponData[i].arms != null)
+            {
+                for (int armIndex = 0; armIndex < weaponData[i].arms.Length; armIndex++)
+                {
+                    if (weaponData[i].arms[armIndex] != null)
+                    {
+                        weaponData[i].arms[armIndex].SetActive(false);
+                    }
+                }
             }
         }
 
@@ -70,6 +92,18 @@ public class WeaponSwitcher : MonoBehaviour
         {
             weapons[index].SetActive(true);
             currentWeaponIndex = index;
+        }
+
+        // Activate arms for the selected weapon using weaponData
+        if (index < weaponData.Length && weaponData[index] != null && weaponData[index].arms != null)
+        {
+            for (int armIndex = 0; armIndex < weaponData[index].arms.Length; armIndex++)
+            {
+                if (weaponData[index].arms[armIndex] != null)
+                {
+                    weaponData[index].arms[armIndex].SetActive(true);
+                }
+            }
         }
 
         // Update UI highlighting
