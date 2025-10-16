@@ -19,7 +19,7 @@ public class musicmenu : MonoBehaviour
             musicSlider.value = musicVolume;
             SetMusicVolume(musicVolume);
         }
-s
+
         if (sfxSlider != null)
         {
             sfxSlider.value = sfxVolume;
