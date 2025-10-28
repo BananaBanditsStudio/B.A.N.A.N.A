@@ -17,6 +17,10 @@ public class PatrolState : BaseState
 
     public void PatrolCycle()
     {
+        // Safety check: agent must be active and on NavMesh
+        if (enemy.Agent == null || !enemy.Agent.isActiveAndEnabled || !enemy.Agent.isOnNavMesh)
+            return;
+        
         if (enemy.Agent.remainingDistance < 0.2f)
         {
             waypointIndex = (waypointIndex + 1) % enemy.path.waypoints.Count;
