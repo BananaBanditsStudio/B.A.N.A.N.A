@@ -13,6 +13,9 @@ public class PatrolState : BaseState
     {
         // Code to execute while in the patrol state
         PatrolCycle();
+        if (enemy.CanSeePlayer()) {
+            stateMachine.ChangeState(new AttackState());
+        }
     }
 
     public void PatrolCycle()

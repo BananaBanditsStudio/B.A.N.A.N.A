@@ -10,6 +10,7 @@ public class EnemyWithSM : MonoBehaviour
     private StateMachine stateMachine;
     private NavMeshAgent agent;
     public NavMeshAgent Agent { get { return agent; } }
+    public GameObject Player { get { return player; } }
     public Path2 path;
 
     [SerializeField]
@@ -19,6 +20,12 @@ public class EnemyWithSM : MonoBehaviour
     private GameObject player;
     public float sightDistance = 20f;
     public float fieldOfView = 85;
+    public float fireRate = 2f;
+
+    [Header("Bullet")]
+    public GameObject bulletPrefab;
+    public Transform gunBarrel;
+
     void Start()
     {
         stateMachine = GetComponent<StateMachine>();
@@ -31,6 +38,7 @@ public class EnemyWithSM : MonoBehaviour
     void Update()
     {
         CanSeePlayer();
+        currentState = stateMachine.activeState.ToString();
     }
 
     public bool CanSeePlayer(){
@@ -40,12 +48,16 @@ public class EnemyWithSM : MonoBehaviour
                 float angleToPlayer = Vector3.Angle(direction, transform.forward);
                 if (angleToPlayer >= -fieldOfView && angleToPlayer <= fieldOfView) {
                     Ray ray = new Ray(transform.position, direction);
+                    RaycastHit hit = new RaycastHit();
+                    if (Physics.Raycast(ray, out hit, sightDistance)) {
+                        if (hit.transform.gameObject == player) {
+                            return true;
+                        }
+                    }
                     Debug.DrawRay(ray.origin, ray.direction * sightDistance, Color.red, 0.1f);
                 }
             }
-            
         }
-
-        return true;
+        return false;
     }
 }

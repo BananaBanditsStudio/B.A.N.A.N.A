@@ -20977,6 +20977,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -8105404148035362246, guid: d25c822612a1984458d38e5b0298e90d, type: 3}
   m_PrefabInstance: {fileID: 1888765894}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &463909612
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 463909613}
+  m_Layer: 0
+  m_Name: BulletSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &463909613
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 463909612}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.341, y: -0.464, z: 0.584}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1132237846144415076}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &464384831 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -3798425998677668069, guid: d25c822612a1984458d38e5b0298e90d, type: 3}
@@ -68999,6 +69030,7 @@ Transform:
   - {fileID: 4881433283557533137}
   - {fileID: 6928595578919252723}
   - {fileID: 2141019024048646692}
+  - {fileID: 463909613}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1303584782530504350
@@ -69523,6 +69555,10 @@ PrefabInstance:
     - target: {fileID: 5690935474733028281, guid: 60010b3554c3c45ceaca20f9384806b1, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5850784253908994530, guid: 60010b3554c3c45ceaca20f9384806b1, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6527128552976583759, guid: 60010b3554c3c45ceaca20f9384806b1, type: 3}
       propertyPath: m_Name
@@ -72407,6 +72443,9 @@ MonoBehaviour:
   currentState: 
   sightDistance: 20
   fieldOfView: 85
+  fireRate: 1
+  bulletPrefab: {fileID: 8513641787784238836, guid: 740124fe1eac7a043b1242813332760d, type: 3}
+  gunBarrel: {fileID: 463909613}
 --- !u!4 &8861886941913117734
 Transform:
   m_ObjectHideFlags: 0
