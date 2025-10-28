@@ -84,6 +84,10 @@ public class SimplePatrol : MonoBehaviour
     bool isChasing = false;
     FieldOfView3D fieldOfView;
 
+    // --- Simple stun support ---
+    private float stunnedUntil = 0f;
+    private Coroutine stunCoroutine = null;
+
     void Start()
     {
         // Get CharacterController component
@@ -131,8 +135,63 @@ public class SimplePatrol : MonoBehaviour
         weaponHandler = GetComponent<EnemyWeaponHandler>();
     }
 
+    // Public API: simple stun, owned by the enemy
+    public void ApplyStun(float seconds)
+    {
+        // Cancel any existing stun
+        if (stunCoroutine != null)
+        {
+            StopCoroutine(stunCoroutine);
+        }
+        
+        // Set stun timer immediately (prevents Update from running)
+        stunnedUntil = Time.time + seconds;
+        
+        // Trigger stun animation if available
+        if (animator != null)
+        {
+            animator.SetBool("IsAttacking", false);
+            animator.SetBool("IsRunning", false);
+            animator.ResetTrigger("Stun");
+            animator.SetTrigger("Stun");
+        }
+
+        // Pause NavMeshAgent immediately
+        if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
+        {
+            navMeshAgent.isStopped = true;
+            navMeshAgent.ResetPath();
+            navMeshAgent.nextPosition = transform.position;
+        }
+
+        // Start coroutine to resume after delay
+        stunCoroutine = StartCoroutine(ResumeAfterStun(seconds));
+    }
+
+    private System.Collections.IEnumerator ResumeAfterStun(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        
+        // Clear stun timer
+        stunnedUntil = 0f;
+        
+        // Resume NavMeshAgent
+        if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
+        {
+            navMeshAgent.isStopped = false;
+            navMeshAgent.ResetPath();
+            navMeshAgent.nextPosition = transform.position;
+        }
+        
+        // Clear coroutine reference
+        stunCoroutine = null;
+    }
+
     void Update()
     {
+        // Early exit if stunned - prevents any movement/patrol logic
+        if (Time.time < stunnedUntil) return;
+        
         if (waypoints == null || waypoints.Length == 0) return;
 
         // Check if we need to seek a weapon first
