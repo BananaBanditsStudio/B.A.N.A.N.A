@@ -11,6 +11,7 @@ public class AttackState : BaseState
 
     public override void Exit()
     {
+        enemy.Animator.ResetTrigger("Throw");
     }
 
     public override void Perform()
@@ -22,6 +23,8 @@ public class AttackState : BaseState
             enemy.transform.LookAt(enemy.Player.transform);
             
             if (shootTimer > enemy.fireRate) {
+                enemy.Animator.ResetTrigger("Throw");
+                enemy.Animator.SetTrigger("Throw");
                 Shoot();
             }
             
@@ -33,7 +36,7 @@ public class AttackState : BaseState
             }
         } else {
             losePlayerTimer += Time.deltaTime;
-            if (losePlayerTimer > 8) {
+            if (losePlayerTimer >= 2f) {
                 stateMachine.ChangeState(new PatrolState());
             }
         }
@@ -47,7 +50,9 @@ public class AttackState : BaseState
         // Instantiate the bullet
         GameObject bullet = Object.Instantiate(enemy.bulletPrefab, gunBarrel.position, enemy.transform.rotation);
         // Calculate the direction to the player
-        Vector3 shootDirection = (enemy.Player.transform.position - gunBarrel.position).normalized;
+        Vector3 playerPosition = enemy.Player.transform.position;
+        playerPosition.y += 0.8f;
+        Vector3 shootDirection = (playerPosition - gunBarrel.position).normalized;
         // Add force to the bullet
         bullet.GetComponent<Rigidbody>().linearVelocity = Quaternion.AngleAxis(Random.Range(-3f, 3f), Vector3.up) * shootDirection * 40;
         shootTimer = 0f;

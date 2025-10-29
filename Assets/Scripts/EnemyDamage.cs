@@ -164,6 +164,17 @@ public class EnemyDamage : MonoBehaviour
         {
             patrolScript.enabled = false;
         }
+
+
+        EnemyWithSM enemyWithSM = GetComponent<EnemyWithSM>();
+        if (enemyWithSM != null) {
+            enemyWithSM.enabled = false;
+        }
+
+        StateMachine stateMachine = GetComponent<StateMachine>();
+        if (stateMachine != null) {
+            stateMachine.enabled = false;
+        }
         
         // Disable NavMeshAgent if present
         UnityEngine.AI.NavMeshAgent navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
