@@ -115,7 +115,7 @@ namespace UnityTutorial.PlayerControl
             if(!_hasAnimator) return;
 
             RaycastHit hitInfo;
-            if(Physics.Raycast(_playerRigidbody.worldCenterOfMass, Vector3.down, out hitInfo, Dis2Ground + 0.1f, GroundCheck))
+            if(Physics.Raycast(transform.position + Vector3.up * 0.1f, Vector3.down, out hitInfo, Dis2Ground + 0.1f, GroundCheck))
             {
                 //collided with sth
                 //Grounded
@@ -128,6 +128,8 @@ namespace UnityTutorial.PlayerControl
             SetAnimationGrounding();
             return;
         }
+
+
 
         private void SetAnimationGrounding()
         {
