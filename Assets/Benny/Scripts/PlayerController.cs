@@ -18,6 +18,7 @@ namespace UnityTutorial.PlayerControl
 
         [SerializeField] private float JumpFactor = 260f;
         [SerializeField] private float Dis2Ground = 0.8f;
+        [SerializeField] private float AirResistance = 0.8f;
         [SerializeField] private LayerMask GroundCheck;
 
         private Rigidbody _playerRigidbody;
@@ -27,6 +28,7 @@ namespace UnityTutorial.PlayerControl
         private bool _hasAnimator;
         private int _xVelHash;
         private int _yVelHash;
+        private int _zVelHash;
         private int _jumpHash;
         private int _groundedHash;
         private int _fallingHash;
@@ -47,6 +49,7 @@ namespace UnityTutorial.PlayerControl
 
             _xVelHash = Animator.StringToHash("X_Velocity");
             _yVelHash = Animator.StringToHash("Y_Velocity");
+            _zVelHash = Animator.StringToHash("Z_Velocity");
             _jumpHash = Animator.StringToHash("Jump");
             _groundedHash = Animator.StringToHash("Grounded");
             _fallingHash = Animator.StringToHash("Falling");
@@ -67,14 +70,21 @@ namespace UnityTutorial.PlayerControl
 
             float targetSpeed = _inputManager.Run ? _runSpeed : _walkSpeed;
             if(_inputManager.Move ==Vector2.zero) targetSpeed = 0;
-                
-            _currentVelocity.x = Mathf.Lerp(_currentVelocity.x, _inputManager.Move.x * targetSpeed, AnimBlendSpeed * Time.fixedDeltaTime);
-            _currentVelocity.y =  Mathf.Lerp(_currentVelocity.y, _inputManager.Move.y * targetSpeed, AnimBlendSpeed * Time.fixedDeltaTime);
+            
+            if(_grounded)
+            {
+                _currentVelocity.x = Mathf.Lerp(_currentVelocity.x, _inputManager.Move.x * targetSpeed, AnimBlendSpeed * Time.fixedDeltaTime);
+                _currentVelocity.y =  Mathf.Lerp(_currentVelocity.y, _inputManager.Move.y * targetSpeed, AnimBlendSpeed * Time.fixedDeltaTime);
 
-            var xVelDifference = _currentVelocity.x - _playerRigidbody.linearVelocity.x;
-            var zVelDifference = _currentVelocity.y - _playerRigidbody.linearVelocity.z;
+                var xVelDifference = _currentVelocity.x - _playerRigidbody.linearVelocity.x;
+                var zVelDifference = _currentVelocity.y - _playerRigidbody.linearVelocity.z;
 
-            _playerRigidbody.AddForce(transform.TransformVector(new Vector3(xVelDifference, 0 , zVelDifference)), ForceMode.VelocityChange);
+                _playerRigidbody.AddForce(transform.TransformVector(new Vector3(xVelDifference, 0 , zVelDifference)), ForceMode.VelocityChange);
+            }
+            else
+            {
+                _playerRigidbody.AddForce(transform.TransformVector(new Vector3(_currentVelocity.x * AirResistance,0,_currentVelocity.y * AirResistance)), ForceMode.VelocityChange);
+            }
 
             _animator.SetFloat(_xVelHash , _currentVelocity.x);
             _animator.SetFloat(_yVelHash, _currentVelocity.y);
@@ -125,6 +135,7 @@ namespace UnityTutorial.PlayerControl
             }
             Debug.Log(_grounded);
             _grounded = false;
+            _animator.SetFloat(_zVelHash, _playerRigidbody.linearVelocity.y);
             SetAnimationGrounding();
             return;
         }
