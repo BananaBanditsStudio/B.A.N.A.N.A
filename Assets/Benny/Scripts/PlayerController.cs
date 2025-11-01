@@ -26,6 +26,8 @@ namespace UnityTutorial.PlayerControl
         private Animator _animator;
         private bool _grounded;
         private bool _hasAnimator;
+        private bool _isCrouching;
+        private bool _crouchPressed;
         private int _xVelHash;
         private int _yVelHash;
         private int _zVelHash;
@@ -72,7 +74,7 @@ namespace UnityTutorial.PlayerControl
             if(!_hasAnimator) return;
 
             float targetSpeed = _inputManager.Run ? _runSpeed : _walkSpeed;
-            if(_inputManager.Crouch) targetSpeed = 1.5f;
+            if(_isCrouching) targetSpeed = 1.5f;
             if(_inputManager.Move ==Vector2.zero) targetSpeed = 0;
             
             if(_grounded)
@@ -110,7 +112,22 @@ namespace UnityTutorial.PlayerControl
             _playerRigidbody.MoveRotation(_playerRigidbody.rotation * Quaternion.Euler(0, Mouse_X * MouseSensitivity * Time.smoothDeltaTime, 0));
         }
 
-        private void HandleCrouch() => _animator.SetBool(_crouchHash, _inputManager.Crouch);
+        private void HandleCrouch()
+        {
+            if(!_hasAnimator) return;
+            
+            // Toggle crouch on button press
+            if(_inputManager.Crouch && !_crouchPressed)
+            {
+                _crouchPressed = true;
+                _isCrouching = !_isCrouching;
+                _animator.SetBool(_crouchHash, _isCrouching);
+            }
+            else if(!_inputManager.Crouch)
+            {
+                _crouchPressed = false;
+            }
+        }
 
         private void HandleJump()
         {
