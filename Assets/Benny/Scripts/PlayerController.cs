@@ -32,6 +32,7 @@ namespace UnityTutorial.PlayerControl
         private int _jumpHash;
         private int _groundedHash;
         private int _fallingHash;
+        private int _crouchHash;
 
         private float _xRotation;
 
@@ -53,12 +54,14 @@ namespace UnityTutorial.PlayerControl
             _jumpHash = Animator.StringToHash("Jump");
             _groundedHash = Animator.StringToHash("Grounded");
             _fallingHash = Animator.StringToHash("Falling");
+            _crouchHash = Animator.StringToHash("Crouch");
         }
 
         private void FixedUpdate() {
             SampleGround();
             Move();
             HandleJump();
+            HandleCrouch();
         }
         private void LateUpdate() {
             CamMovements();
@@ -69,6 +72,7 @@ namespace UnityTutorial.PlayerControl
             if(!_hasAnimator) return;
 
             float targetSpeed = _inputManager.Run ? _runSpeed : _walkSpeed;
+            if(_inputManager.Crouch) targetSpeed = 1.5f;
             if(_inputManager.Move ==Vector2.zero) targetSpeed = 0;
             
             if(_grounded)
@@ -105,6 +109,8 @@ namespace UnityTutorial.PlayerControl
             Camera.localRotation = Quaternion.Euler(_xRotation, 0 , 0);
             _playerRigidbody.MoveRotation(_playerRigidbody.rotation * Quaternion.Euler(0, Mouse_X * MouseSensitivity * Time.smoothDeltaTime, 0));
         }
+
+        private void HandleCrouch() => _animator.SetBool(_crouchHash, _inputManager.Crouch);
 
         private void HandleJump()
         {
