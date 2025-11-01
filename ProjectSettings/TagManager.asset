@@ -23,8 +23,8 @@ TagManager:
   - OnlyMain
   - Grapple
   - Ground
-  - 
-  - 
+  - PlayerBody
+  - FirstPersonArms
   - 
   - 
   - 
