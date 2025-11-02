@@ -397,9 +397,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 574402294305117041}
+  - component: {fileID: 4335409663352534043}
   m_Layer: 0
   m_Name: neck
-  m_TagString: Untagged
+  m_TagString: Head
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -420,6 +421,27 @@ Transform:
   - {fileID: 5982554435804245701}
   m_Father: {fileID: 4407858205092484372}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &4335409663352534043
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1590805494586994131}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.43, y: 0.45, z: 0.52}
+  m_Center: {x: 0, y: 0.26, z: 0.08}
 --- !u!1 &1708948721752756515
 GameObject:
   m_ObjectHideFlags: 0
@@ -3332,6 +3354,7 @@ MonoBehaviour:
   health: 50
   healthBarUI: {fileID: 2540220382087815764}
   healthBarSprite: {fileID: 2109285538843160609}
+  damagePopupPrefab: {fileID: 7387775422977122372, guid: ad263f193647e4e39bdeee729e904388, type: 3}
 --- !u!82 &4797505818429227623
 AudioSource:
   m_ObjectHideFlags: 0

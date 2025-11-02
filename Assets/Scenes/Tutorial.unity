@@ -22109,7 +22109,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e64c1f1fafa97d44901506fd07be88b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  Player: {fileID: 742067857}
+  Player: {fileID: 507150955}
 --- !u!1 &483929961
 GameObject:
   m_ObjectHideFlags: 0
@@ -23248,6 +23248,10 @@ PrefabInstance:
       propertyPath: 'waypoints.Array.data[3]'
       value: 
       objectReference: {fileID: 1543422253}
+    - target: {fileID: 8290997510167123704, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+      propertyPath: damagePopupPrefab
+      value: 
+      objectReference: {fileID: 7387775422977122372, guid: ad263f193647e4e39bdeee729e904388, type: 3}
     - target: {fileID: 8827158906207099270, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_Name
       value: Enemy (3)
@@ -27888,7 +27892,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &742067858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -27922,6 +27926,7 @@ MonoBehaviour:
   MouseSensitivity: 21.9
   JumpFactor: 260
   Dis2Ground: 0.8
+  AirResistance: 0.8
   GroundCheck:
     serializedVersion: 2
     m_Bits: 0
@@ -35319,6 +35324,10 @@ PrefabInstance:
       propertyPath: alertColor.a
       value: 0.3882353
       objectReference: {fileID: 0}
+    - target: {fileID: 6464824982976325245, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+      propertyPath: damagePopupPrefab
+      value: 
+      objectReference: {fileID: 7387775422977122372, guid: ad263f193647e4e39bdeee729e904388, type: 3}
     - target: {fileID: 7034251830636075039, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_LocalPosition.x
       value: -17.46
@@ -49928,6 +49937,10 @@ PrefabInstance:
       propertyPath: 'waypoints.Array.data[3]'
       value: 
       objectReference: {fileID: 1650267166}
+    - target: {fileID: 8290997510167123704, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+      propertyPath: damagePopupPrefab
+      value: 
+      objectReference: {fileID: 7387775422977122372, guid: ad263f193647e4e39bdeee729e904388, type: 3}
     - target: {fileID: 8827158906207099270, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_Name
       value: Enemy (2)
@@ -61449,6 +61462,10 @@ PrefabInstance:
       propertyPath: 'waypoints.Array.data[3]'
       value: 
       objectReference: {fileID: 1651864922}
+    - target: {fileID: 8290997510167123704, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
+      propertyPath: damagePopupPrefab
+      value: 
+      objectReference: {fileID: 7387775422977122372, guid: ad263f193647e4e39bdeee729e904388, type: 3}
     - target: {fileID: 8827158906207099270, guid: e1225fbde690942f7b89c3fdbbf86123, type: 3}
       propertyPath: m_Name
       value: Enemy
@@ -63062,7 +63079,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a24a209a6bd187d49929d1a6d40a92ec, type: 2}
+  - {fileID: 2100000, guid: a9c333d18f2fb41c98090af834c7467d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -71871,7 +71888,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6527128552976583759, guid: 60010b3554c3c45ceaca20f9384806b1, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8249985619811562602, guid: 60010b3554c3c45ceaca20f9384806b1, type: 3}
       propertyPath: m_CullingMask.m_Bits
@@ -72552,6 +72569,7 @@ MonoBehaviour:
   health: 50
   healthBarUI: {fileID: 6928595578919252723}
   healthBarSprite: {fileID: 4607525910688495912}
+  damagePopupPrefab: {fileID: 7387775422977122372, guid: ad263f193647e4e39bdeee729e904388, type: 3}
 --- !u!1 &4074276384692770788
 GameObject:
   m_ObjectHideFlags: 0

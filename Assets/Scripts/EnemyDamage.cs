@@ -12,8 +12,7 @@ public class EnemyDamage : MonoBehaviour
 
     public Transform healthBarUI;
     public Image healthBarSprite;
-
-
+    public GameObject damagePopupPrefab; // Reference to the damage popup prefab
 
     private Camera cameraMain;
 
@@ -33,15 +32,39 @@ public class EnemyDamage : MonoBehaviour
         }
     }
 
-    public void TakeDamage(float amount)
+    public void TakeDamage(float amount, bool isCriticalHit = false)
     {
         if (isDead) return; // Prevent taking damage after death
 
         health -= amount;
         UpdateHealthBar();
+        
+        // Spawn damage popup before checking death (so it shows even on killing blow)
+        if (!isDead && damagePopupPrefab != null)
+        {
+            CreateDamagePopup(amount, isCriticalHit);
+        }
+        
         if (health <= 0f)
         {
             Die();
+        }
+    }
+    
+    private void CreateDamagePopup(float damageAmount, bool isCriticalHit)
+    {
+        if (damagePopupPrefab == null) return;
+        
+        // Spawn popup at chest/mid-torso level to stay visible even when camera is close
+        // This prevents the popup from going off-screen when the top of the enemy is cut off
+        Vector3 popupPosition = transform.position + Vector3.up * 0.4f;
+        GameObject popupInstance = Instantiate(damagePopupPrefab, popupPosition, Quaternion.identity);
+        
+        // Setup the popup with damage value
+        DamagePopup popup = popupInstance.GetComponent<DamagePopup>();
+        if (popup != null)
+        {
+            popup.Setup(damageAmount, isCriticalHit);
         }
     }
     

@@ -5,6 +5,7 @@ using System.Collections;
 public class gun : MonoBehaviour
 {
     public float damage = 10f;
+    public float headshotMultiplier = 2f; // 2x damage for headshots
     public float range = 100f;
     public Camera fpsCam;
 
@@ -41,16 +42,71 @@ public class gun : MonoBehaviour
 
     void Shoot()
     {
-        RaycastHit hit;
-
-        // Determine the end point of the bullet
-        Vector3 bulletEndPoint;
+        RaycastHit[] hits;
+        
+        // Initialize variables with default values
+        RaycastHit hit = default(RaycastHit);
+        Vector3 bulletEndPoint = fpsCam.transform.position + fpsCam.transform.forward * range;
 
         Instantiate(gunEffect, transform.position, transform.rotation);
-        if (Physics.Raycast(fpsCam.transform.position, fpsCam.transform.forward, out hit, range))
+        
+        // Use RaycastAll to get all colliders hit along the ray
+        hits = Physics.RaycastAll(fpsCam.transform.position, fpsCam.transform.forward, range);
+        
+        if (hits.Length > 0)
         {
-            Debug.Log("Hit: " + hit.collider.name);
+            // Sort hits by distance
+            System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
+            
+            // Use the closest hit as default (for obstacle detection, etc.)
+            hit = hits[0];
             bulletEndPoint = hit.point;
+            
+            // First, find if any hit is a headshot (prioritize headshots)
+            bool isHeadshot = false;
+            RaycastHit headshotHit = default(RaycastHit);
+            EnemyDamage target = null;
+            
+            foreach (RaycastHit h in hits)
+            {
+                // Check for headshot first
+                if (h.collider.CompareTag("Head") && !isHeadshot)
+                {
+                    isHeadshot = true;
+                    headshotHit = h;
+                    // Find the EnemyDamage component - check parent hierarchy
+                    Transform enemyTransform = h.transform;
+                    while (enemyTransform != null && target == null)
+                    {
+                        target = enemyTransform.GetComponent<EnemyDamage>();
+                        if (target == null)
+                            enemyTransform = enemyTransform.parent;
+                        else
+                            break;
+                    }
+                    // Update hit and bulletEndPoint for headshot
+                    hit = headshotHit;
+                    bulletEndPoint = hit.point;
+                    break; // Found headshot, prioritize this
+                }
+            }
+            
+            // If no headshot, find the first enemy hit
+            if (!isHeadshot)
+            {
+                foreach (RaycastHit h in hits)
+                {
+                    target = h.transform.GetComponent<EnemyDamage>();
+                    if (target != null)
+                    {
+                        hit = h;
+                        bulletEndPoint = hit.point;
+                        break;
+                    }
+                }
+            }
+            
+            Debug.Log("Hit: " + hit.collider.name + (isHeadshot ? " [HEADSHOT]" : ""));
 
             TrailRenderer trail = Instantiate(dartTrail, bulletSpawnPoint.position, Quaternion.identity);
             StartCoroutine(SpawnDartTrail(trail, hit));
@@ -60,29 +116,31 @@ public class gun : MonoBehaviour
             {
                 CreateBulletImpactEffect(hit);
             }
-
-            EnemyDamage target = hit.transform.GetComponent<EnemyDamage>();
+            
             if (target != null)
             {
                 Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
+                
+                float finalDamage = damage;
+                
+                if (isHeadshot)
+                {
+                    finalDamage = damage * headshotMultiplier;
+                    Debug.Log("HEADSHOT! Damage: " + finalDamage);
+                }
                 
                 // Check if enemy is slipping and handle appropriately
                 if (target.IsSlipping())
                 {
                     // If enemy is slipping, just deal damage without additional effects
-                    target.TakeDamage(damage);
+                    target.TakeDamage(finalDamage, isHeadshot);
                 }
                 else
                 {
                     // Normal damage dealing
-                    target.TakeDamage(damage);
+                    target.TakeDamage(finalDamage, isHeadshot);
                 }
             }
-        }
-        else
-        {
-            // No hit, bullet travels max range
-            bulletEndPoint = fpsCam.transform.position + fpsCam.transform.forward * range;
         }
 
         // Create bullet trail effect

@@ -30,6 +30,13 @@ public class Grappling : MonoBehaviour
     private void Start()
     {
         fpc = GetComponent<FirstPersonController>();
+        
+        // Set line renderer color to black (overrides color gradient)
+        if (lr != null)
+        {
+            lr.startColor = Color.black;
+            lr.endColor = Color.black;
+        }
     }
 
     private void Update()
