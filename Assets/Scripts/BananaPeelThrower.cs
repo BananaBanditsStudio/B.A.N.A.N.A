@@ -78,30 +78,33 @@ public class BananaPeelThrower : MonoBehaviour
                 if (weaponHandler != null)
                     weaponHandler.DropBat();
 
-                // Check if enemy is already slipping or dead
+                // Resolve animator and target position now
+                Animator enemyAnimator = hit.transform.GetComponentInChildren<Animator>();
+                Vector3 targetPosition = hit.transform.position; targetPosition.y = 0.09f;
+
                 if (enemy.IsSlipping() || enemy.health <= 0)
                 {
-                    // If already slipping or dead, just deal damage without animation
+                    // If already slipping or dead, just deal damage
                     enemy.TakeDamage(damage);
                 }
                 else
                 {
-                    // Set slipping state before animation
+                    // Mark slipping, then start animation and damage ON ARRIVAL of peel for sync
                     enemy.SetSlippingState(true);
-                    
-                    // Play animation on enemy and freeze movement
-                    Animator enemyAnimator = hit.transform.GetComponentInChildren<Animator>();
-                    if (enemyAnimator != null)
-                        StartCoroutine(PlayBananaHitAnimation(enemy.gameObject, enemyAnimator));
-
-                    // Deal damage
-                    enemy.TakeDamage(damage);
+                    ThrowBananaPeelWithArrivalCallback(targetPosition, () => {
+                        if (enemy != null && enemyAnimator != null)
+                        {
+                            StartCoroutine(PlayBananaHitAnimation(enemy.gameObject, enemyAnimator));
+                            enemy.TakeDamage(damage);
+                        }
+                    });
                 }
-
-                // Throw peel to enemy’s feet
-                Vector3 targetPosition = hit.transform.position;
-                targetPosition.y = 0.09f;
-                ThrowBananaPeel(targetPosition);
+                
+                // If already slipping/dead, still throw the peel for visuals
+                if (enemy.IsSlipping() || enemy.health <= 0)
+                {
+                    ThrowBananaPeel(targetPosition);
+                }
             }
 
 
@@ -128,6 +131,27 @@ public class BananaPeelThrower : MonoBehaviour
         }
 
         // Configure the throw
+        throwScript.InitializeThrow(throwPoint.position, targetPosition, throwForce);
+    }
+
+    // Throws peel and invokes callback exactly when the peel arrives
+    void ThrowBananaPeelWithArrivalCallback(Vector3 targetPosition, System.Action onArrived)
+    {
+        if (bananaPeelPrefab == null || throwPoint == null)
+        {
+            Debug.LogWarning("Banana peel prefab or throw point not assigned!");
+            return;
+        }
+
+        GameObject bananaPeel = Instantiate(bananaPeelPrefab, throwPoint.position, Quaternion.identity);
+
+        BananaPeelThrow throwScript = bananaPeel.GetComponent<BananaPeelThrow>();
+        if (throwScript == null)
+        {
+            throwScript = bananaPeel.AddComponent<BananaPeelThrow>();
+        }
+
+        throwScript.onArrived = onArrived;
         throwScript.InitializeThrow(throwPoint.position, targetPosition, throwForce);
     }
 

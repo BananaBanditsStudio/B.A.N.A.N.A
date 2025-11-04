@@ -1,4 +1,5 @@
 using UnityEngine;
+using System;
 
 public class BananaPeelThrow : MonoBehaviour
 {
@@ -7,6 +8,7 @@ public class BananaPeelThrow : MonoBehaviour
     public float arcHeight = 2f;
     public float rotationSpeed = 180f;
     public float lifetime = 10f;
+    public float fixedThrowTime = 0.4f; // Fixed travel time regardless of distance
     
     private Vector3 startPosition;
     private Vector3 targetPosition;
@@ -14,6 +16,7 @@ public class BananaPeelThrow : MonoBehaviour
     private float throwTime;
     private float totalThrowTime;
     private bool isThrowing = false;
+    public Action onArrived; // callback when peel arrives at target
     
     void Start()
     {
@@ -27,9 +30,8 @@ public class BananaPeelThrow : MonoBehaviour
         targetPosition = target;
         throwForce = force;
         
-        // Calculate throw trajectory
-        float distance = Vector3.Distance(startPosition, targetPosition);
-        totalThrowTime = distance / (throwSpeed * (force / 10f));
+        // Use fixed travel time for fast, consistent throws regardless of distance
+        totalThrowTime = fixedThrowTime;
         
         // Start the throw
         isThrowing = true;
@@ -48,6 +50,8 @@ public class BananaPeelThrow : MonoBehaviour
             // Land at target position
             transform.position = targetPosition;
             isThrowing = false;
+            // signal arrival for animation/damage sync
+            try { onArrived?.Invoke(); } catch {}
             return;
         }
         
@@ -64,8 +68,12 @@ public class BananaPeelThrow : MonoBehaviour
         // Linear interpolation between start and target
         Vector3 linearPosition = Vector3.Lerp(startPosition, targetPosition, progress);
         
+        // Scale arc height based on distance for more realistic arcs at different ranges
+        float distance = Vector3.Distance(startPosition, targetPosition);
+        float scaledArcHeight = arcHeight * Mathf.Clamp(distance / 10f, 0.5f, 2f);
+        
         // Add arc height using a parabola
-        float arcOffset = Mathf.Sin(progress * Mathf.PI) * arcHeight;
+        float arcOffset = Mathf.Sin(progress * Mathf.PI) * scaledArcHeight;
         linearPosition.y += arcOffset;
         
         return linearPosition;

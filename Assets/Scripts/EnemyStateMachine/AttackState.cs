@@ -5,13 +5,19 @@ public class AttackState : BaseState
     private float moveTimer = 0f;
     private float losePlayerTimer = 0f;
     private float shootTimer = 0f;
+    private bool isThrowing = false;
+    private EnemyDamage enemyDamage;
+    private const float MOVEMENT_THRESHOLD = 0.1f; // Minimum velocity to consider enemy as "moving"
+    
     public override void Enter()
     {
+        enemyDamage = enemy.GetComponent<EnemyDamage>();
     }
 
     public override void Exit()
     {
         enemy.Animator.ResetTrigger("Throw");
+        isThrowing = false;
     }
 
     public override void Perform()
@@ -22,13 +28,18 @@ public class AttackState : BaseState
             shootTimer += Time.deltaTime;
             enemy.transform.LookAt(enemy.Player.transform);
             
-            if (shootTimer > enemy.fireRate) {
+            // Check if we can throw (not slipping, not already throwing, not moving)
+            bool canThrow = CanThrow();
+            
+            if (canThrow && shootTimer > enemy.fireRate) {
                 enemy.Animator.ResetTrigger("Throw");
                 enemy.Animator.SetTrigger("Throw");
+                isThrowing = true;
                 Shoot();
             }
             
-            
+            // Check if throw animation has completed
+            CheckThrowAnimationComplete();
             
             if (moveTimer > Random.Range(3f, 7f)) {
                 enemy.Agent.SetDestination(enemy.transform.position + Random.insideUnitSphere * 5f);
@@ -42,6 +53,49 @@ public class AttackState : BaseState
         }
     }
 
+    private bool CanThrow()
+    {
+        // Don't throw if enemy is slipping
+        if (enemyDamage != null && enemyDamage.IsSlipping()) {
+            return false;
+        }
+        
+        // Don't throw if already throwing
+        if (isThrowing) {
+            return false;
+        }
+        
+        // Don't throw if enemy is actively moving to a new position
+        if (enemy.Agent.velocity.magnitude > MOVEMENT_THRESHOLD) {
+            return false;
+        }
+        
+        // Don't throw if currently in a throw animation
+        AnimatorStateInfo stateInfo = enemy.Animator.GetCurrentAnimatorStateInfo(0);
+        if (stateInfo.IsName("Throw") || stateInfo.IsName("Throwing")) {
+            return false;
+        }
+        
+        // Don't throw if in other interrupting animations (slipping, stun, dead)
+        if (stateInfo.IsName("Slip") || stateInfo.IsName("Slipping") || 
+            stateInfo.IsName("Stun") || stateInfo.IsName("Death")) {
+            return false;
+        }
+        
+        return true;
+    }
+
+    private void CheckThrowAnimationComplete()
+    {
+        if (isThrowing) {
+            AnimatorStateInfo stateInfo = enemy.Animator.GetCurrentAnimatorStateInfo(0);
+            
+            // If we're no longer in a throw animation, reset the throwing flag
+            if (!stateInfo.IsName("Throw") && !stateInfo.IsName("Throwing")) {
+                isThrowing = false;
+            }
+        }
+    }
 
     public void Shoot() {
         Debug.Log("Shooting!");
