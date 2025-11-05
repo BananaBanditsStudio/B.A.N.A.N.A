@@ -10,6 +10,7 @@ TagManager:
   - rock
   - Car
   - Head
+  - Enemy
   layers:
   - Default
   - TransparentFX
