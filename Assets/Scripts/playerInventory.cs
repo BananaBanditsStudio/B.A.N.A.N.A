@@ -12,4 +12,5 @@ public class PlayerInventory : MonoBehaviour
         hasBanana = true;
         Debug.Log("🍌 Banana added to inventory!");
     }
+    public static bool hasKey = false;
 }
