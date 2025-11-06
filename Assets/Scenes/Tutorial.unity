@@ -47144,6 +47144,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8771091787928289351, guid: aa14ab3445aa59741a94e99acc27d5b8, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1118154686}
+    - targetCorrespondingSourceObject: {fileID: 8771091787928289351, guid: aa14ab3445aa59741a94e99acc27d5b8, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1118154692}
   m_SourcePrefab: {fileID: -4161369568681901532, guid: aa14ab3445aa59741a94e99acc27d5b8, type: 3}
 --- !u!1 &1118154685 stripped
 GameObject:
@@ -47225,6 +47228,19 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -3910990755373119420, guid: aa14ab3445aa59741a94e99acc27d5b8, type: 3}
   m_PrefabInstance: {fileID: 1118154684}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1118154692
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1118154685}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e20460a6f704194da36461ac51c0778, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
+  bananaCount: 0
 --- !u!1 &1119672522
 GameObject:
   m_ObjectHideFlags: 0
