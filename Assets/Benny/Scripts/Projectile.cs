@@ -8,53 +8,6 @@ public class Projectile : MonoBehaviour
     public float stickLifetime = 10f; // How long projectile stays stuck before disappearing
     
     private bool hasHit = false;
-    private Vector3 previousPosition;
-    private Rigidbody rb;
-    
-    void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-        previousPosition = transform.position;
-        
-        // Ensure continuous collision detection
-        if (rb != null)
-        {
-            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        }
-    }
-    
-    void FixedUpdate()
-    {
-        // Raycast backup check to prevent tunneling
-        if (!hasHit && rb != null)
-        {
-            Vector3 direction = transform.position - previousPosition;
-            float distance = direction.magnitude;
-            
-            if (distance > 0.01f)
-            {
-                RaycastHit hit;
-                // Only check Ground layer
-                int groundLayer = LayerMask.GetMask("Ground");
-                
-                if (Physics.Raycast(previousPosition, direction.normalized, out hit, distance, groundLayer))
-                {
-                    Debug.Log($"Raycast caught bullet tunneling! Hit: {hit.collider.name}");
-                    
-                    // Create a fake collision to process the hit
-                    ContactPoint contact = new ContactPoint
-                    {
-                        point = hit.point,
-                        normal = hit.normal
-                    };
-                    
-                    ProcessHit(hit.collider, hit.point, hit.normal);
-                }
-            }
-            
-            previousPosition = transform.position;
-        }
-    }
 
     void OnCollisionEnter(Collision collision)
     {
@@ -67,29 +20,18 @@ public class Projectile : MonoBehaviour
             return;
         }
         
-        Debug.Log($"OnCollisionEnter: Projectile hit Ground layer object: {collision.gameObject.name}");
-        
-        // Get contact point
-        Vector3 hitPoint = collision.contacts.Length > 0 ? collision.contacts[0].point : transform.position;
-        Vector3 hitNormal = collision.contacts.Length > 0 ? collision.contacts[0].normal : -transform.forward;
-        
-        ProcessHit(collision.collider, hitPoint, hitNormal, collision.transform);
-    }
-    
-    void ProcessHit(Collider hitCollider, Vector3 hitPoint, Vector3 hitNormal, Transform hitTransform = null)
-    {
-        if (hasHit) return;
         hasHit = true;
+        Debug.Log($"Projectile hit Ground layer object: {collision.gameObject.name}");
         
         // Check what we hit
-        bool isHeadshot = hitCollider.CompareTag("Head");
+        bool isHeadshot = collision.collider.CompareTag("Head");
         
         // Find enemy
-        EnemyDamage target = hitCollider.GetComponent<EnemyDamage>();
-        if (target == null && hitTransform != null)
+        EnemyDamage target = collision.collider.GetComponent<EnemyDamage>();
+        if (target == null)
         {
             // Search parent hierarchy
-            Transform enemyTransform = hitTransform;
+            Transform enemyTransform = collision.transform;
             while (enemyTransform != null && target == null)
             {
                 target = enemyTransform.GetComponent<EnemyDamage>();
@@ -115,30 +57,33 @@ public class Projectile : MonoBehaviour
         }
         
         // Create impact effect
-        if (impactEffect != null)
+        if (impactEffect != null && collision.contacts.Length > 0)
         {
-            Instantiate(impactEffect, hitPoint, Quaternion.LookRotation(hitNormal));
+            ContactPoint contact = collision.contacts[0];
+            Instantiate(impactEffect, contact.point, Quaternion.LookRotation(contact.normal));
         }
         
         // Create bullet hole on obstacles
-        if (hitCollider.CompareTag("Obstacle"))
+        if (collision.collider.CompareTag("Obstacle") && collision.contacts.Length > 0)
         {
+            ContactPoint contact = collision.contacts[0];
             if (GlobalReferences.Instance != null && GlobalReferences.Instance.bulletImpactEffectPrefab != null)
             {
-                GameObject hole = Instantiate(GlobalReferences.Instance.bulletImpactEffectPrefab, hitPoint, Quaternion.LookRotation(hitNormal));
-                hole.transform.SetParent(hitCollider.transform);
+                GameObject hole = Instantiate(GlobalReferences.Instance.bulletImpactEffectPrefab, contact.point, Quaternion.LookRotation(contact.normal));
+                hole.transform.SetParent(collision.collider.transform);
             }
         }
         
-        Debug.Log("Projectile hit: " + hitCollider.name + (isHeadshot ? " [HEADSHOT]" : ""));
+        Debug.Log("Projectile hit: " + collision.collider.name + (isHeadshot ? " [HEADSHOT]" : ""));
         
-        // Stick the projectile to the surface
-        StickToSurface(hitCollider.transform, hitPoint, hitNormal);
+        // Stick the projectile to the wall
+        StickToSurface(collision);
     }
     
-    void StickToSurface(Transform surfaceTransform, Vector3 hitPoint, Vector3 hitNormal)
+    void StickToSurface(Collision collision)
     {
         // Stop physics
+        Rigidbody rb = GetComponent<Rigidbody>();
         if (rb != null)
         {
             rb.linearVelocity = Vector3.zero;
@@ -147,19 +92,20 @@ public class Projectile : MonoBehaviour
         }
         
         // Parent to the hit object so it moves with it
-        if (surfaceTransform != null)
-        {
-            transform.SetParent(surfaceTransform);
-        }
+        transform.SetParent(collision.transform);
         
         // Position at contact point and align with surface normal
-        transform.position = hitPoint;
-        transform.rotation = Quaternion.LookRotation(hitNormal);
+        if (collision.contacts.Length > 0)
+        {
+            ContactPoint contact = collision.contacts[0];
+            transform.position = contact.point;
+            transform.rotation = Quaternion.LookRotation(contact.normal);
+        }
         
         // Destroy after some time
         Destroy(gameObject, stickLifetime);
         
-        Debug.Log($"Projectile stuck to {(surfaceTransform != null ? surfaceTransform.gameObject.name : "surface")} for {stickLifetime} seconds");
+        Debug.Log($"Projectile stuck to {collision.gameObject.name} for {stickLifetime} seconds");
     }
 }
 

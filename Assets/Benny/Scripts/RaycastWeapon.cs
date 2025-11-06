@@ -110,8 +110,6 @@ public class RaycastWeapon : MonoBehaviour
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            // Set collision detection to Continuous to prevent tunneling through objects
-            rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             rb.linearVelocity = direction * projectileSpeed;
         }
         else
