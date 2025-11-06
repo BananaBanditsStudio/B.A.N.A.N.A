@@ -18,19 +18,17 @@ public class BananaPickup : MonoBehaviour
 
     [Header("UI Prompt")]
     public GameObject interactPrompt; // "Press E to steal" UI
+    public Camera playerCamera; // Assign your main camera in Inspector
 
     private bool canBeCollected = false;
     private bool isCollected = false;
-    private bool isPlayerInRange = false;
-    private PlayerInventory cachedInventory; // optional cache
+    private PlayerInventory cachedInventory;
 
     void Start()
     {
         StartCoroutine(EnableCollectionAfterDelay(1f));
-
         if (bananaMarker != null) bananaMarker.gameObject.SetActive(true);
         if (carMarker != null) carMarker.gameObject.SetActive(false);
-
         if (interactPrompt != null) interactPrompt.SetActive(false);
     }
 
@@ -40,35 +38,36 @@ public class BananaPickup : MonoBehaviour
         canBeCollected = true;
     }
 
-    void OnTriggerEnter(Collider other)
-    {
-        if (!canBeCollected || isCollected) return;
-        if (!other.CompareTag("Player")) return;
-
-        // Find inventory on the player (supports child colliders)
-        cachedInventory = other.GetComponentInParent<PlayerInventory>();
-
-        isPlayerInRange = true;
-
-        if (interactPrompt != null) interactPrompt.SetActive(true);
-    }
-
-    void OnTriggerExit(Collider other)
-    {
-        if (!other.CompareTag("Player")) return;
-
-        isPlayerInRange = false;
-        cachedInventory = null;
-
-        if (interactPrompt != null) interactPrompt.SetActive(false);
-    }
-
     void Update()
     {
-        if (!canBeCollected || isCollected) return;
+        if (!canBeCollected || isCollected)
+        {
+            if (interactPrompt != null) interactPrompt.SetActive(false);
+            return;
+        }
 
-        // Legacy Input example; swap with new Input System if you use it
-        if (isPlayerInRange && Input.GetKeyDown(KeyCode.E))
+        bool lookingAtMe = false;
+        if (playerCamera != null)
+        {
+            Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, 2.5f)) // Adjust distance as you like
+            {
+                if (hit.collider != null && hit.collider.gameObject == this.gameObject)
+                {
+                    lookingAtMe = true;
+                    // Cache inventory for efficiency
+                    if (cachedInventory == null && hit.transform != null)
+                    {
+                        // See if the player is the object holding the camera
+                        GameObject playerObj = playerCamera.transform.root.gameObject;
+                        cachedInventory = playerObj.GetComponent<PlayerInventory>() ?? playerObj.GetComponentInChildren<PlayerInventory>();
+                    }
+                }
+            }
+        }
+        if (interactPrompt != null) interactPrompt.SetActive(lookingAtMe);
+        if (lookingAtMe && Input.GetKeyDown(KeyCode.E))
         {
             TryCollect();
         }
@@ -76,18 +75,10 @@ public class BananaPickup : MonoBehaviour
 
     private void TryCollect()
     {
-        // Safety: resolve inventory if not cached
-        if (cachedInventory == null)
-        {
-            // Attempt to find any overlapping player collider again if needed
-            // Optional, usually not necessary if cached in OnTriggerEnter
-        }
-
-        // Toggle markers immediately
+        // Marker logic
         if (bananaMarker != null) bananaMarker.gameObject.SetActive(false);
         if (carMarker != null) carMarker.gameObject.SetActive(true);
-
-        // Handle inventory
+        // Inventory
         if (cachedInventory != null)
         {
             cachedInventory.AddBananas(bananaValue);
@@ -97,25 +88,18 @@ public class BananaPickup : MonoBehaviour
         {
             Debug.LogWarning("No PlayerInventory found on Player!");
         }
-
-        // A/V
+        // Audio/Visual
         if (pickupSound != null) AudioSource.PlayClipAtPoint(pickupSound, transform.position);
         if (pickupVFX != null) Instantiate(pickupVFX, transform.position, Quaternion.identity);
-
-        // Spawn enemies
         SpawnEnemies();
-
-        // Prevent re-use and hide prompt
         isCollected = true;
         if (interactPrompt != null) interactPrompt.SetActive(false);
-
         Destroy(gameObject, 0.2f);
     }
 
     void SpawnEnemies()
     {
         if (enemyPrefab == null || spawnCenter == null) return;
-
         for (int i = 0; i < enemyCount; i++)
         {
             Vector3 randomOffset = new Vector3(
@@ -123,7 +107,6 @@ public class BananaPickup : MonoBehaviour
                 1.2f,
                 Random.Range(-spawnRadius, spawnRadius)
             );
-
             Vector3 spawnPosition = spawnCenter.position + randomOffset;
             Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
         }
