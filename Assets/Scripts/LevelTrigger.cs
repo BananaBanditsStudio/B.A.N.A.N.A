@@ -3,11 +3,17 @@ using UnityEngine.SceneManagement;
 
 public class LevelTrigger : MonoBehaviour
 {
-    public string nextSceneName; //  type the name of the next scene in Inspector
-    private bool canEnter = false;
+    public string nextSceneName;
     private GameStateManager gameStateManager;
     [SerializeField] private FadeTransition fadeTransition;
 
+    [Header("UI Prompt")]
+    public GameObject interactPrompt; // Drag your "Press E to drive" UI here
+    public Camera playerCamera; // Drag your player camera here
+    public float interactDistance = 3f; // Adjust for how far away 'drive' can be triggered
+
+    private bool isCollected => PlayerInventory.hasBanana; // For clarity
+    private bool isLevelEnding = false;
 
     void Start()
     {
@@ -18,49 +24,54 @@ public class LevelTrigger : MonoBehaviour
             GameObject gameStateGO = new GameObject("GameStateManager");
             gameStateManager = gameStateGO.AddComponent<GameStateManager>();
         }
+        if (interactPrompt) interactPrompt.SetActive(false);
     }
 
-    private void OnTriggerEnter(Collider other)
+    void Update()
     {
-        if (other.CompareTag("Player"))
+        if (isLevelEnding) return;
+        bool showPrompt = false;
+        if (playerCamera && isCollected)
         {
-            if (PlayerInventory.hasBanana) // only if banana collected
+            Ray ray = playerCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, interactDistance))
             {
-                Debug.Log("Player reached car! Starting fade transition...");
-
-                // Reset game state before scene change (important if returning to TitleScreen)
-                if (gameStateManager != null)
-                    gameStateManager.ResetState();
-
-                // Resume time scale before scene change
-                Time.timeScale = 1f;
-
-                // Unlock cursor for TitleScreen
-                if (nextSceneName.ToLower().Contains("title"))
+                if (hit.collider && hit.collider.gameObject == this.gameObject)
                 {
-                    Cursor.lockState = CursorLockMode.None;
-                    Cursor.visible = true;
-                    Debug.Log("Preparing for TitleScreen - cursor unlocked");
+                    showPrompt = true;
+                    if (Input.GetKeyDown(KeyCode.E))
+                    {
+                        TryDrive();
+                    }
                 }
-
-                // 🚗 Trigger fade transition instead of instant load
-                if (fadeTransition != null)
-                {
-                    fadeTransition.nextSceneName = nextSceneName; // just to be sure
-                    fadeTransition.StartFadeOut();
-                }
-                else
-                {
-                    Debug.LogWarning("FadeTransition not assigned! Loading instantly.");
-                    SceneManager.LoadScene(nextSceneName);
-                }
-            }
-            else
-            {
-                Debug.Log("Player needs the banana first!");
             }
         }
+        if (interactPrompt) interactPrompt.SetActive(showPrompt);
     }
 
+    void TryDrive()
+    {
+        isLevelEnding = true;
+        Debug.Log("Player starting drive transition...");
+        if (gameStateManager) gameStateManager.ResetState();
+        Time.timeScale = 1f;
+        if (nextSceneName.ToLower().Contains("title"))
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            Debug.Log("Preparing for TitleScreen - cursor unlocked");
+        }
+        if (fadeTransition)
+        {
+            fadeTransition.nextSceneName = nextSceneName;
+            fadeTransition.StartFadeOut();
+        }
+        else
+        {
+            Debug.LogWarning("FadeTransition not assigned! Loading instantly.");
+            SceneManager.LoadScene(nextSceneName);
+        }
+        if (interactPrompt) interactPrompt.SetActive(false);
+    }
 }
-
