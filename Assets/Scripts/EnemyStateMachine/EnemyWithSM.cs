@@ -8,6 +8,7 @@ public class EnemyWithSM : MonoBehaviour
 {
 
     private StateMachine stateMachine;
+    public StateMachine StateMachine { get { return stateMachine; } }
     private NavMeshAgent agent;
     public NavMeshAgent Agent { get { return agent; } }
     public GameObject Player { get { return player; } }
@@ -132,6 +133,40 @@ public class EnemyWithSM : MonoBehaviour
             }
         }
         return false;
+    }
+
+    /// <summary>
+    /// Triggers the enemy to investigate a distraction at the specified position.
+    /// The enemy will move to the target location and play a confused animation upon arrival.
+    /// </summary>
+    /// <param name="targetPosition">The world position to investigate</param>
+    public void TriggerDistraction(Vector3 targetPosition)
+    {
+        if (stateMachine != null)
+        {
+            stateMachine.ChangeState(new DistractionState(targetPosition));
+        }
+        else
+        {
+            Debug.LogWarning("EnemyWithSM: Cannot trigger distraction - StateMachine is null");
+        }
+    }
+
+    /// <summary>
+    /// Triggers the enemy to investigate a distraction at a GameObject's position.
+    /// Useful when you want the enemy to check out a specific object.
+    /// </summary>
+    /// <param name="targetObject">The GameObject to investigate</param>
+    public void TriggerDistraction(GameObject targetObject)
+    {
+        if (targetObject != null)
+        {
+            TriggerDistraction(targetObject.transform.position);
+        }
+        else
+        {
+            Debug.LogWarning("EnemyWithSM: Cannot trigger distraction - target GameObject is null");
+        }
     }
 
 }
