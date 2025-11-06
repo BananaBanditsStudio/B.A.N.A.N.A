@@ -156,18 +156,33 @@ public class ActiveWeapon : MonoBehaviour
         
         if (weapon && isWeaponEquipped)
         {
+            // Check if Fire1 is pressed and log what other inputs are active
             if (Input.GetButtonDown("Fire1"))
             {
-                weapon.StartFiring();
+                // Debug what else is being pressed
+                if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || 
+                    Input.GetKey(KeyCode.C) || Input.GetKey(KeyCode.LeftShift))
+                {
+                    Debug.LogWarning($"Fire1 triggered while other keys pressed! Ctrl: {Input.GetKey(KeyCode.LeftControl)}, C: {Input.GetKey(KeyCode.C)}, Shift: {Input.GetKey(KeyCode.LeftShift)}");
+                    Debug.LogWarning("Ignoring Fire1 input - may be crouch conflict");
+                }
+                else
+                {
+                    weapon.StartFiring();
+                    Debug.Log("Fire1 pressed - Starting to fire");
+                }
             }
+            
             if (weapon.isFiring)
             {
                 weapon.UpdateFiring(Time.deltaTime);
             }
             weapon.UpdateBullets(Time.deltaTime);
+            
             if (Input.GetButtonUp("Fire1"))
             {
                 weapon.StopFiring();
+                Debug.Log("Fire1 released - Stopped firing");
             }
             
             HandleWeaponAiming();
