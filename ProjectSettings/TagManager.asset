@@ -27,11 +27,11 @@ TagManager:
   - Ground
   - PlayerBody
   - FirstPersonArms
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Background
+  - Midground
+  - Forground
+  - Car
+  - UI
   - 
   - 
   - 

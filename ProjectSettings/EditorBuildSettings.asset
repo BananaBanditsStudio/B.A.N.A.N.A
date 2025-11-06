@@ -14,6 +14,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Tutorial.unity
     guid: fb2bf577921b47e4f8cde110de5c617b
+  - enabled: 1
+    path: Assets/Scenes/Cutscene_TutorialtoMission1.unity
+    guid: 8d17ce0b8a3fc11418195ebf35bce344
+  - enabled: 1
+    path: Assets/Scenes/Mission #1.unity
+    guid: afd44bcd8711a4486928f01143713a66
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}

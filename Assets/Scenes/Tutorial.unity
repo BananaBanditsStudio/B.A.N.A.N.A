@@ -23497,7 +23497,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 130c8b386c4e8f64daa23b483b150847, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelTrigger
-  nextSceneName: TitleScreen
+  nextSceneName: Cutscene_TutorialtoMission1
   fadeTransition: {fileID: 580055164}
 --- !u!4 &600008285 stripped
 Transform:
