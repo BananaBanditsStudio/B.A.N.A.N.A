@@ -1,12 +1,9 @@
 using UnityEngine;
-using System.Collections;
-
 
 public class BananaPickup : MonoBehaviour
 {
-
     public AudioClip pickupSound;
-    public GameObject pickupVFX; // Optional particle effect
+    public GameObject pickupVFX;
     public int bananaValue = 1;
 
     [Header("Enemy Spawning")]
@@ -15,29 +12,29 @@ public class BananaPickup : MonoBehaviour
     public Transform spawnCenter;
     public float spawnRadius = 3f;
 
-
     public ObjectiveMarker bananaMarker;
     public ObjectiveMarker carMarker;
     public GameObject carTrigger;
 
+    [Header("UI Prompt")]
+    public GameObject interactPrompt; // "Press E to steal" UI
 
     private bool canBeCollected = false;
     private bool isCollected = false;
+    private bool isPlayerInRange = false;
+    private PlayerInventory cachedInventory; // optional cache
 
     void Start()
     {
-        // Wait 1 second before banana can be collected
         StartCoroutine(EnableCollectionAfterDelay(1f));
 
-        // Set initial marker visibility
-        if (bananaMarker != null)
-            bananaMarker.gameObject.SetActive(true);
+        if (bananaMarker != null) bananaMarker.gameObject.SetActive(true);
+        if (carMarker != null) carMarker.gameObject.SetActive(false);
 
-        if (carMarker != null)
-            carMarker.gameObject.SetActive(false);
+        if (interactPrompt != null) interactPrompt.SetActive(false);
     }
 
-    IEnumerator EnableCollectionAfterDelay(float delay)
+    System.Collections.IEnumerator EnableCollectionAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         canBeCollected = true;
@@ -45,58 +42,75 @@ public class BananaPickup : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // Prevent multiple triggers or early collection
-        if (!canBeCollected || isCollected)
-            return;
+        if (!canBeCollected || isCollected) return;
+        if (!other.CompareTag("Player")) return;
 
-        if (other.CompareTag("Player"))
+        // Find inventory on the player (supports child colliders)
+        cachedInventory = other.GetComponentInParent<PlayerInventory>();
+
+        isPlayerInRange = true;
+
+        if (interactPrompt != null) interactPrompt.SetActive(true);
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+
+        isPlayerInRange = false;
+        cachedInventory = null;
+
+        if (interactPrompt != null) interactPrompt.SetActive(false);
+    }
+
+    void Update()
+    {
+        if (!canBeCollected || isCollected) return;
+
+        // Legacy Input example; swap with new Input System if you use it
+        if (isPlayerInRange && Input.GetKeyDown(KeyCode.E))
         {
-            Debug.Log("Player touched banana!");
-
-            isCollected = true;
-
-            // Toggle markers
-            if (bananaMarker != null)
-            {
-                bananaMarker.gameObject.SetActive(false);
-                Debug.Log("Banana marker hidden");
-            }
-
-            if (carMarker != null)
-            {
-                carMarker.gameObject.SetActive(true);
-                Debug.Log("Car marker shown");
-            }
-
-            // Handle inventory
-            PlayerInventory inventory = other.GetComponent<PlayerInventory>();
-            if (inventory != null)
-            {
-                inventory.AddBananas(bananaValue);
-                PlayerInventory.hasBanana = true;
-                Debug.Log("Bananas stolen: " + bananaValue);
-            }
-            else
-            {
-                Debug.LogWarning("No PlayerInventory found on Player!");
-            }
-
-            // Play sound and VFX
-            if (pickupSound != null)
-                AudioSource.PlayClipAtPoint(pickupSound, transform.position);
-
-            if (pickupVFX != null)
-                Instantiate(pickupVFX, transform.position, Quaternion.identity);
-
-            // Spawn enemies
-            SpawnEnemies();
-
-            Debug.Log("Destroying banana...");
-            Destroy(gameObject, 0.2f);
+            TryCollect();
         }
     }
 
+    private void TryCollect()
+    {
+        // Safety: resolve inventory if not cached
+        if (cachedInventory == null)
+        {
+            // Attempt to find any overlapping player collider again if needed
+            // Optional, usually not necessary if cached in OnTriggerEnter
+        }
 
+        // Toggle markers immediately
+        if (bananaMarker != null) bananaMarker.gameObject.SetActive(false);
+        if (carMarker != null) carMarker.gameObject.SetActive(true);
+
+        // Handle inventory
+        if (cachedInventory != null)
+        {
+            cachedInventory.AddBananas(bananaValue);
+            PlayerInventory.hasBanana = true;
+        }
+        else
+        {
+            Debug.LogWarning("No PlayerInventory found on Player!");
+        }
+
+        // A/V
+        if (pickupSound != null) AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+        if (pickupVFX != null) Instantiate(pickupVFX, transform.position, Quaternion.identity);
+
+        // Spawn enemies
+        SpawnEnemies();
+
+        // Prevent re-use and hide prompt
+        isCollected = true;
+        if (interactPrompt != null) interactPrompt.SetActive(false);
+
+        Destroy(gameObject, 0.2f);
+    }
 
     void SpawnEnemies()
     {
@@ -104,7 +118,6 @@ public class BananaPickup : MonoBehaviour
 
         for (int i = 0; i < enemyCount; i++)
         {
-            // Random position around spawn center
             Vector3 randomOffset = new Vector3(
                 Random.Range(-spawnRadius, spawnRadius),
                 1.2f,
@@ -112,12 +125,7 @@ public class BananaPickup : MonoBehaviour
             );
 
             Vector3 spawnPosition = spawnCenter.position + randomOffset;
-
-            // Instantiate enemy
-            GameObject enemy = Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-
-            Debug.Log($"Spawned enemy {i + 1} at {spawnPosition}");
+            Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
         }
     }
-
 }
