@@ -1286,7 +1286,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 117397174}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
@@ -1383,7 +1383,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 117397174}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
@@ -1480,14 +1480,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 117397174}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b7705dff05108554d870e31248fb274e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
   walkSound: {fileID: 117397187}
-  sprintSound: {fileID: 117397187}
-  jumpSound: {fileID: 117397187}
+  sprintSound: {fileID: 117397191}
+  jumpSound: {fileID: 117397186}
   moveThreshold: 0.1
   crouchVolumeMultiplier: 0.5
   crouchPitchMultiplier: 0.85
@@ -1531,7 +1531,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 117397174}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
@@ -13403,6 +13403,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LevelTrigger
   nextSceneName: TitleScreen
   fadeTransition: {fileID: 370539143}
+  interactPrompt: {fileID: 0}
+  playerCamera: {fileID: 0}
+  interactDistance: 3
 --- !u!1 &1684628955
 GameObject:
   m_ObjectHideFlags: 0
