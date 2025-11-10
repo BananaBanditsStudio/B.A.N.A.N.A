@@ -21,9 +21,10 @@ public class DistractionState : BaseState
         hasPlayedAnimation = false;
         animationTimer = 0f;
         
-        // Set destination to investigate
+        // Set patrol speed for investigating (walk speed)
         if (enemy.Agent != null && enemy.Agent.isActiveAndEnabled)
         {
+            enemy.Agent.speed = enemy.patrolSpeed;
             enemy.Agent.SetDestination(targetPosition);
         }
         else

@@ -121,23 +121,36 @@ public class EnemyDamage : MonoBehaviour
         // Reset slipping state
         isSlipping = false;
         
-        // Re-enable movement components
-        SimplePatrol patrolScript = GetComponent<SimplePatrol>();
-        if (patrolScript != null && !patrolScript.enabled)
+        // Check if this enemy uses EnemyWithSM (state machine system)
+        EnemyWithSM enemyWithSM = GetComponent<EnemyWithSM>();
+        if (enemyWithSM != null)
         {
-            patrolScript.enabled = true;
+            UnityEngine.AI.NavMeshAgent navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+            if (navAgent != null && !navAgent.enabled)
+            {
+                navAgent.enabled = true;
+            }
         }
-        
-        UnityEngine.AI.NavMeshAgent navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
-        if (navAgent != null && !navAgent.enabled)
+        else
         {
-            navAgent.enabled = true;
-        }
-        
-        CharacterController characterController = GetComponent<CharacterController>();
-        if (characterController != null && !characterController.enabled)
-        {
-            characterController.enabled = true;
+            // For SimplePatrol enemies, re-enable movement components
+            SimplePatrol patrolScript = GetComponent<SimplePatrol>();
+            if (patrolScript != null && !patrolScript.enabled)
+            {
+                patrolScript.enabled = true;
+            }
+            
+            UnityEngine.AI.NavMeshAgent navAgent = GetComponent<UnityEngine.AI.NavMeshAgent>();
+            if (navAgent != null && !navAgent.enabled)
+            {
+                navAgent.enabled = true;
+            }
+            
+            CharacterController characterController = GetComponent<CharacterController>();
+            if (characterController != null && !characterController.enabled)
+            {
+                characterController.enabled = true;
+            }
         }
         
         // Reset animation to default state

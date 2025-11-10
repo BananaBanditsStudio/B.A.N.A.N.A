@@ -37,6 +37,15 @@ public class ChasePlayer : MonoBehaviour
     
     void Start()
     {
+        // Check if EnemyWithSM is present - if so, disable this script as EnemyWithSM handles movement
+        EnemyWithSM enemyWithSM = GetComponent<EnemyWithSM>();
+        if (enemyWithSM != null)
+        {
+            Debug.LogWarning($"ChasePlayer: EnemyWithSM component detected on {gameObject.name}. Disabling ChasePlayer script to avoid conflicts. EnemyWithSM will handle movement.");
+            enabled = false;
+            return;
+        }
+        
         // Get components
         characterController = GetComponent<CharacterController>();
         agent = GetComponent<NavMeshAgent>();

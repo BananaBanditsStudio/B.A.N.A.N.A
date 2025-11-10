@@ -220,19 +220,32 @@ public class BananaPeelThrower : MonoBehaviour
             // Re-enable movement components only if enemy is still alive
             if (enemyDamage.health > 0)
             {
-                if (hadPatrolScript && patrolScript != null)
+                // Check if this enemy uses EnemyWithSM (state machine system)
+                EnemyWithSM enemyWithSM = enemy.GetComponent<EnemyWithSM>();
+                if (enemyWithSM != null)
                 {
-                    patrolScript.enabled = true; // Re-enable movement
+                    if (hadNavAgent && navAgent != null)
+                    {
+                        navAgent.enabled = true;
+                    }
                 }
-                
-                if (hadNavAgent && navAgent != null)
+                else
                 {
-                    navAgent.enabled = true; // Re-enable NavMeshAgent
-                }
-                
-                if (hadCharacterController && characterController != null)
-                {
-                    characterController.enabled = true; // Re-enable CharacterController
+                    // For SimplePatrol enemies, re-enable movement components
+                    if (hadPatrolScript && patrolScript != null)
+                    {
+                        patrolScript.enabled = true; // Re-enable movement
+                    }
+                    
+                    if (hadNavAgent && navAgent != null)
+                    {
+                        navAgent.enabled = true; // Re-enable NavMeshAgent
+                    }
+                    
+                    if (hadCharacterController && characterController != null)
+                    {
+                        characterController.enabled = true; // Re-enable CharacterController
+                    }
                 }
             }
         }

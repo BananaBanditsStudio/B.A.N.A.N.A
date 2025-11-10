@@ -3,6 +3,11 @@ public class PatrolState : BaseState
     public int waypointIndex;
     public override void Enter()
     {
+        if (enemy.Agent != null)
+        {
+            enemy.Agent.speed = enemy.patrolSpeed;
+            enemy.Agent.isStopped = false;
+        }
     }
 
     public override void Exit()

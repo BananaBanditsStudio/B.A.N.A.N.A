@@ -23,11 +23,44 @@ public class EnemyWithSM : MonoBehaviour
     private Animator animator;
     public float sightDistance = 20f;
     public float fieldOfView = 85;
-    public float fireRate = 2f;
 
-    [Header("Bullet")]
+    [Header("Attack Behavior")]
+    [Tooltip("The type of attack behavior to use. Change this to swap attack behaviors.")]
+    public AttackBehaviorType attackBehaviorType = AttackBehaviorType.Throw;
+
+    [Header("Ranged/Throw Attack Settings")]
+    [Tooltip("Rate of fire for ranged attacks (seconds between shots)")]
+    public float rangedFireRate = 2f;
+    [Tooltip("Bullet/projectile prefab to throw")]
     public GameObject bulletPrefab;
+    [Tooltip("Transform representing where projectiles spawn from")]
     public Transform gunBarrel;
+
+    [Header("Melee Attack Settings")]
+    [Tooltip("Range at which melee attacks can hit")]
+    public float meleeAttackRange = 2f;
+    [Tooltip("Cooldown between melee attacks (seconds)")]
+    public float meleeAttackCooldown = 2f;
+    [Tooltip("Damage dealt by melee attacks")]
+    public float meleeDamage = 10f;
+    [Tooltip("Delay before damage is applied after attack animation starts (seconds)")]
+    public float meleeDamageDelay = 1.3f;
+
+    [Header("Charge Attack Settings")]
+    [Tooltip("Speed at which enemy charges towards player")]
+    public float chargeSpeed = 15f;
+    [Tooltip("Distance at which explosion triggers")]
+    public float explosionRange = 2f;
+    [Tooltip("Damage dealt to player on explosion")]
+    public float explosionDamage = 50f;
+    [Tooltip("Explosion prefab to spawn when using Charge attack behavior")]
+    public GameObject explosionPrefab;
+
+    [Header("Movement Speed")]
+    [Tooltip("Walk speed for patrolling (matches blend tree: 0.1 = walk)")]
+    public float patrolSpeed = 2f;
+    [Tooltip("Run speed for chasing/attacking (matches blend tree: 3 = run)")]
+    public float chaseSpeed = 6f;
 
     [Header("Sight Visualization")]
     public bool showSightCircle = true;
@@ -37,9 +70,13 @@ public class EnemyWithSM : MonoBehaviour
     {
         stateMachine = GetComponent<StateMachine>();
         agent = GetComponent<NavMeshAgent>();
-        stateMachine.Initialize();
         player = GameObject.FindGameObjectWithTag("Player");
         animator = GetComponentInChildren<Animator>();
+        
+        if (agent != null)
+        {
+            agent.speed = patrolSpeed;
+        }
         
         // Setup LineRenderer for sight circle
         if (showSightCircle)
@@ -79,9 +116,7 @@ public class EnemyWithSM : MonoBehaviour
     {
         CanSeePlayer();
         currentState = stateMachine.activeState.ToString();
-        // Debug.Log("Speed: " + agent.velocity.magnitude);
         animator.SetFloat("speed", agent.velocity.magnitude);
-        
         DrawSightCircle();
     }
 
