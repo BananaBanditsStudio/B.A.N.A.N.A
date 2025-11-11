@@ -1,7 +1,6 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI; // Needed for Slider!
 using UnityTutorial.Manager;
 
 namespace UnityTutorial.PlayerControl
@@ -9,10 +8,8 @@ namespace UnityTutorial.PlayerControl
     public class PlayerController : MonoBehaviour
     {
         [SerializeField] private float AnimBlendSpeed = 8.9f;
-        [SerializeField] private Camera playerCamera;
-        private Coroutine fovCoroutine = null; // Track current FOV coroutine
-
-
+        [SerializeField] private Camera playerCamera; // Assign Main Camera (Camera component!) here
+        [SerializeField] private Slider staminaBar;
 
         [SerializeField] private Transform CameraRoot;
         [SerializeField] private Transform Camera;
@@ -25,12 +22,6 @@ namespace UnityTutorial.PlayerControl
         [SerializeField] private float AirResistance = 0.8f;
         [SerializeField] private LayerMask GroundCheck;
 
-        //FOV for Dash
-        [SerializeField] private float dashFOV = 80f; // FOV during dash
-        [SerializeField] private float normalFOV = 60f; // Regular FOV (set to match your camera default)
-        [SerializeField] private float fovChangeSpeed = 10f; // Adjust for how fast FOV changes
-
-
         private Rigidbody _playerRigidbody;
         private InputManager _inputManager;
         private Animator _animator;
@@ -38,27 +29,29 @@ namespace UnityTutorial.PlayerControl
         private bool _hasAnimator;
         private bool _isCrouching;
         private bool _crouchPressed;
-        private int _xVelHash;
-        private int _yVelHash;
-        private int _zVelHash;
-        private int _jumpHash;
-        private int _groundedHash;
-        private int _fallingHash;
-        private int _crouchHash;
-
+        private int _xVelHash, _yVelHash, _zVelHash, _jumpHash, _groundedHash, _fallingHash, _crouchHash;
         private float _xRotation;
-
         private const float _walkSpeed = 2f;
         private const float _runSpeed = 6f;
         private Vector2 _currentVelocity;
 
-        // Dash variables
-        [SerializeField] private float dashForce = 20f;
+        // Dash & FOV
+        [SerializeField] private float dashForce = 7f; // This is dash distance, not a force now!
         [SerializeField] private float dashCooldown = 1f;
         [SerializeField] private float dashDuration = 0.15f;
+        [SerializeField] private float dashFOV = 80f;
+        [SerializeField] private float normalFOV = 60f;
+        [SerializeField] private float fovChangeSpeed = 10f; // higher = snappier
 
         private bool isDashing = false;
         private float lastDashTime = -999f;
+        private Coroutine fovCoroutine = null;
+
+        // Stamina system
+        [SerializeField] private float maxStamina = 50f;
+        [SerializeField] private float dashStaminaCost = 50f;
+        [SerializeField] private float staminaRegenRate = 25f;
+        private float currentStamina;
 
         private void Start()
         {
@@ -73,13 +66,36 @@ namespace UnityTutorial.PlayerControl
             _groundedHash = Animator.StringToHash("Grounded");
             _fallingHash = Animator.StringToHash("Falling");
             _crouchHash = Animator.StringToHash("Crouch");
+
+            // Stamina bar setup
+            currentStamina = maxStamina;
+            staminaBar.maxValue = maxStamina;
+            staminaBar.value = currentStamina;
+
+            // On start set normal FOV
+            if (playerCamera != null)
+                playerCamera.fieldOfView = normalFOV;
+        }
+
+        private void Update()
+        {
+            // Regen stamina
+            if (currentStamina < maxStamina)
+                currentStamina += staminaRegenRate * Time.deltaTime;
+            currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
+
+            // Update bar UI
+            staminaBar.value = currentStamina;
+            // Optional: color shows ready
+            staminaBar.fillRect.GetComponent<Image>().color = currentStamina >= dashStaminaCost ? Color.green : Color.red;
         }
 
         private void FixedUpdate()
         {
-            // Dash input (Left Shift)
-            if (_inputManager.Dash && Time.time >= lastDashTime + dashCooldown && _grounded && !isDashing)
+            // Dash only if enough stamina!
+            if (_inputManager.Dash && Time.time >= lastDashTime + dashCooldown && _grounded && !isDashing && currentStamina >= dashStaminaCost)
             {
+                currentStamina -= dashStaminaCost;
                 StartCoroutine(Dash());
             }
 
@@ -96,7 +112,7 @@ namespace UnityTutorial.PlayerControl
 
         private void Move()
         {
-            if (!_hasAnimator || isDashing) return; // Don't move normally while dashing
+            if (!_hasAnimator || isDashing) return; // Block movement if dashing
 
             float targetSpeed = _inputManager.Run ? _runSpeed : _walkSpeed;
             if (_isCrouching) targetSpeed = 1.5f;
@@ -140,7 +156,6 @@ namespace UnityTutorial.PlayerControl
         {
             if (!_hasAnimator) return;
 
-            // Toggle crouch on button press
             if (_inputManager.Crouch && !_crouchPressed)
             {
                 _crouchPressed = true;
@@ -178,11 +193,9 @@ namespace UnityTutorial.PlayerControl
                 SetAnimationGrounding();
                 return;
             }
-            Debug.Log(_grounded);
             _grounded = false;
             _animator.SetFloat(_zVelHash, _playerRigidbody.linearVelocity.y);
             SetAnimationGrounding();
-            return;
         }
 
         private void SetAnimationGrounding()
@@ -191,65 +204,60 @@ namespace UnityTutorial.PlayerControl
             _animator.SetBool(_groundedHash, _grounded);
         }
 
-        // DASH COROUTINE (Smooth!)
+        // FOV coroutine (ensures only one runs at a time)
         private IEnumerator ChangeFOV(float targetFOV)
         {
             while (Mathf.Abs(playerCamera.fieldOfView - targetFOV) > 0.5f)
             {
-                playerCamera.fieldOfView = Mathf.Lerp(
-                    playerCamera.fieldOfView, targetFOV, fovChangeSpeed * Time.deltaTime);
+                playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, targetFOV, fovChangeSpeed * Time.deltaTime);
                 yield return null;
             }
             playerCamera.fieldOfView = targetFOV;
         }
 
+        // DASH coroutine with hit check and FOV
         private IEnumerator Dash()
         {
             isDashing = true;
             lastDashTime = Time.time;
-            if (fovCoroutine != null)
-                StopCoroutine(fovCoroutine);
+
+            // Smooth FOV effect, only one coroutine at a time!
+            if (fovCoroutine != null) StopCoroutine(fovCoroutine);
             fovCoroutine = StartCoroutine(ChangeFOV(dashFOV));
 
-
+            // Get dash path and stop if you hit something
             Vector3 dashDirection = transform.forward;
             if (_inputManager.Move != Vector2.zero)
-            {
                 dashDirection = (transform.right * _inputManager.Move.x + transform.forward * _inputManager.Move.y).normalized;
-            }
 
             float startTime = Time.time;
             Vector3 start = transform.position;
+            float dashDistance = dashForce;
 
-            // Cast to see how far you can actually dash without hitting
-            float dashDistance = dashForce; // dashForce should be your dash distance now
             RaycastHit hit;
             if (Physics.CapsuleCast(
-                start + Vector3.up * 0.5f,         // start of capsule (feet level, Y might need tuning)
-                start + Vector3.up * 1.5f,         // end of capsule (head level)
-                0.4f,                              // radius (match your player's collider)
-                dashDirection, out hit, dashDistance, LayerMask.GetMask("Default"))) // or your collision layers
+                start + Vector3.up * 0.5f,
+                start + Vector3.up * 1.5f,
+                0.4f, dashDirection, out hit, dashDistance, LayerMask.GetMask("Default")))
             {
-                dashDistance = hit.distance - 0.01f; // stop just before collision
+                dashDistance = hit.distance - 0.01f;
             }
 
             Vector3 end = start + dashDirection * dashDistance;
 
-            // Lerp position (stops before wall)
             while (Time.time < startTime + dashDuration)
             {
                 float t = (Time.time - startTime) / dashDuration;
                 _playerRigidbody.MovePosition(Vector3.Lerp(start, end, t));
                 yield return null;
             }
-
             _playerRigidbody.MovePosition(end);
-            if (fovCoroutine != null)
-                StopCoroutine(fovCoroutine);
+
+            // Smooth FOV reset after dash
+            if (fovCoroutine != null) StopCoroutine(fovCoroutine);
             fovCoroutine = StartCoroutine(ChangeFOV(normalFOV));
 
             isDashing = false;
         }
-
     }
 }
