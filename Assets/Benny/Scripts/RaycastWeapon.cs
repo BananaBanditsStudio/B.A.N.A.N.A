@@ -5,25 +5,25 @@ public class RaycastWeapon : MonoBehaviour
 {
     [Header("Animation Recording")]
     [SerializeField] private AnimationClip animationClip;
-    
+
     [Header("Weapon Mode")]
     public bool useProjectiles = false; // Toggle between raycast and projectile
-    
+
     [Header("Weapon Stats")]
     public float damage = 10f;
     public float headshotMultiplier = 2f;
     public float range = 100f;
     public float fireRate = 0.1f; // Time between shots
-    
+
     [Header("Projectile Settings")]
     public GameObject projectilePrefab;
     public float projectileSpeed = 50f;
     public float projectileLifetime = 5f;
-    
+
     [Header("References")]
     public Transform raycastDestination;
     public Transform bulletSpawnPoint;
-    
+
     [Header("Effects")]
     public GameObject gunEffect;
     public GameObject impactEffect;
@@ -31,14 +31,33 @@ public class RaycastWeapon : MonoBehaviour
     public LineRenderer bulletTrailPrefab;
     public TrailRenderer dartTrail;
     public ParticleSystem impactParticleSystem;
-    
+
     [Header("Bullet Trail Settings")]
     public float bulletSpeed = 100f;
     public float bulletTrailTime = 0.05f;
-    
-    public bool isFiring = false;
+
+    // Tap-only firing control
     private float nextFireTime = 0f;
-    
+    private bool readyToFire = true;
+
+    // Backwards compatibility property
+    public bool isFiring
+    {
+        get
+        {
+            bool pressed = Input.GetMouseButton(0); // holding state
+            return pressed && Time.time >= nextFireTime;
+        }
+        set
+        {
+            if (!value)
+            {
+                // Treat “stop firing” as disarm until release
+                readyToFire = true;
+            }
+        }
+    }
+
     public AnimationClip AnimationClip
     {
         get => animationClip;
@@ -51,34 +70,35 @@ public class RaycastWeapon : MonoBehaviour
             shootingSound = GetComponent<AudioSource>();
     }
 
-    public void StartFiring()
-    {
-        isFiring = true;
-    }
+    // Intentionally empty for tap-only fire
+    public void StartFiring() { }
+    public void StopFiring() { readyToFire = true; }
 
+    // Call this from your update loop
     public void UpdateFiring(float deltaTime)
     {
-        if (Time.time >= nextFireTime)
+        // Fire once on tap only; ignores holding
+        if (readyToFire && Time.time >= nextFireTime && Input.GetMouseButtonDown(0))
         {
             nextFireTime = Time.time + fireRate;
-            
-            if (useProjectiles)
-                ShootProjectile();
-            else
-                Shoot();
+            readyToFire = false;
+
+            if (useProjectiles) ShootProjectile();
+            else Shoot();
+        }
+
+        // Re-arm after button fully released so next tap can register
+        if (!Input.GetMouseButton(0))
+        {
+            readyToFire = true;
         }
     }
 
     public void UpdateBullets(float deltaTime)
     {
-        // Can be used for projectile-based weapons
+        // For projectile-based weapons if needed
     }
 
-    public void StopFiring()
-    {
-        isFiring = false;
-    }
-    
     void ShootProjectile()
     {
         if (projectilePrefab == null)
@@ -86,26 +106,26 @@ public class RaycastWeapon : MonoBehaviour
             Debug.LogWarning("Projectile prefab not assigned!");
             return;
         }
-        
+
         if (raycastDestination == null)
         {
             Debug.LogWarning("Raycast destination not set!");
             return;
         }
-        
+
         Vector3 spawnPosition = GetBulletStartPosition();
         Vector3 direction = (raycastDestination.position - spawnPosition).normalized;
-        
+
         // Play effects
         if (shootingSound != null)
             shootingSound.Play();
-            
+
         if (gunEffect != null)
             Instantiate(gunEffect, spawnPosition, transform.rotation);
-        
+
         // Spawn projectile
         GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.LookRotation(direction));
-        
+
         // Add velocity to projectile
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
         if (rb != null)
@@ -116,25 +136,25 @@ public class RaycastWeapon : MonoBehaviour
         {
             Debug.LogWarning("Projectile prefab needs a Rigidbody component!");
         }
-        
+
         // Add Projectile component if it doesn't exist
         Projectile proj = projectile.GetComponent<Projectile>();
         if (proj == null)
         {
             proj = projectile.AddComponent<Projectile>();
         }
-        
+
         // Set projectile damage and properties
         proj.damage = damage;
         proj.headshotMultiplier = headshotMultiplier;
         proj.impactEffect = impactEffect;
-        
+
         // Destroy projectile after lifetime
         Destroy(projectile, projectileLifetime);
-        
+
         Debug.Log("Projectile fired!");
     }
-    
+
     void Shoot()
     {
         if (raycastDestination == null)
@@ -142,9 +162,8 @@ public class RaycastWeapon : MonoBehaviour
             Debug.LogWarning("Raycast destination not set!");
             return;
         }
-        
+
         RaycastHit[] hits;
-        
         RaycastHit hit = default(RaycastHit);
         Vector3 shootOrigin = GetBulletStartPosition();
         Vector3 shootDirection = (raycastDestination.position - shootOrigin).normalized;
@@ -153,33 +172,33 @@ public class RaycastWeapon : MonoBehaviour
         // Play effects
         if (shootingSound != null)
             shootingSound.Play();
-            
+
         if (gunEffect != null)
             Instantiate(gunEffect, shootOrigin, transform.rotation);
-        
+
         // Raycast to find hits
         hits = Physics.RaycastAll(shootOrigin, shootDirection, range);
-        
+
         if (hits.Length > 0)
         {
             // Sort hits by distance
             System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
-            
+
             hit = hits[0];
             bulletEndPoint = hit.point;
-            
+
             // Check for headshot first
             bool isHeadshot = false;
             RaycastHit headshotHit = default(RaycastHit);
             EnemyDamage target = null;
-            
+
             foreach (RaycastHit h in hits)
             {
                 if (h.collider.CompareTag("Head") && !isHeadshot)
                 {
                     isHeadshot = true;
                     headshotHit = h;
-                    
+
                     Transform enemyTransform = h.transform;
                     while (enemyTransform != null && target == null)
                     {
@@ -189,13 +208,13 @@ public class RaycastWeapon : MonoBehaviour
                         else
                             break;
                     }
-                    
+
                     hit = headshotHit;
                     bulletEndPoint = hit.point;
                     break;
                 }
             }
-            
+
             // If no headshot, find first enemy hit
             if (!isHeadshot)
             {
@@ -210,7 +229,7 @@ public class RaycastWeapon : MonoBehaviour
                     }
                 }
             }
-            
+
             Debug.Log("Hit: " + hit.collider.name + (isHeadshot ? " [HEADSHOT]" : ""));
 
             // Bullet trail
@@ -225,21 +244,21 @@ public class RaycastWeapon : MonoBehaviour
             {
                 CreateBulletImpactEffect(hit);
             }
-            
+
             // Deal damage to target
             if (target != null)
             {
                 if (impactEffect != null)
                     Instantiate(impactEffect, hit.point, Quaternion.LookRotation(hit.normal));
-                
+
                 float finalDamage = damage;
-                
+
                 if (isHeadshot)
                 {
                     finalDamage = damage * headshotMultiplier;
                     Debug.Log("HEADSHOT! Damage: " + finalDamage);
                 }
-                
+
                 if (target.IsSlipping())
                 {
                     target.TakeDamage(finalDamage, isHeadshot);
