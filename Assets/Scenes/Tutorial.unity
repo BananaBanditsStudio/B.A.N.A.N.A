@@ -26518,7 +26518,7 @@ MonoBehaviour:
   carAudio: {fileID: 580055168}
   carSound: {fileID: 8300000, guid: 1ae4b6d6ed734894e818898b11a5bcd3, type: 3}
   fadeDuration: 4
-  nextSceneName: TitleScreen
+  nextSceneName: Cutscene_TutorialtoMission1
 --- !u!225 &580055165
 CanvasGroup:
   m_ObjectHideFlags: 0
