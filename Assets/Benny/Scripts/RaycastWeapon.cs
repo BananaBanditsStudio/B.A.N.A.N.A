@@ -24,6 +24,12 @@ public class RaycastWeapon : MonoBehaviour
     public Transform raycastDestination;
     public Transform bulletSpawnPoint;
     
+    [Header("Hand Grip Positions")]
+    [Tooltip("Left hand grip position for this weapon. If not set, will use ActiveWeapon's default.")]
+    public Transform leftHandGrip;
+    [Tooltip("Right hand grip position for this weapon. If not set, will use ActiveWeapon's default.")]
+    public Transform rightHandGrip;
+    
     [Header("Effects")]
     public GameObject gunEffect;
     public GameObject impactEffect;

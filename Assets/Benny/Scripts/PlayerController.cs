@@ -84,10 +84,20 @@ namespace UnityTutorial.PlayerControl
                 currentStamina += staminaRegenRate * Time.deltaTime;
             currentStamina = Mathf.Clamp(currentStamina, 0, maxStamina);
 
-            // Update bar UI
-            staminaBar.value = currentStamina;
-            // Optional: color shows ready
-            staminaBar.fillRect.GetComponent<Image>().color = currentStamina >= dashStaminaCost ? Color.green : Color.red;
+            // Update bar UI (only if assigned)
+            if (staminaBar != null)
+            {
+                staminaBar.value = currentStamina;
+                // Optional: color shows ready
+                if (staminaBar.fillRect != null)
+                {
+                    Image fillImage = staminaBar.fillRect.GetComponent<Image>();
+                    if (fillImage != null)
+                    {
+                        fillImage.color = currentStamina >= dashStaminaCost ? Color.green : Color.red;
+                    }
+                }
+            }
         }
 
         private void FixedUpdate()
