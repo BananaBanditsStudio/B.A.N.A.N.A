@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 using System.Collections;
 
@@ -44,7 +45,24 @@ public class PipePuzzle : Interactable
     {
         if (isActive) return;
         
+        // Ensure canvas has GraphicRaycaster for UI interactions
+        if (canvas != null)
+        {
+            GraphicRaycaster raycaster = canvas.GetComponent<GraphicRaycaster>();
+            if (raycaster == null)
+            {
+                canvas.gameObject.AddComponent<GraphicRaycaster>();
+            }
+        }
         
+        // Ensure EventSystem exists for UI button clicks
+        EventSystem eventSystem = EventSystem.current;
+        if (eventSystem == null)
+        {
+            GameObject eventSystemGO = new GameObject("EventSystem");
+            eventSystemGO.AddComponent<EventSystem>();
+            eventSystemGO.AddComponent<StandaloneInputModule>();
+        }
         
         // Create puzzle canvas
         puzzleCanvas = new GameObject("PipePuzzleCanvas");

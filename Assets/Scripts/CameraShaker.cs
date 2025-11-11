@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class CameraShaker : MonoBehaviour
 {
-    private Vector3 originalPosition;
+    private Vector3 shakeOffset = Vector3.zero;
     private float shakeIntensity;
     private float shakeTimer;
     private bool isShaking;
@@ -15,16 +15,24 @@ public class CameraShaker : MonoBehaviour
             
             if (shakeTimer > 0)
             {
-                Vector3 shakeOffset = new Vector3(
+                // Remove previous offset first
+                transform.position -= shakeOffset;
+                
+                // Calculate new shake offset
+                shakeOffset = new Vector3(
                     Random.Range(-1f, 1f) * shakeIntensity,
                     Random.Range(-1f, 1f) * shakeIntensity,
                     Random.Range(-1f, 1f) * shakeIntensity
                 );
-                transform.position = originalPosition + shakeOffset;
+                
+                // Apply new shake offset to current position
+                transform.position += shakeOffset;
             }
             else
             {
-                transform.position = originalPosition;
+                // Remove shake offset when done
+                transform.position -= shakeOffset;
+                shakeOffset = Vector3.zero;
                 isShaking = false;
             }
         }
@@ -32,10 +40,13 @@ public class CameraShaker : MonoBehaviour
     
     public void ShakeCamera(float intensity, float duration)
     {
-        if (!isShaking)
+        // If already shaking, remove previous offset first
+        if (isShaking)
         {
-            originalPosition = transform.position;
+            transform.position -= shakeOffset;
+            shakeOffset = Vector3.zero;
         }
+        
         shakeIntensity = intensity;
         shakeTimer = duration;
         isShaking = true;
