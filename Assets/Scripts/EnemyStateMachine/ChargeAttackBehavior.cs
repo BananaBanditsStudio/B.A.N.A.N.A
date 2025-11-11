@@ -31,6 +31,14 @@ public class ChargeAttackBehavior : IAttackBehavior
             enemy.Agent.autoBraking = false; // Don't brake, maintain speed
             enemy.Agent.isStopped = false;
         }
+        
+        // Explicitly set animator speed parameter to trigger run animation in blend tree
+        // Blend tree thresholds: 0=idle, 0.1=walk, 7=run, 12=fast run
+        // Charge speed (15f) should trigger the run animation
+        if (enemy.Animator != null)
+        {
+            enemy.Animator.SetFloat("speed", chargeSpeed);
+        }
     }
     
     public void OnExit(EnemyWithSM enemy)
@@ -39,6 +47,14 @@ public class ChargeAttackBehavior : IAttackBehavior
         if (enemy.Agent != null)
         {
             enemy.Agent.ResetPath();
+        }
+        
+        // Reset animator speed (though enemy should be destroyed after explosion)
+        // This is just for cleanup in case the state exits without exploding
+        if (enemy.Animator != null)
+        {
+            // Reset to 0 or let EnemyWithSM.Update() handle it
+            enemy.Animator.SetFloat("speed", 0f);
         }
     }
     
@@ -57,8 +73,28 @@ public class ChargeAttackBehavior : IAttackBehavior
             enemy.transform.rotation = Quaternion.RotateTowards(enemy.transform.rotation, targetRotation, 1080f * deltaTime);
         }
         
-        // Check if we're close enough to explode
-        if (distanceToPlayer <= explosionRange)
+        // Keep animator speed parameter set to charge speed for run animation
+        // This ensures the blend tree stays in run animation during charge
+        if (enemy.Animator != null)
+        {
+            enemy.Animator.SetFloat("speed", chargeSpeed);
+        }
+        
+        // Calculate early explosion trigger range (explode before getting too close)
+        // This prevents the enemy from overshooting at high speeds
+        float earlyExplosionRange = explosionRange * 2f;
+        
+        // Predictive check: if moving fast towards player, explode early
+        // Calculate how far we'll travel this frame based on current velocity
+        Vector3 velocity = enemy.Agent != null && enemy.Agent.enabled ? enemy.Agent.velocity : Vector3.zero;
+        float speed = velocity.magnitude;
+        float distanceThisFrame = speed * deltaTime;
+        
+        // If we're moving fast and will be within explosion range next frame, explode now
+        bool willBeInRange = distanceToPlayer <= (explosionRange + distanceThisFrame);
+        
+        // Check if we're close enough to explode (early trigger)
+        if (distanceToPlayer <= earlyExplosionRange || willBeInRange)
         {
             Explode(enemy);
         }
@@ -106,13 +142,16 @@ public class ChargeAttackBehavior : IAttackBehavior
         }
         
         // Deal damage to player if in range
+        // Use a generous damage range to ensure player gets hit even if explosion triggers early
         if (enemy.Player != null)
         {
             Vector3 toPlayer = enemy.Player.transform.position - explosionPosition;
             toPlayer.y = 0f;
             float distanceToPlayer = toPlayer.magnitude;
             
-            if (distanceToPlayer <= explosionRange * 1.5f) // Slightly larger range for damage
+            // Use a larger range for damage to account for early explosion trigger
+            float damageRange = explosionRange * 2.5f;
+            if (distanceToPlayer <= damageRange)
             {
                 PlayerHealth playerHealth = enemy.Player.transform.parent.GetComponent<PlayerHealth>();
                 if (playerHealth != null)
