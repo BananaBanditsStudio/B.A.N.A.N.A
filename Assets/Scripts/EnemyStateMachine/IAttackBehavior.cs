@@ -47,11 +47,14 @@ public static class AttackBehaviorFactory
         {
             case AttackBehaviorType.Throw:
                 return new ThrowAttackBehavior();
-            // Add more attack behavior types here as you create them
             case AttackBehaviorType.Melee:
                 return new MeleeAttackBehavior();
             case AttackBehaviorType.Charge:
                 return new ChargeAttackBehavior();
+            case AttackBehaviorType.BigJump:
+                return new BigJumpAttackBehavior();
+            case AttackBehaviorType.BigMelee:
+                return new BigMeleeAttackBehavior();
             default:
                 return new ThrowAttackBehavior();
         }
@@ -67,6 +70,7 @@ public enum AttackBehaviorType
     Throw,
     Melee,
     Charge,
-    // Ranged,
+    BigJump,
+    BigMelee,
 }
 

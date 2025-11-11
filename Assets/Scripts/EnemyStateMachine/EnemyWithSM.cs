@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityTutorial.PlayerControl;
 
 
 public class EnemyWithSM : MonoBehaviour
@@ -19,10 +20,19 @@ public class EnemyWithSM : MonoBehaviour
     private string currentState;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
+    [Header("Player Reference")]
+    [Tooltip("Manually assign the player GameObject here, or leave empty to find by tag automatically")]
+    [SerializeField]
+    private GameObject playerReference;
+    
     private GameObject player;
     private Animator animator;
     public float sightDistance = 20f;
     public float fieldOfView = 85;
+    
+    private float playerSearchCooldown = 0f;
+    private const float PLAYER_SEARCH_INTERVAL = 1f; // Search every second if player is null
+    private bool hasLoggedPlayerNotFoundWarning = false;
 
     [Header("Attack Behavior")]
     [Tooltip("The type of attack behavior to use. Change this to swap attack behaviors.")]
@@ -56,6 +66,36 @@ public class EnemyWithSM : MonoBehaviour
     [Tooltip("Explosion prefab to spawn when using Charge attack behavior")]
     public GameObject explosionPrefab;
 
+    [Header("Big Jump Attack Settings")]
+    [Tooltip("Range at which big jump attacks can be initiated")]
+    public float bigJumpRange = 8f;
+    [Tooltip("Cooldown between big jump attacks (seconds)")]
+    public float bigJumpCooldown = 5f;
+    [Tooltip("Damage dealt by big jump landing")]
+    public float bigJumpDamage = 25f;
+    [Tooltip("Delay before damage is applied after jump starts (seconds)")]
+    public float bigJumpDamageDelay = 1.5f;
+    [Tooltip("Radius of AOE damage on landing")]
+    public float bigJumpAOERadius = 4f;
+    [Tooltip("Camera shake intensity on landing")]
+    public float bigJumpShakeIntensity = 0.3f;
+    [Tooltip("Camera shake duration (seconds)")]
+    public float bigJumpShakeDuration = 0.5f;
+    [Tooltip("Effect prefab to spawn on landing")]
+    public GameObject bigJumpEffectPrefab;
+
+    [Header("Big Melee Attack Settings")]
+    [Tooltip("Range at which big melee attacks can hit")]
+    public float bigMeleeAttackRange = 3f;
+    [Tooltip("Cooldown between big melee attacks (seconds)")]
+    public float bigMeleeAttackCooldown = 3f;
+    [Tooltip("Damage dealt by big melee attacks")]
+    public float bigMeleeDamage = 20f;
+    [Tooltip("Delay before damage is applied after attack animation starts (seconds)")]
+    public float bigMeleeDamageDelay = 1.5f;
+    [Tooltip("Knockback force applied to player")]
+    public float bigMeleeKnockback = 5f;
+
     [Header("Movement Speed")]
     [Tooltip("Walk speed for patrolling (matches blend tree: 0.1 = walk)")]
     public float patrolSpeed = 2f;
@@ -70,8 +110,10 @@ public class EnemyWithSM : MonoBehaviour
     {
         stateMachine = GetComponent<StateMachine>();
         agent = GetComponent<NavMeshAgent>();
-        player = GameObject.FindGameObjectWithTag("Player");
         animator = GetComponentInChildren<Animator>();
+        
+        // Try to find the player
+        FindPlayer();
         
         if (agent != null)
         {
@@ -114,10 +156,74 @@ public class EnemyWithSM : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // Retry finding player if it's null (handles cases where player spawns after enemy)
+        if (player == null)
+        {
+            playerSearchCooldown -= Time.deltaTime;
+            if (playerSearchCooldown <= 0f)
+            {
+                FindPlayer();
+                playerSearchCooldown = PLAYER_SEARCH_INTERVAL;
+            }
+        }
+        
         CanSeePlayer();
-        currentState = stateMachine.activeState.ToString();
-        animator.SetFloat("speed", agent.velocity.magnitude);
+        if (stateMachine != null && stateMachine.activeState != null)
+        {
+            currentState = stateMachine.activeState.ToString();
+        }
+        if (animator != null && agent != null)
+        {
+            animator.SetFloat("speed", agent.velocity.magnitude);
+        }
         DrawSightCircle();
+    }
+    
+    /// <summary>
+    /// Finds the player GameObject using multiple methods:
+    /// 1. Uses manually assigned playerReference if set
+    /// 2. Searches for GameObject with "Player" tag
+    /// 3. Searches for PlayerController component as fallback
+    /// 4. Logs warning if player cannot be found (throttled by search interval)
+    /// </summary>
+    private void FindPlayer()
+    {
+        // First, try to use the manually assigned reference
+        if (playerReference != null)
+        {
+            player = playerReference;
+            hasLoggedPlayerNotFoundWarning = false; // Reset warning flag when player is found
+            return;
+        }
+        
+        // Try to find by tag
+        GameObject foundPlayer = GameObject.FindGameObjectWithTag("Player");
+        if (foundPlayer != null)
+        {
+            player = foundPlayer;
+            hasLoggedPlayerNotFoundWarning = false; // Reset warning flag when player is found
+            return;
+        }
+        
+        // If still not found, try to find by component (PlayerController)
+        PlayerController playerController = FindObjectOfType<PlayerController>();
+        if (playerController != null)
+        {
+            player = playerController.gameObject;
+            Debug.Log($"EnemyWithSM on {gameObject.name}: Found player by PlayerController component");
+            hasLoggedPlayerNotFoundWarning = false; // Reset warning flag when player is found
+            return;
+        }
+        
+        // Log warning if player still not found (only once to avoid spam)
+        if (player == null && !hasLoggedPlayerNotFoundWarning)
+        {
+            Debug.LogWarning($"EnemyWithSM on {gameObject.name}: Could not find player! Make sure:" +
+                           "\n1. Player GameObject has 'Player' tag, OR" +
+                           "\n2. Player GameObject has PlayerController component, OR" +
+                           "\n3. Manually assign playerReference in the inspector");
+            hasLoggedPlayerNotFoundWarning = true;
+        }
     }
 
     void DrawSightCircle()

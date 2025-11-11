@@ -71,4 +71,17 @@ public class AttackState : BaseState
             attackBehavior.Attack(enemy);
         }
     }
+    
+    public void SetAttackBehavior(IAttackBehavior newBehavior)
+    {
+        if (attackBehavior != null)
+        {
+            attackBehavior.OnExit(enemy);
+        }
+        attackBehavior = newBehavior;
+        if (attackBehavior != null)
+        {
+            attackBehavior.OnEnter(enemy);
+        }
+    }
 }
