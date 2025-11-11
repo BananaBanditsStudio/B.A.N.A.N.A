@@ -11,6 +11,7 @@ TagManager:
   - Car
   - Head
   - Enemy
+  - Building
   layers:
   - Default
   - TransparentFX

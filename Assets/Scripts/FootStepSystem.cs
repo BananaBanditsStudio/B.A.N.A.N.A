@@ -48,9 +48,10 @@ public class Footsteps : MonoBehaviour
 
         bool isSprinting = Input.GetKey(KeyCode.LeftShift);
 
-        // ✅ Only play movement sounds if grounded
+        // Check grounded state
         bool isGrounded = controller ? controller.isGrounded : true;
 
+        // Footsteps ONLY while moving AND grounded
         if (isGrounded && isMoving)
         {
             if (isSprinting && !isCrouching)
@@ -73,8 +74,8 @@ public class Footsteps : MonoBehaviour
 
                 if (isCrouching)
                 {
-                    walkSound.volume = 1f * crouchVolumeMultiplier;
-                    walkSound.pitch = 1f * crouchPitchMultiplier;
+                    walkSound.volume = crouchVolumeMultiplier;
+                    walkSound.pitch = crouchPitchMultiplier;
                 }
                 else
                 {
@@ -85,11 +86,12 @@ public class Footsteps : MonoBehaviour
         }
         else
         {
-            // stop footsteps if not grounded or not moving
+            // Make sure both sounds instantly stop if not grounded or not moving!
             if (walkSound.isPlaying) walkSound.Stop();
             if (sprintSound.isPlaying) sprintSound.Stop();
         }
     }
+
 
     void HandleJumpSound()
     {
