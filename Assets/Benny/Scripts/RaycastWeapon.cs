@@ -74,6 +74,33 @@ public class RaycastWeapon : MonoBehaviour
     {
         if (shootingSound == null)
             shootingSound = GetComponent<AudioSource>();
+        
+        // Validate weapon configuration
+        ValidateWeaponConfiguration();
+    }
+    
+    /// <summary>
+    /// Validates that the weapon has all required components and settings configured
+    /// </summary>
+    void ValidateWeaponConfiguration()
+    {
+        if (useProjectiles)
+        {
+            if (projectilePrefab == null)
+            {
+                Debug.LogError($"[{gameObject.name}] Weapon is set to use projectiles but projectilePrefab is not assigned!");
+            }
+            
+            if (raycastDestination == null)
+            {
+                Debug.LogWarning($"[{gameObject.name}] Weapon is set to use projectiles but raycastDestination is not assigned! This will be set automatically by ActiveWeapon when equipped.");
+            }
+            
+            if (bulletSpawnPoint == null)
+            {
+                Debug.LogWarning($"[{gameObject.name}] Bullet spawn point not set. Projectiles will spawn at weapon position.");
+            }
+        }
     }
 
     // Intentionally empty for tap-only fire
@@ -109,14 +136,19 @@ public class RaycastWeapon : MonoBehaviour
     {
         if (projectilePrefab == null)
         {
-            Debug.LogWarning("Projectile prefab not assigned!");
+            Debug.LogWarning($"[{gameObject.name}] Projectile prefab not assigned! Cannot fire.");
             return;
         }
 
         if (raycastDestination == null)
         {
-            Debug.LogWarning("Raycast destination not set!");
+            Debug.LogWarning($"[{gameObject.name}] Raycast destination not set! Cannot fire. Please assign raycastDestination in the Inspector.");
             return;
+        }
+        
+        if (bulletSpawnPoint == null)
+        {
+            Debug.LogWarning($"[{gameObject.name}] Bullet spawn point not set! Using weapon position as fallback.");
         }
 
         Vector3 spawnPosition = GetBulletStartPosition();
@@ -143,6 +175,9 @@ public class RaycastWeapon : MonoBehaviour
             Debug.LogWarning("Projectile prefab needs a Rigidbody component!");
         }
 
+        // Ignore collisions with player model and weapon model
+        IgnorePlayerAndWeaponCollisions(projectile);
+
         // Add Projectile component if it doesn't exist
         Projectile proj = projectile.GetComponent<Projectile>();
         if (proj == null)
@@ -158,7 +193,7 @@ public class RaycastWeapon : MonoBehaviour
         // Destroy projectile after lifetime
         Destroy(projectile, projectileLifetime);
 
-        Debug.Log("Projectile fired!");
+        Debug.Log($"[{gameObject.name}] Projectile fired from {spawnPosition} towards {raycastDestination.position}!");
     }
 
     void Shoot()
@@ -338,5 +373,51 @@ public class RaycastWeapon : MonoBehaviour
 
         trail.transform.position = hit.point;
         Destroy(trail.gameObject, trail.time);
+    }
+    
+    /// <summary>
+    /// Ignores collisions between the projectile and player model/weapon model
+    /// </summary>
+    void IgnorePlayerAndWeaponCollisions(GameObject projectile)
+    {
+        Collider projectileCollider = projectile.GetComponent<Collider>();
+        if (projectileCollider == null)
+        {
+            Debug.LogWarning("Projectile prefab needs a Collider component for collision ignoring!");
+            return;
+        }
+        
+        // Find player by tag
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        if (player != null)
+        {
+            // Get all colliders on player and its children
+            Collider[] playerColliders = player.GetComponentsInChildren<Collider>();
+            foreach (Collider playerCollider in playerColliders)
+            {
+                Physics.IgnoreCollision(projectileCollider, playerCollider, true);
+            }
+        }
+        
+        // Find weapon (this weapon's GameObject and its children)
+        if (gameObject != null)
+        {
+            Collider[] weaponColliders = gameObject.GetComponentsInChildren<Collider>();
+            foreach (Collider weaponCollider in weaponColliders)
+            {
+                Physics.IgnoreCollision(projectileCollider, weaponCollider, true);
+            }
+        }
+        
+        // Also check for PlayerHealth component (in case player isn't tagged)
+        PlayerHealth playerHealth = FindFirstObjectByType<PlayerHealth>();
+        if (playerHealth != null && playerHealth.gameObject != player)
+        {
+            Collider[] healthColliders = playerHealth.GetComponentsInChildren<Collider>();
+            foreach (Collider healthCollider in healthColliders)
+            {
+                Physics.IgnoreCollision(projectileCollider, healthCollider, true);
+            }
+        }
     }
 }

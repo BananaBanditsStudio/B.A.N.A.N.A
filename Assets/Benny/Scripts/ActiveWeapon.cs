@@ -706,13 +706,27 @@ public class ActiveWeapon : MonoBehaviour
     public void Equip(RaycastWeapon newWeapon)
     {
         weapon = newWeapon;
-        weapon.raycastDestination = crossHairTarget;
+        
+        // Set raycast destination if not already set
+        if (weapon.raycastDestination == null)
+        {
+            weapon.raycastDestination = crossHairTarget;
+            Debug.Log($"✓ Set raycastDestination for {newWeapon.name} to crossHairTarget");
+        }
+        else if (weapon.raycastDestination != crossHairTarget)
+        {
+            Debug.LogWarning($"⚠ {newWeapon.name} has a different raycastDestination assigned. Using assigned value instead of crossHairTarget.");
+        }
         
         Debug.Log("=== EQUIPPING WEAPON ===");
         Debug.Log($"Weapon: {newWeapon.name}");
         Debug.Log($"Weapon AnimationClip: {(newWeapon.AnimationClip != null ? newWeapon.AnimationClip.name : "NULL")}");
         Debug.Log($"Override Controller: {(animatorOverrideController != null ? "OK" : "NULL")}");
         Debug.Log($"Default Weapon Clip: {(defaultWeaponClip != null ? defaultWeaponClip.name : "NULL")}");
+        Debug.Log($"Raycast Destination: {(weapon.raycastDestination != null ? weapon.raycastDestination.name : "NULL - THIS WILL PREVENT FIRING!")}");
+        Debug.Log($"Bullet Spawn Point: {(weapon.bulletSpawnPoint != null ? weapon.bulletSpawnPoint.name : "NULL - Will use weapon position")}");
+        Debug.Log($"Use Projectiles: {weapon.useProjectiles}");
+        Debug.Log($"Projectile Prefab: {(weapon.projectilePrefab != null ? weapon.projectilePrefab.name : "NULL - REQUIRED FOR PROJECTILE MODE!")}");
         
         // Set animation overrides if weapon has animation clip
         if (newWeapon.AnimationClip != null && animatorOverrideController != null && defaultWeaponClip != null)

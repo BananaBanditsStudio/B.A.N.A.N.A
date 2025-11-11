@@ -300,6 +300,37 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63932b13327930f42a75d8a45230748e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Path2
+--- !u!1 &319732118
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 319732119}
+  m_Layer: 0
+  m_Name: BannanaBlasterBulletSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &319732119
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 319732118}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.059167393, y: -0.99374557, z: -0.08833436, w: 0.034147464}
+  m_LocalPosition: {x: 1.349, y: 0.22, z: 0.273}
+  m_LocalScale: {x: 0.083999984, y: 0.084, z: 0.08399998}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2046162220}
+  m_LocalEulerAnglesHint: {x: -9.705, y: -176.82, z: -0.685}
 --- !u!1 &371875956
 GameObject:
   m_ObjectHideFlags: 0
@@ -1691,11 +1722,25 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7293962902611212276, guid: 53512d05e85c30346bbc355411954d48, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 8357026983553599127, guid: 53512d05e85c30346bbc355411954d48, type: 3}
-    - {fileID: 6572398612785150123, guid: 53512d05e85c30346bbc355411954d48, type: 3}
+    - target: {fileID: 8357026983553599127, guid: 53512d05e85c30346bbc355411954d48, type: 3}
+      propertyPath: fpsCam
+      value: 
+      objectReference: {fileID: 949843049}
+    - target: {fileID: 8357026983553599127, guid: 53512d05e85c30346bbc355411954d48, type: 3}
+      propertyPath: throwPoint
+      value: 
+      objectReference: {fileID: 319732119}
+    - target: {fileID: 8357026983553599127, guid: 53512d05e85c30346bbc355411954d48, type: 3}
+      propertyPath: audioSource
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8357026983553599127, guid: 53512d05e85c30346bbc355411954d48, type: 3}
+      propertyPath: m_shootingSound
+      value: 
+      objectReference: {fileID: 2046162226}
+    m_RemovedComponents: []
     m_RemovedGameObjects:
     - {fileID: 2219765116715647630, guid: 53512d05e85c30346bbc355411954d48, type: 3}
     m_AddedGameObjects:
@@ -1705,10 +1750,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6140992064196542455, guid: 53512d05e85c30346bbc355411954d48, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2006330865}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 7293962902611212276, guid: 53512d05e85c30346bbc355411954d48, type: 3}
+    - targetCorrespondingSourceObject: {fileID: 6140992064196542455, guid: 53512d05e85c30346bbc355411954d48, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 2046162221}
+      addedObject: {fileID: 319732119}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 53512d05e85c30346bbc355411954d48, type: 3}
 --- !u!1 &1155160982
 GameObject:
@@ -47991,49 +48036,16 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &2046162219 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 7293962902611212276, guid: 53512d05e85c30346bbc355411954d48, type: 3}
-  m_PrefabInstance: {fileID: 1045992289}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2046162220 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6140992064196542455, guid: 53512d05e85c30346bbc355411954d48, type: 3}
   m_PrefabInstance: {fileID: 1045992289}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &2046162221
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+--- !u!82 &2046162226 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 6572398612785150123, guid: 53512d05e85c30346bbc355411954d48, type: 3}
+  m_PrefabInstance: {fileID: 1045992289}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2046162219}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71520ec313bd82d4b8eec2e838d8bfb2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::RaycastWeapon
-  animationClip: {fileID: 0}
-  useProjectiles: 0
-  damage: 10
-  headshotMultiplier: 2
-  range: 100
-  fireRate: 0.1
-  projectilePrefab: {fileID: 0}
-  projectileSpeed: 50
-  projectileLifetime: 5
-  raycastDestination: {fileID: 0}
-  bulletSpawnPoint: {fileID: 0}
-  leftHandGrip: {fileID: 2006330865}
-  rightHandGrip: {fileID: 1534203085}
-  gunEffect: {fileID: 0}
-  impactEffect: {fileID: 0}
-  shootingSound: {fileID: 0}
-  bulletTrailPrefab: {fileID: 0}
-  dartTrail: {fileID: 0}
-  impactParticleSystem: {fileID: 0}
-  bulletSpeed: 100
-  bulletTrailTime: 0.05
 --- !u!1 &2072381749
 GameObject:
   m_ObjectHideFlags: 0
@@ -48971,6 +48983,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BlowGun
       objectReference: {fileID: 0}
+    - target: {fileID: 3767847689536781750, guid: 3fc498ed0293c9a4b82e01a100a51023, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4048670651645944232, guid: 3fc498ed0293c9a4b82e01a100a51023, type: 3}
     m_RemovedGameObjects: []
@@ -49588,7 +49604,7 @@ MonoBehaviour:
   weaponAnimStateName: Empty_anim
   availableWeapons:
   - {fileID: 1331216182}
-  - {fileID: 2046162221}
+  - {fileID: 0}
 --- !u!114 &5866666021004787563
 MonoBehaviour:
   m_ObjectHideFlags: 0
