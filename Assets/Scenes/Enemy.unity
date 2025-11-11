@@ -1435,7 +1435,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7293962902611212276, guid: 53512d05e85c30346bbc355411954d48, type: 3}
       propertyPath: m_Name
-      value: Banana_Blaster_1014033917_texture (1)
+      value: BananaBlaster
+      objectReference: {fileID: 0}
+    - target: {fileID: 7293962902611212276, guid: 53512d05e85c30346bbc355411954d48, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 8357026983553599127, guid: 53512d05e85c30346bbc355411954d48, type: 3}
@@ -1907,7 +1911,6 @@ MonoBehaviour:
   impactParticleSystem: {fileID: 9064919875212695174, guid: a5e1e2c4d2cd81f4abed6272a2b8187a, type: 3}
   bulletSpeed: 100
   bulletTrailTime: 0.05
-  isFiring: 0
 --- !u!1 &1440029812
 GameObject:
   m_ObjectHideFlags: 0
@@ -47700,7 +47703,6 @@ MonoBehaviour:
   impactParticleSystem: {fileID: 0}
   bulletSpeed: 100
   bulletTrailTime: 0.05
-  isFiring: 0
 --- !u!1 &2072381749
 GameObject:
   m_ObjectHideFlags: 0
@@ -49038,7 +49040,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   AnimBlendSpeed: 8.9
-  playerCamera: {fileID: 0}
+  playerCamera: {fileID: 949843049}
   staminaBar: {fileID: 0}
   CameraRoot: {fileID: 94346680}
   Camera: {fileID: 949843050}
