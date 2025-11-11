@@ -13,20 +13,12 @@ public class Projectile : MonoBehaviour
     {
         if (hasHit) return;
         
-        // Only hit objects on the "Ground" layer
-        if (collision.gameObject.layer != LayerMask.NameToLayer("Ground"))
-        {
-            Debug.Log($"Projectile ignored collision with {collision.gameObject.name} (Layer: {LayerMask.LayerToName(collision.gameObject.layer)})");
-            return;
-        }
-        
         hasHit = true;
-        Debug.Log($"Projectile hit Ground layer object: {collision.gameObject.name}");
         
-        // Check what we hit
+        // Check what we hit - prioritize enemies
         bool isHeadshot = collision.collider.CompareTag("Head");
         
-        // Find enemy
+        // Find enemy - check collision object and parent hierarchy
         EnemyDamage target = collision.collider.GetComponent<EnemyDamage>();
         if (target == null)
         {
@@ -42,7 +34,7 @@ public class Projectile : MonoBehaviour
             }
         }
         
-        // Deal damage
+        // Deal damage to enemy if hit
         if (target != null)
         {
             float finalDamage = damage;
@@ -54,7 +46,33 @@ public class Projectile : MonoBehaviour
             }
             
             target.TakeDamage(finalDamage, isHeadshot);
+            Debug.Log("Projectile hit enemy: " + collision.collider.name + (isHeadshot ? " [HEADSHOT]" : ""));
+            
+            // Create impact effect on enemy
+            if (impactEffect != null && collision.contacts.Length > 0)
+            {
+                ContactPoint contact = collision.contacts[0];
+                Instantiate(impactEffect, contact.point, Quaternion.LookRotation(contact.normal));
+            }
+            
+            // Stick the projectile to the enemy
+            StickToSurface(collision);
+            return; // Exit early since we hit an enemy
         }
+        
+        // If we didn't hit an enemy, check for other surfaces (Ground layer, Obstacles, etc.)
+        // Only hit objects on the "Ground" layer or tagged as "Obstacle"
+        bool isGroundLayer = collision.gameObject.layer == LayerMask.NameToLayer("Ground");
+        bool isObstacle = collision.collider.CompareTag("Obstacle");
+        
+        if (!isGroundLayer && !isObstacle)
+        {
+            Debug.Log($"Projectile ignored collision with {collision.gameObject.name} (Layer: {LayerMask.LayerToName(collision.gameObject.layer)})");
+            hasHit = false; // Allow projectile to continue
+            return;
+        }
+        
+        Debug.Log($"Projectile hit surface: {collision.gameObject.name}");
         
         // Create impact effect
         if (impactEffect != null && collision.contacts.Length > 0)
@@ -64,7 +82,7 @@ public class Projectile : MonoBehaviour
         }
         
         // Create bullet hole on obstacles
-        if (collision.collider.CompareTag("Obstacle") && collision.contacts.Length > 0)
+        if (isObstacle && collision.contacts.Length > 0)
         {
             ContactPoint contact = collision.contacts[0];
             if (GlobalReferences.Instance != null && GlobalReferences.Instance.bulletImpactEffectPrefab != null)
@@ -74,9 +92,7 @@ public class Projectile : MonoBehaviour
             }
         }
         
-        Debug.Log("Projectile hit: " + collision.collider.name + (isHeadshot ? " [HEADSHOT]" : ""));
-        
-        // Stick the projectile to the wall
+        // Stick the projectile to the surface
         StickToSurface(collision);
     }
     
