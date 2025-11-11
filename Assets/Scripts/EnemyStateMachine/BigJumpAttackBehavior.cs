@@ -185,7 +185,11 @@ public class BigJumpAttackBehavior : IAttackBehavior
             
             if (distanceToPlayer <= aoeRadius)
             {
-                PlayerHealth playerHealth = enemy.Player.transform.parent.GetComponent<PlayerHealth>();
+                PlayerHealth playerHealth = enemy.Player.GetComponent<PlayerHealth>();
+                if (playerHealth == null && enemy.Player.transform.parent != null)
+                {
+                    playerHealth = enemy.Player.transform.parent.GetComponent<PlayerHealth>();
+                }
                 if (playerHealth != null)
                 {
                     playerHealth.TakeDamage(damage);

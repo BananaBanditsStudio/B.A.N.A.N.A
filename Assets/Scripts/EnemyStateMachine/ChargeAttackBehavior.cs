@@ -153,7 +153,11 @@ public class ChargeAttackBehavior : IAttackBehavior
             float damageRange = explosionRange * 2.5f;
             if (distanceToPlayer <= damageRange)
             {
-                PlayerHealth playerHealth = enemy.Player.transform.parent.GetComponent<PlayerHealth>();
+                PlayerHealth playerHealth = enemy.Player.GetComponent<PlayerHealth>();
+                if (playerHealth == null && enemy.Player.transform.parent != null)
+                {
+                    playerHealth = enemy.Player.transform.parent.GetComponent<PlayerHealth>();
+                }
                 if (playerHealth != null)
                 {
                     playerHealth.TakeDamage(explosionDamage);
