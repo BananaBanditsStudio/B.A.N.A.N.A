@@ -26188,6 +26188,8 @@ MonoBehaviour:
   dashFOV: 80
   normalFOV: 60
   fovChangeSpeed: 10
+  dashAudioSource: {fileID: 0}
+  dashSound: {fileID: 0}
   maxStamina: 50
   dashStaminaCost: 50
   staminaRegenRate: 25
@@ -64996,7 +64998,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2970970380871607169, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -38.17
+      value: -47.79
       objectReference: {fileID: 0}
     - target: {fileID: 2970970380871607169, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
       propertyPath: m_LocalRotation.w
@@ -65340,7 +65342,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4380748538858994167, guid: 8b825121765de294ab210025fb06be76, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -61.7
+      value: -41.26
       objectReference: {fileID: 0}
     - target: {fileID: 4380748538858994167, guid: 8b825121765de294ab210025fb06be76, type: 3}
       propertyPath: m_LocalPosition.y
@@ -65348,7 +65350,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4380748538858994167, guid: 8b825121765de294ab210025fb06be76, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -39.22
+      value: -52.56
       objectReference: {fileID: 0}
     - target: {fileID: 4380748538858994167, guid: 8b825121765de294ab210025fb06be76, type: 3}
       propertyPath: m_LocalRotation.w
@@ -65623,7 +65625,7 @@ PrefabInstance:
       objectReference: {fileID: 478800151}
     - target: {fileID: 5690935474733028281, guid: 60010b3554c3c45ceaca20f9384806b1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -51.9
+      value: 21.07
       objectReference: {fileID: 0}
     - target: {fileID: 5690935474733028281, guid: 60010b3554c3c45ceaca20f9384806b1, type: 3}
       propertyPath: m_LocalPosition.y
@@ -65631,7 +65633,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5690935474733028281, guid: 60010b3554c3c45ceaca20f9384806b1, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -22
+      value: -42.96
       objectReference: {fileID: 0}
     - target: {fileID: 5690935474733028281, guid: 60010b3554c3c45ceaca20f9384806b1, type: 3}
       propertyPath: m_LocalRotation.w
@@ -67989,7 +67991,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2821076802832285878, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -34.72
+      value: -35.75
       objectReference: {fileID: 0}
     - target: {fileID: 2821076802832285878, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: m_LocalRotation.w
@@ -68767,6 +68769,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWithSM
   path: {fileID: 58144138}
   currentState: 
+  playerReference: {fileID: 0}
   sightDistance: 15
   fieldOfView: 180
   attackBehaviorType: 0
@@ -68845,67 +68848,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!1001 &8927594672945122114
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 6137476196133733988, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: path
-      value: 
-      objectReference: {fileID: 960447349}
-    - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -42.08
-      objectReference: {fileID: 0}
-    - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.865
-      objectReference: {fileID: 0}
-    - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -23.85
-      objectReference: {fileID: 0}
-    - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7552159423504955592, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_Name
-      value: Armored Monkey
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
 --- !u!4 &8941307996436334490
 Transform:
   m_ObjectHideFlags: 0
@@ -69059,7 +69001,6 @@ SceneRoots:
   - {fileID: 1694570139702451972}
   - {fileID: 1058914605003515088}
   - {fileID: 7061232172731331135}
-  - {fileID: 8927594672945122114}
   - {fileID: 701315677}
   - {fileID: 5884246081895141251}
   - {fileID: 945389910}
