@@ -3163,11 +3163,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWithSM
   path: {fileID: 0}
   currentState: 
+  playerReference: {fileID: 0}
   sightDistance: 15
   fieldOfView: 180
   attackBehaviorType: 0
   rangedFireRate: 1
-  bulletPrefab: {fileID: 8513641787784238836, guid: 740124fe1eac7a043b1242813332760d, type: 3}
+  bulletPrefab: {fileID: 148992858794940301, guid: 4480df3d492d4d94284f8e803464b877, type: 3}
   gunBarrel: {fileID: 2345265800585359646}
   meleeAttackRange: 2
   meleeAttackCooldown: 2
