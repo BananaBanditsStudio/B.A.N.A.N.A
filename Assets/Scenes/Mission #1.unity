@@ -4370,6 +4370,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   AnimBlendSpeed: 8.9
+  playerCamera: {fileID: 0}
   CameraRoot: {fileID: 1602065008}
   Camera: {fileID: 1488452616}
   UpperLimit: -40
@@ -4381,6 +4382,12 @@ MonoBehaviour:
   GroundCheck:
     serializedVersion: 2
     m_Bits: 4096
+  dashFOV: 80
+  normalFOV: 60
+  fovChangeSpeed: 10
+  dashForce: 20
+  dashCooldown: 1
+  dashDuration: 0.15
 --- !u!114 &117397179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11234,6 +11241,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2685463757929791408, guid: e55cf30a462ef1a44a781454f8b33005, type: 3}
+      propertyPath: dashForce
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 2685463757929791408, guid: e55cf30a462ef1a44a781454f8b33005, type: 3}
+      propertyPath: playerCamera
+      value: 
+      objectReference: {fileID: 1482797338}
     - target: {fileID: 2915911610179422593, guid: e55cf30a462ef1a44a781454f8b33005, type: 3}
       propertyPath: m_LocalPosition.x
       value: -44.210716

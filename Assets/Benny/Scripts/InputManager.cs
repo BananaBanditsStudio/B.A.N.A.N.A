@@ -9,11 +9,12 @@ namespace UnityTutorial.Manager
     {
         [SerializeField] private PlayerInput PlayerInput;
 
-        public Vector2 Move {get; private set;}
-        public Vector2 Look {get; private set;}
-        public bool Run {get; private set;}
-        public bool Jump {get; private set;}
-        public bool Crouch {get; private set;}
+        public Vector2 Move { get; private set; }
+        public Vector2 Look { get; private set; }
+        public bool Run { get; private set; }
+        public bool Jump { get; private set; }
+        public bool Crouch { get; private set; }
+        public bool Dash => Input.GetKey(KeyCode.B);
 
         private InputActionMap _currentMap;
         private InputAction _moveAction;
@@ -22,12 +23,13 @@ namespace UnityTutorial.Manager
         private InputAction _jumpAction;
         private InputAction _crouchAction;
 
-        private void Awake() {
+        private void Awake()
+        {
             HideCursor();
             _currentMap = PlayerInput.currentActionMap;
             _moveAction = _currentMap.FindAction("Move");
             _lookAction = _currentMap.FindAction("Look");
-            _runAction  = _currentMap.FindAction("Run");
+            _runAction = _currentMap.FindAction("Run");
             _jumpAction = _currentMap.FindAction("Jump");
             _crouchAction = _currentMap.FindAction("Crouch");
 
@@ -73,13 +75,15 @@ namespace UnityTutorial.Manager
 
             Crouch = context.ReadValueAsButton();
         }
-        private void OnEnable() {
+        private void OnEnable()
+        {
             _currentMap.Enable();
         }
 
-        private void OnDisable() {
+        private void OnDisable()
+        {
             _currentMap.Disable();
         }
-        
+
     }
 }
