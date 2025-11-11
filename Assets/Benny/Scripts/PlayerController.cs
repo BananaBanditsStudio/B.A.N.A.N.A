@@ -42,6 +42,8 @@ namespace UnityTutorial.PlayerControl
         [SerializeField] private float dashFOV = 80f;
         [SerializeField] private float normalFOV = 60f;
         [SerializeField] private float fovChangeSpeed = 10f; // higher = snappier
+        [SerializeField] private AudioSource dashAudioSource; // Audio source for dash sound
+        [SerializeField] private AudioClip dashSound; // Dash sound clip (optional if using AudioSource with clip assigned)
 
         private bool isDashing = false;
         private float lastDashTime = -999f;
@@ -71,6 +73,10 @@ namespace UnityTutorial.PlayerControl
             currentStamina = maxStamina;
             staminaBar.maxValue = maxStamina;
             staminaBar.value = currentStamina;
+
+            // Audio source setup - get component if not assigned
+            if (dashAudioSource == null)
+                dashAudioSource = GetComponent<AudioSource>();
 
             // On start set normal FOV
             if (playerCamera != null)
@@ -230,6 +236,15 @@ namespace UnityTutorial.PlayerControl
         {
             isDashing = true;
             lastDashTime = Time.time;
+
+            // Play dash sound
+            if (dashAudioSource != null)
+            {
+                if (dashSound != null)
+                    dashAudioSource.PlayOneShot(dashSound);
+                else if (dashAudioSource.clip != null)
+                    dashAudioSource.Play();
+            }
 
             // Smooth FOV effect, only one coroutine at a time!
             if (fovCoroutine != null) StopCoroutine(fovCoroutine);
