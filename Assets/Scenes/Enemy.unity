@@ -1725,6 +1725,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8357026983553599127, guid: 53512d05e85c30346bbc355411954d48, type: 3}
+      propertyPath: damage
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8357026983553599127, guid: 53512d05e85c30346bbc355411954d48, type: 3}
       propertyPath: fpsCam
       value: 
       objectReference: {fileID: 949843049}
@@ -1753,7 +1757,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6140992064196542455, guid: 53512d05e85c30346bbc355411954d48, type: 3}
       insertIndex: -1
       addedObject: {fileID: 319732119}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 7293962902611212276, guid: 53512d05e85c30346bbc355411954d48, type: 3}
+      insertIndex: 3
+      addedObject: {fileID: 2046162227}
   m_SourcePrefab: {fileID: 100100000, guid: 53512d05e85c30346bbc355411954d48, type: 3}
 --- !u!1 &1155160982
 GameObject:
@@ -48036,6 +48043,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2046162219 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7293962902611212276, guid: 53512d05e85c30346bbc355411954d48, type: 3}
+  m_PrefabInstance: {fileID: 1045992289}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2046162220 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6140992064196542455, guid: 53512d05e85c30346bbc355411954d48, type: 3}
@@ -48046,6 +48058,39 @@ AudioSource:
   m_CorrespondingSourceObject: {fileID: 6572398612785150123, guid: 53512d05e85c30346bbc355411954d48, type: 3}
   m_PrefabInstance: {fileID: 1045992289}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2046162227
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2046162219}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71520ec313bd82d4b8eec2e838d8bfb2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RaycastWeapon
+  animationClip: {fileID: 0}
+  useProjectiles: 0
+  damage: 10
+  headshotMultiplier: 2
+  range: 100
+  fireRate: 0.1
+  projectilePrefab: {fileID: 0}
+  projectileSpeed: 50
+  projectileLifetime: 5
+  raycastDestination: {fileID: 0}
+  bulletSpawnPoint: {fileID: 0}
+  leftHandGrip: {fileID: 2006330865}
+  rightHandGrip: {fileID: 1534203085}
+  gunEffect: {fileID: 0}
+  impactEffect: {fileID: 0}
+  shootingSound: {fileID: 0}
+  bulletTrailPrefab: {fileID: 0}
+  dartTrail: {fileID: 0}
+  impactParticleSystem: {fileID: 0}
+  bulletSpeed: 100
+  bulletTrailTime: 0.05
 --- !u!1 &2072381749
 GameObject:
   m_ObjectHideFlags: 0
@@ -49604,7 +49649,7 @@ MonoBehaviour:
   weaponAnimStateName: Empty_anim
   availableWeapons:
   - {fileID: 1331216182}
-  - {fileID: 0}
+  - {fileID: 2046162227}
 --- !u!114 &5866666021004787563
 MonoBehaviour:
   m_ObjectHideFlags: 0
