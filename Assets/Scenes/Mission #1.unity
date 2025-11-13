@@ -2540,6 +2540,10 @@ PrefabInstance:
       propertyPath: showSightCircle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: chargeAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 630e9c4941f7ea542930ee06b8817019, type: 3}
     - target: {fileID: 5576003157580102249, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: m_Name
       value: Exploding Monkey (4)
@@ -5979,6 +5983,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4f32dfddb033d3e40b5841bc53cc1689, type: 3}
+--- !u!1 &199657193 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8668492982123387130, guid: 8b825121765de294ab210025fb06be76, type: 3}
+  m_PrefabInstance: {fileID: 1891345598}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &199714501
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13170,6 +13179,10 @@ PrefabInstance:
       propertyPath: showSightCircle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: chargeAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 630e9c4941f7ea542930ee06b8817019, type: 3}
     - target: {fileID: 5576003157580102249, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: m_Name
       value: Exploding Monkey (1)
@@ -15261,6 +15274,10 @@ PrefabInstance:
       propertyPath: showSightCircle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7230287969934151732, guid: 8b825121765de294ab210025fb06be76, type: 3}
+      propertyPath: meleeAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 42b292e9032b94b45849d51e3e34b941, type: 3}
     - target: {fileID: 8668492982123387130, guid: 8b825121765de294ab210025fb06be76, type: 3}
       propertyPath: m_Name
       value: Melee Monkey (1)
@@ -15268,7 +15285,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8668492982123387130, guid: 8b825121765de294ab210025fb06be76, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1371834692}
   m_SourcePrefab: {fileID: 100100000, guid: 8b825121765de294ab210025fb06be76, type: 3}
 --- !u!4 &513599922 stripped
 Transform:
@@ -19084,6 +19104,10 @@ PrefabInstance:
       propertyPath: showSightCircle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7104562555100234303, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
+      propertyPath: rangedAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 76ca6c4e184cf2845beff6992d9df7f6, type: 3}
     - target: {fileID: 8471735533867782593, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
       propertyPath: m_Name
       value: Ranged Monkey
@@ -35260,6 +35284,10 @@ PrefabInstance:
       propertyPath: showSightCircle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: chargeAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 630e9c4941f7ea542930ee06b8817019, type: 3}
     - target: {fileID: 5576003157580102249, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: m_Name
       value: Exploding Monkey (2)
@@ -37346,6 +37374,10 @@ PrefabInstance:
       propertyPath: showSightCircle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6137476196133733988, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
+      propertyPath: bigJumpAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 0fddfb95bcb8c2d47ae22741fbb7408f, type: 3}
     - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -37983,6 +38015,108 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 22, y: 8, z: 36}
   m_Center: {x: -12.287799, y: -4.086442, z: 2.2362983}
+--- !u!1 &1371834681 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8668492982123387130, guid: 8b825121765de294ab210025fb06be76, type: 3}
+  m_PrefabInstance: {fileID: 508760777}
+  m_PrefabAsset: {fileID: 0}
+--- !u!82 &1371834692
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1371834681}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &1373470075
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -39795,6 +39929,103 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4380748538858994167, guid: 8b825121765de294ab210025fb06be76, type: 3}
   m_PrefabInstance: {fileID: 1891345598}
   m_PrefabAsset: {fileID: 0}
+--- !u!82 &1443333355
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 199657193}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 42b292e9032b94b45849d51e3e34b941, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!4 &1444262648 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: acf38ccf2258add4ba3aa2d89b708d2a, type: 3}
@@ -40445,6 +40676,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 726545854}
     - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: audioSource
+      value: 
+      objectReference: {fileID: 1788701534}
+    - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: sightDistance
       value: 1000
       objectReference: {fileID: 0}
@@ -40460,14 +40695,25 @@ PrefabInstance:
       propertyPath: showSightCircle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: chargeAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 630e9c4941f7ea542930ee06b8817019, type: 3}
     - target: {fileID: 5576003157580102249, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: m_Name
       value: Exploding Monkey
       objectReference: {fileID: 0}
+    - target: {fileID: 8128180724669925370, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: bc500be5ea130364bbf8b9b2bfbcc5ee, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 5576003157580102249, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1788701540}
   m_SourcePrefab: {fileID: 100100000, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
 --- !u!4 &1472318345 stripped
 Transform:
@@ -42038,6 +42284,10 @@ PrefabInstance:
       propertyPath: showSightCircle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: chargeAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 630e9c4941f7ea542930ee06b8817019, type: 3}
     - target: {fileID: 5576003157580102249, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: m_Name
       value: Exploding Monkey (7)
@@ -44853,6 +45103,10 @@ PrefabInstance:
       propertyPath: showSightCircle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7104562555100234303, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
+      propertyPath: rangedAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 76ca6c4e184cf2845beff6992d9df7f6, type: 3}
     - target: {fileID: 8471735533867782593, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
       propertyPath: m_Name
       value: Ranged Monkey
@@ -45527,6 +45781,14 @@ PrefabInstance:
       propertyPath: showSightCircle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7104562555100234303, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
+      propertyPath: meleeAttackSound
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7104562555100234303, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
+      propertyPath: rangedAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 76ca6c4e184cf2845beff6992d9df7f6, type: 3}
     - target: {fileID: 8471735533867782593, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
       propertyPath: m_Name
       value: Ranged Monkey
@@ -49105,6 +49367,113 @@ Transform:
   - {fileID: 899302531}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1788701529 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5576003157580102249, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+  m_PrefabInstance: {fileID: 1471671612}
+  m_PrefabAsset: {fileID: 0}
+--- !u!82 &1788701534 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 8128180724669925370, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+  m_PrefabInstance: {fileID: 1471671612}
+  m_PrefabAsset: {fileID: 0}
+--- !u!82 &1788701540
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1788701529}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 8300000, guid: 630e9c4941f7ea542930ee06b8817019, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 0.238
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1001 &1789008389
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -51439,6 +51808,10 @@ PrefabInstance:
       propertyPath: attackBehaviorType
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 6137476196133733988, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
+      propertyPath: bigJumpAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 0fddfb95bcb8c2d47ae22741fbb7408f, type: 3}
     - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -52569,6 +52942,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 726545854}
     - target: {fileID: 7230287969934151732, guid: 8b825121765de294ab210025fb06be76, type: 3}
+      propertyPath: audioSource
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 7230287969934151732, guid: 8b825121765de294ab210025fb06be76, type: 3}
       propertyPath: playerReference
       value: 
       objectReference: {fileID: 711744217}
@@ -52576,6 +52953,14 @@ PrefabInstance:
       propertyPath: showSightCircle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7230287969934151732, guid: 8b825121765de294ab210025fb06be76, type: 3}
+      propertyPath: meleeAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 42b292e9032b94b45849d51e3e34b941, type: 3}
+    - target: {fileID: 7230287969934151732, guid: 8b825121765de294ab210025fb06be76, type: 3}
+      propertyPath: bigMeleeAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 42b292e9032b94b45849d51e3e34b941, type: 3}
     - target: {fileID: 8668492982123387130, guid: 8b825121765de294ab210025fb06be76, type: 3}
       propertyPath: m_Name
       value: Melee Monkey
@@ -52583,7 +52968,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8668492982123387130, guid: 8b825121765de294ab210025fb06be76, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1443333355}
   m_SourcePrefab: {fileID: 100100000, guid: 8b825121765de294ab210025fb06be76, type: 3}
 --- !u!114 &1891590465 stripped
 MonoBehaviour:
@@ -57958,6 +58346,10 @@ PrefabInstance:
       propertyPath: showSightCircle
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: chargeAttackSound
+      value: 
+      objectReference: {fileID: 8300000, guid: 630e9c4941f7ea542930ee06b8817019, type: 3}
     - target: {fileID: 5576003157580102249, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: m_Name
       value: Exploding Monkey (2)

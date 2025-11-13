@@ -12,12 +12,12 @@ public class ThrowAttackBehavior : IAttackBehavior
     private EnemyDamage enemyDamage;
     private const float THROW_TIMEOUT = 5f;
     private bool hasFiredThisThrow = false; // Track if we've fired for this throw cycle
-    
+
     public void OnEnter(EnemyWithSM enemy)
     {
         enemyDamage = enemy.GetComponent<EnemyDamage>();
     }
-    
+
     public void OnExit(EnemyWithSM enemy)
     {
         if (enemy.Animator != null)
@@ -27,14 +27,14 @@ public class ThrowAttackBehavior : IAttackBehavior
         isThrowing = false;
         hasFiredThisThrow = false;
         shootTimer = 0f;
-        
+
         if (enemy.Agent != null)
         {
             enemy.Agent.ResetPath();
             enemy.Agent.isStopped = false;
         }
     }
-    
+
     public void OnPerform(EnemyWithSM enemy, float deltaTime)
     {
         // Only increment shootTimer if we're NOT currently throwing
@@ -42,19 +42,19 @@ public class ThrowAttackBehavior : IAttackBehavior
         {
             shootTimer += deltaTime;
         }
-        
+
         // Stop movement and face player
         if (enemy.Agent != null)
         {
             enemy.Agent.isStopped = true;
             enemy.Agent.ResetPath();
         }
-        
+
         if (enemy.Player != null)
         {
             enemy.transform.LookAt(enemy.Player.transform);
         }
-        
+
         // Check if we can throw and fire rate is ready
         if (CanAttack(enemy) && shootTimer >= enemy.rangedFireRate)
         {
@@ -67,7 +67,7 @@ public class ThrowAttackBehavior : IAttackBehavior
             hasFiredThisThrow = false; // Reset fire flag for new throw
             throwStartTime = Time.time;
             shootTimer = 0f;
-            
+
             // Start a new throw cycle
             EnemyAttackEvents attackEvents = enemy.Animator.GetComponent<EnemyAttackEvents>();
             if (attackEvents == null)
@@ -83,17 +83,17 @@ public class ThrowAttackBehavior : IAttackBehavior
                 Debug.LogError("ThrowAttackBehavior: Could not find EnemyAttackEvents component!");
             }
         }
-        
+
         // Check if throw animation has completed
         CheckThrowAnimationComplete(enemy);
-        
+
         // Fallback: If animation event doesn't fire, try to fire after a delay
         // This helps when animation events aren't set up properly
         if (isThrowing && enemy.Animator != null)
         {
             AnimatorStateInfo stateInfo = enemy.Animator.GetCurrentAnimatorStateInfo(0);
             bool isInThrowAnimation = stateInfo.IsName("Throw") || stateInfo.IsName("Throwing");
-            
+
             // If we're in throw animation and past the release point (around 0.5 normalized time)
             // and haven't fired yet, fire as fallback
             if (isInThrowAnimation && stateInfo.normalizedTime >= 0.5f && stateInfo.normalizedTime < 0.7f)
@@ -104,7 +104,7 @@ public class ThrowAttackBehavior : IAttackBehavior
                 {
                     attackEvents = enemy.GetComponentInChildren<EnemyAttackEvents>();
                 }
-                
+
                 // If no EnemyAttackEvents component, fire directly as fallback
                 if (attackEvents == null && !hasFiredThisThrow)
                 {
@@ -115,7 +115,7 @@ public class ThrowAttackBehavior : IAttackBehavior
             }
         }
     }
-    
+
     public bool CanAttack(EnemyWithSM enemy)
     {
         // Don't throw if enemy is slipping
@@ -123,13 +123,13 @@ public class ThrowAttackBehavior : IAttackBehavior
         {
             return false;
         }
-        
+
         // Don't throw if already throwing
         if (isThrowing)
         {
             return false;
         }
-        
+
         // Don't throw if currently in a throw animation
         if (enemy.Animator != null)
         {
@@ -138,49 +138,52 @@ public class ThrowAttackBehavior : IAttackBehavior
             {
                 return false;
             }
-            
+
             // Don't throw if in other interrupting animations
-            if (stateInfo.IsName("Slip") || stateInfo.IsName("Slipping") || 
+            if (stateInfo.IsName("Slip") || stateInfo.IsName("Slipping") ||
                 stateInfo.IsName("Stun") || stateInfo.IsName("Death"))
             {
                 return false;
             }
         }
-        
+
         return true;
     }
-    
+
     public void Attack(EnemyWithSM enemy)
     {
+        // 🔥 PLAY THROW SOUND HERE (kept separate for clean sync)
+        enemy.PlayThrowAttackSound();
+
         // This is called by EnemyAttackEvents, same as the old Shoot() method
         Transform gunBarrel = enemy.gunBarrel;
-        
+
         if (gunBarrel == null || enemy.bulletPrefab == null)
         {
             Debug.LogWarning($"ThrowAttackBehavior: Missing gunBarrel or bulletPrefab! gunBarrel: {(gunBarrel != null ? "OK" : "NULL")}, bulletPrefab: {(enemy.bulletPrefab != null ? "OK" : "NULL")}");
             return;
         }
-        
+
         // Instantiate the bullet
         GameObject bullet = Object.Instantiate(enemy.bulletPrefab, gunBarrel.position, enemy.transform.rotation);
-        
+
         if (bullet == null)
         {
             Debug.LogError("ThrowAttackBehavior: Failed to instantiate bullet!");
             return;
         }
-        
+
         // Calculate the direction to the player
         if (enemy.Player == null)
         {
             Debug.LogWarning("ThrowAttackBehavior: Player is null, cannot calculate direction!");
             return;
         }
-        
+
         Vector3 playerPosition = enemy.Player.transform.position;
         playerPosition.y += 0.8f;
         Vector3 shootDirection = (playerPosition - gunBarrel.position).normalized;
-        
+
         // Add force to the bullet
         Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
         if (bulletRb != null)
@@ -194,20 +197,20 @@ public class ThrowAttackBehavior : IAttackBehavior
             Debug.LogWarning("ThrowAttackBehavior: Bullet prefab has no Rigidbody component!");
         }
     }
-    
+
     public void UpdateMovement(EnemyWithSM enemy, float deltaTime)
     {
         // Ranged enemies stay stationary and just throw
         // Movement is handled in OnPerform by stopping the agent
     }
-    
+
     private void CheckThrowAnimationComplete(EnemyWithSM enemy)
     {
         if (isThrowing && enemy.Animator != null)
         {
             AnimatorStateInfo stateInfo = enemy.Animator.GetCurrentAnimatorStateInfo(0);
             bool isInThrowAnimation = stateInfo.IsName("Throw") || stateInfo.IsName("Throwing");
-            
+
             // Safety timeout
             if (Time.time - throwStartTime > THROW_TIMEOUT)
             {
@@ -223,4 +226,3 @@ public class ThrowAttackBehavior : IAttackBehavior
         }
     }
 }
-

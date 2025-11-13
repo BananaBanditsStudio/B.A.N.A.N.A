@@ -2,94 +2,126 @@ using UnityEngine;
 
 public class EnemyAttackEvents : MonoBehaviour
 {
-    // Cached references for performance - avoid GetComponent calls in hot path
-    private EnemyWithSM cachedEnemy;
-    private StateMachine cachedStateMachine;
-    private bool referencesCached = false;
-    
-    // Track which throw cycle we're on to prevent cross-cycle firing
+    // Cached references
+    private EnemyWithSM enemy;
+    private StateMachine stateMachine;
+    private bool refsCached = false;
+
+    // Ranged attack cycle
     private int currentThrowCycle = 0;
     private int lastFiredCycle = -1;
-    
-    // Reduced cooldown for faster response
     private float lastFireTime = -1f;
-    private const float FIRE_COOLDOWN = 0.05f; // Reduced from 0.1s to 0.05s
+    private const float FIRE_COOLDOWN = 0.05f;
 
     void Awake()
     {
-        CacheReferences();
+        CacheRefs();
     }
 
     void Start()
     {
-        // Ensure references are cached
-        if (!referencesCached)
-        {
-            CacheReferences();
-        }
+        if (!refsCached)
+            CacheRefs();
     }
 
-    private void CacheReferences()
+    private void CacheRefs()
     {
-        cachedEnemy = GetComponentInParent<EnemyWithSM>();
-        if (cachedEnemy != null)
-        {
-            cachedStateMachine = cachedEnemy.GetComponent<StateMachine>();
-        }
-        referencesCached = true;
+        enemy = GetComponentInParent<EnemyWithSM>();
+
+        if (enemy != null)
+            stateMachine = enemy.GetComponent<StateMachine>();
+
+        refsCached = true;
     }
 
-    // Called by the animation event on the "release" frame
-    // OPTIMIZED: Minimal checks, cached references, fast path
-    public void AnimEvent_ThrowRelease()
-    {
-        // CRITICAL: Fire immediately when animation event is called - no blocking checks!
-        // The animation event should fire exactly at the release frame
-        
-        // Ensure references are cached (fallback)
-        if (!referencesCached || cachedStateMachine == null || cachedStateMachine.activeState == null)
-        {
-            CacheReferences();
-            if (cachedStateMachine == null || cachedStateMachine.activeState == null)
-            {
-                Debug.LogError("EnemyAttackEvents: Cannot fire - missing references!");
-                return;
-            }
-        }
-        
-        // Fast path: Direct cast and fire immediately
-        if (cachedStateMachine.activeState is AttackState attackState)
-        {
-            // Check for duplicate only AFTER we know we can fire
-            float currentTime = Time.time;
-            if (currentTime - lastFireTime < FIRE_COOLDOWN && lastFiredCycle == currentThrowCycle)
-            {
-                Debug.LogWarning($"EnemyAttackEvents: Duplicate fire prevented! Cycle: {currentThrowCycle}, Time since last: {currentTime - lastFireTime:F3}s");
-                return; // Already fired for this cycle
-            }
-            
-            // FIRE IMMEDIATELY - no more checks!
-            attackState.Shoot();
-            lastFireTime = currentTime;
-            lastFiredCycle = currentThrowCycle;
-            
-            Debug.Log($"EnemyAttackEvents: FIRED at {currentTime:F3}s, Cycle: {currentThrowCycle}");
-        }
-        else
-        {
-            Debug.LogWarning($"EnemyAttackEvents: Cannot fire - not in AttackState! Current state: {cachedStateMachine.activeState?.GetType().Name}");
-        }
-    }
+    // -------------------------------------------------------------------
+    // 🔥 RANGED ATTACK (Throw)
+    // -------------------------------------------------------------------
 
-    // Reset when entering Throw so the event can fire again next time
+    // Called at the START of the animation cycle
     public void AnimEvent_ThrowEnter()
     {
         currentThrowCycle++;
     }
-    
-    // Public method to start a new throw cycle (called from AttackState when triggering)
+
+    // Called exactly at the projectile release frame
+    public void AnimEvent_ThrowRelease()
+    {
+        if (!refsCached || stateMachine == null || stateMachine.activeState == null)
+            CacheRefs();
+
+        if (stateMachine == null || stateMachine.activeState == null)
+        {
+            Debug.LogError("EnemyAttackEvents: Missing state machine.");
+            return;
+        }
+
+        if (stateMachine.activeState is AttackState attackState)
+        {
+            float t = Time.time;
+
+            // Prevent double-firing
+            if (t - lastFireTime < FIRE_COOLDOWN && lastFiredCycle == currentThrowCycle)
+                return;
+
+            attackState.Shoot(); // FIRE PROJECTILE
+
+            lastFireTime = t;
+            lastFiredCycle = currentThrowCycle;
+        }
+    }
+
+    // -------------------------------------------------------------------
+    // 🔊 SOUND EVENTS (Forwarded to EnemyWithSM)
+    // -------------------------------------------------------------------
+
+    public void AnimEvent_PlayMeleeAttackSound()
+    {
+        enemy?.PlayMeleeAttackSound();
+    }
+
+    public void AnimEvent_PlayRangedAttackSound()
+    {
+        enemy?.PlayRangedAttackSound();
+    }
+
+    public void AnimEvent_PlayChargeAttackSound()
+    {
+        enemy?.PlayChargeAttackSound();
+    }
+
+    public void AnimEvent_PlayBigJumpAttackSound()
+    {
+        enemy?.PlayBigJumpAttackSound();
+    }
+
+    public void AnimEvent_PlayBigMeleeAttackSound()
+    {
+        enemy?.PlayBigMeleeAttackSound();
+    }
+    // Called by ThrowAttackBehavior to begin a new throw cycle
     public void StartNewThrowCycle()
     {
         currentThrowCycle++;
     }
+
+
+    // -------------------------------------------------------------------
+    // ⚡ DAMAGE & SPECIAL ATTACK EVENTS (Optional Expansion)
+    // -------------------------------------------------------------------
+
+    // If later you want to sync damage, explosion triggers, etc.
+    // Just add forwarder calls here:
+    //
+    // public void AnimEvent_ChargeExplode()
+    // {
+    //     enemy?.ExplodeChargeAttack();
+    // }
+    //
+    // public void AnimEvent_MeleeApplyDamage()
+    // {
+    //     enemy?.ApplyMeleeDamageNow();
+    // }
+
+    // This architecture now supports ANY additional attack events cleanly.
 }

@@ -13,25 +13,25 @@ public class BigJumpAttackBehavior : IAttackBehavior
     private float damage;
     private float jumpDamageDelay;
     private float aoeRadius;
-    
+
     public void OnEnter(EnemyWithSM enemy)
     {
         enemyDamage = enemy.GetComponent<EnemyDamage>();
         coroutineRunner = enemy;
-        
+
         attackRange = enemy.bigJumpRange;
         attackCooldown = enemy.bigJumpCooldown;
         damage = enemy.bigJumpDamage;
         jumpDamageDelay = enemy.bigJumpDamageDelay;
         aoeRadius = enemy.bigJumpAOERadius;
-        
+
         if (enemy.Agent != null)
         {
             enemy.Agent.stoppingDistance = attackRange * 0.8f;
             enemy.Agent.autoBraking = true;
         }
     }
-    
+
     public void OnExit(EnemyWithSM enemy)
     {
         if (isAttackInProgress)
@@ -40,43 +40,43 @@ public class BigJumpAttackBehavior : IAttackBehavior
             {
                 enemy.Animator.ResetTrigger("BigJump");
             }
-            
+
             if (damageCoroutine != null && coroutineRunner != null)
             {
                 coroutineRunner.StopCoroutine(damageCoroutine);
                 damageCoroutine = null;
             }
-            
+
             isAttackInProgress = false;
         }
-        
+
         if (enemy.Agent != null)
         {
             enemy.Agent.ResetPath();
             enemy.Agent.stoppingDistance = 0.1f;
         }
     }
-    
+
     public void OnPerform(EnemyWithSM enemy, float deltaTime)
     {
         if (enemy.Player == null) return;
-        
+
         Vector3 toPlayer = enemy.Player.transform.position - enemy.transform.position;
         toPlayer.y = 0f;
         float distanceToPlayer = toPlayer.magnitude;
-        
+
         if (toPlayer.sqrMagnitude > 0.0001f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(toPlayer);
             enemy.transform.rotation = Quaternion.RotateTowards(enemy.transform.rotation, targetRotation, 720f * deltaTime);
         }
-        
+
         bool isJumpAnimPlaying = false;
         if (enemy.Animator != null)
         {
             AnimatorStateInfo stateInfo = enemy.Animator.GetCurrentAnimatorStateInfo(0);
             isJumpAnimPlaying = stateInfo.IsName("BigJump");
-            
+
             if (isJumpAnimPlaying)
             {
                 isAttackInProgress = true;
@@ -91,11 +91,11 @@ public class BigJumpAttackBehavior : IAttackBehavior
                 FinishAttack(enemy);
             }
         }
-        
+
         if (!isJumpAnimPlaying)
         {
-            if (distanceToPlayer <= attackRange && 
-                Time.time - lastAttackTime >= attackCooldown && 
+            if (distanceToPlayer <= attackRange &&
+                Time.time - lastAttackTime >= attackCooldown &&
                 CanAttack(enemy))
             {
                 StartAttack(enemy);
@@ -106,14 +106,14 @@ public class BigJumpAttackBehavior : IAttackBehavior
             }
         }
     }
-    
+
     public bool CanAttack(EnemyWithSM enemy)
     {
         if (enemyDamage != null && enemyDamage.IsSlipping())
         {
             return false;
         }
-        
+
         if (enemy.Animator != null)
         {
             AnimatorStateInfo stateInfo = enemy.Animator.GetCurrentAnimatorStateInfo(0);
@@ -121,48 +121,48 @@ public class BigJumpAttackBehavior : IAttackBehavior
             {
                 return false;
             }
-            
-            if (stateInfo.IsName("Slip") || stateInfo.IsName("Slipping") || 
+
+            if (stateInfo.IsName("Slip") || stateInfo.IsName("Slipping") ||
                 stateInfo.IsName("Stun") || stateInfo.IsName("Death"))
             {
                 return false;
             }
         }
-        
+
         return true;
     }
-    
+
     public void Attack(EnemyWithSM enemy)
     {
     }
-    
+
     private void StartAttack(EnemyWithSM enemy)
     {
         isAttackInProgress = true;
         lastAttackTime = Time.time;
-        
+
         if (enemy.Agent != null)
         {
             enemy.Agent.ResetPath();
             enemy.Agent.isStopped = true;
         }
-        
+
         if (enemy.Animator != null)
         {
             enemy.Animator.ResetTrigger("BigJump");
             enemy.Animator.SetTrigger("BigJump");
         }
-        
+
         if (coroutineRunner != null)
         {
             damageCoroutine = coroutineRunner.StartCoroutine(DealDamageAfterDelay(enemy, jumpDamageDelay));
         }
     }
-    
+
     private void FinishAttack(EnemyWithSM enemy)
     {
         isAttackInProgress = false;
-        
+
         if (enemy.Agent != null)
         {
             enemy.Agent.isStopped = false;
@@ -172,17 +172,17 @@ public class BigJumpAttackBehavior : IAttackBehavior
             }
         }
     }
-    
+
     private IEnumerator DealDamageAfterDelay(EnemyWithSM enemy, float delay)
     {
         yield return new WaitForSeconds(delay);
-        
+
         if (isAttackInProgress && enemy.Player != null)
         {
             ShakeCamera(enemy);
-            
+
             float distanceToPlayer = Vector3.Distance(enemy.transform.position, enemy.Player.transform.position);
-            
+
             if (distanceToPlayer <= aoeRadius)
             {
                 PlayerHealth playerHealth = enemy.Player.GetComponent<PlayerHealth>();
@@ -195,19 +195,23 @@ public class BigJumpAttackBehavior : IAttackBehavior
                     playerHealth.TakeDamage(damage);
                 }
             }
-            
+
+            // Little delay before landing fx
             yield return new WaitForSeconds(0.15f);
-            
+
+            // 🔥 PLAY BIG JUMP SOUND
+            enemy.PlayBigJumpAttackSound();
+
             if (enemy.bigJumpEffectPrefab != null)
             {
                 GameObject effect = Object.Instantiate(enemy.bigJumpEffectPrefab, enemy.transform.position, Quaternion.identity);
                 Object.Destroy(effect, 5f);
             }
         }
-        
+
         damageCoroutine = null;
     }
-    
+
     private void ShakeCamera(EnemyWithSM enemy)
     {
         Camera mainCam = Camera.main;
@@ -221,7 +225,7 @@ public class BigJumpAttackBehavior : IAttackBehavior
             shaker.ShakeCamera(enemy.bigJumpShakeIntensity, enemy.bigJumpShakeDuration);
         }
     }
-    
+
     public void UpdateMovement(EnemyWithSM enemy, float deltaTime)
     {
         if (enemy.Agent != null && enemy.Player != null && !isAttackInProgress)
@@ -230,27 +234,27 @@ public class BigJumpAttackBehavior : IAttackBehavior
             Vector3 toPlayer = playerPosition - enemy.transform.position;
             toPlayer.y = 0f;
             float distanceToPlayer = toPlayer.magnitude;
-            
+
             if (distanceToPlayer > enemy.Agent.stoppingDistance)
             {
                 if (enemy.Agent.isStopped)
                 {
                     enemy.Agent.isStopped = false;
                 }
-                
+
                 float destinationDistance = Vector3.Distance(enemy.Agent.destination, playerPosition);
-                
-                bool shouldUpdate = destinationDistance > 0.2f || 
-                                    !enemy.Agent.hasPath || 
+
+                bool shouldUpdate = destinationDistance > 0.2f ||
+                                    !enemy.Agent.hasPath ||
                                     (enemy.Agent.isStopped && distanceToPlayer > enemy.Agent.stoppingDistance + 0.1f);
-                
+
                 if (shouldUpdate)
                 {
                     enemy.Agent.SetDestination(playerPosition);
                 }
             }
-            else if (distanceToPlayer <= enemy.Agent.stoppingDistance && 
-                     !enemy.Agent.isStopped && 
+            else if (distanceToPlayer <= enemy.Agent.stoppingDistance &&
+                     !enemy.Agent.isStopped &&
                      enemy.Agent.velocity.magnitude < 0.1f)
             {
                 enemy.Agent.isStopped = true;
@@ -259,4 +263,3 @@ public class BigJumpAttackBehavior : IAttackBehavior
         }
     }
 }
-
