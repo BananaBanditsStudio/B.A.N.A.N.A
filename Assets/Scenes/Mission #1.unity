@@ -31003,6 +31003,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PuzzleTest
       objectReference: {fileID: 0}
+    - target: {fileID: 7699555193338202311, guid: 758b887e86f984e4da8c4bab42c71053, type: 3}
+      propertyPath: canvas
+      value: 
+      objectReference: {fileID: 1766263546}
     - target: {fileID: 9096764283507105117, guid: 758b887e86f984e4da8c4bab42c71053, type: 3}
       propertyPath: m_LocalPosition.x
       value: -13.69
@@ -47351,6 +47355,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
+--- !u!223 &1766263546 stripped
+Canvas:
+  m_CorrespondingSourceObject: {fileID: 6344517191702685379, guid: 9e32761bf05b98d4b905246cda9b02ab, type: 3}
+  m_PrefabInstance: {fileID: 564684626321647571}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1768661634
 PrefabInstance:
   m_ObjectHideFlags: 0
