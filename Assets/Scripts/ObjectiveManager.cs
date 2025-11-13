@@ -7,6 +7,7 @@ public class ObjectiveDisplay : MonoBehaviour
     [Header("UI Reference")]
     public TextMeshProUGUI objectiveText;
     public CanvasGroup canvasGroup;  // For fade animation
+    public ObjectiveUI objectiveUI;  // Reference to the new ObjectiveUI system (optional)
 
     [Header("Objective Settings")]
     [TextArea] public string[] objectives = {
@@ -139,6 +140,13 @@ public class ObjectiveDisplay : MonoBehaviour
     public void CompleteObjective()
     {
         if (!showing) return;
+        
+        // Notify ObjectiveUI if assigned (only for objectives 0-2, which map to UI objectives 0-2)
+        if (objectiveUI != null && currentObjectiveIndex < 3)
+        {
+            objectiveUI.MarkObjectiveComplete();
+        }
+        
         StartCoroutine(SwitchObjective());
     }
 

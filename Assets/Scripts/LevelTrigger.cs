@@ -11,6 +11,7 @@ public class LevelTrigger : MonoBehaviour
     public GameObject interactPrompt; // Drag your "Press E to drive" UI here
     public Camera playerCamera; // Drag your player camera here
     public float interactDistance = 3f; // Adjust for how far away 'drive' can be triggered
+    public ObjectiveTracker objectiveTracker;  // Reference to ObjectiveTracker (usually on Benny)
 
     private bool isCollected => PlayerInventory.hasBanana; // For clarity
     private bool isLevelEnding = false;
@@ -54,6 +55,13 @@ public class LevelTrigger : MonoBehaviour
     {
         isLevelEnding = true;
         Debug.Log("Player starting drive transition...");
+        
+        // Notify ObjectiveTracker if assigned (objective 4: getaway)
+        if (objectiveTracker != null)
+        {
+            objectiveTracker.CompleteGetawayObjective();
+        }
+        
         if (gameStateManager) gameStateManager.ResetState();
         Time.timeScale = 1f;
         if (nextSceneName.ToLower().Contains("title"))

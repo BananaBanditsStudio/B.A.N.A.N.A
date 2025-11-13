@@ -15,6 +15,7 @@ public class BananaPickup : MonoBehaviour
     public ObjectiveMarker bananaMarker;
     public ObjectiveMarker carMarker;
     public GameObject carTrigger;
+    public ObjectiveTracker objectiveTracker;  // Reference to ObjectiveTracker (usually on Benny)
 
     [Header("UI Prompt")]
     public GameObject interactPrompt; // "Press E to steal" UI
@@ -87,6 +88,11 @@ public class BananaPickup : MonoBehaviour
         else
         {
             Debug.LogWarning("No PlayerInventory found on Player!");
+        }
+        // Notify ObjectiveTracker if assigned (objective 3: baby banana)
+        if (objectiveTracker != null)
+        {
+            objectiveTracker.CompleteBananaObjective();
         }
         // Audio/Visual
         if (pickupSound != null) AudioSource.PlayClipAtPoint(pickupSound, transform.position);
