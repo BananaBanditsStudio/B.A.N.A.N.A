@@ -282,6 +282,12 @@ public class ActiveWeapon : MonoBehaviour
             }
         }
         
+        // Handle E key interaction with DistractionInteractable when no weapon is equipped
+        if (!isWeaponEquipped && Input.GetKeyDown(KeyCode.E))
+        {
+            HandleDistractionInteraction();
+        }
+        
         if (weapon && isWeaponEquipped)
         {
             // Check if crouch is active FIRST (prevents firing while crouching)
@@ -340,6 +346,84 @@ public class ActiveWeapon : MonoBehaviour
             
             weapon.UpdateBullets(Time.deltaTime);
             HandleWeaponAiming();
+        }
+    }
+    
+    /// <summary>
+    /// Handles E key interaction with DistractionInteractable when no weapon is equipped.
+    /// Casts a ray from the camera center (crosshair) to detect interactables.
+    /// </summary>
+    private void HandleDistractionInteraction()
+    {
+        // Get camera - try to get from crossHairTarget first, fallback to Camera.main
+        Camera cam = null;
+        if (crossHairTarget != null)
+        {
+            cam = crossHairTarget.GetComponent<Camera>();
+            if (cam == null && crossHairTarget.parent != null)
+            {
+                cam = crossHairTarget.parent.GetComponent<Camera>();
+            }
+        }
+        if (cam == null)
+        {
+            cam = Camera.main;
+        }
+        
+        if (cam == null)
+        {
+            return; // No camera found
+        }
+        
+        // Cast ray from camera center (crosshair position)
+        float interactionDistance = 30f; // Increased distance for far interaction
+        Ray ray = new Ray(cam.transform.position, cam.transform.forward);
+        
+        // Use RaycastAll to check all hits along the ray
+        // This allows interaction even if there are objects in between
+        RaycastHit[] hits = Physics.RaycastAll(ray, interactionDistance);
+        
+        // Check all hits to find a DistractionInteractable
+        foreach (RaycastHit hitInfo in hits)
+        {
+            // Check if we hit a DistractionInteractable
+            DistractionInteractable distraction = hitInfo.collider.GetComponent<DistractionInteractable>();
+            if (distraction != null)
+            {
+                // Interact with the distraction
+                distraction.BaseInteract();
+                return; // Only interact with the first one found
+            }
+        }
+        
+        // Alternative: If raycast doesn't work due to colliders, try direct distance/angle check
+        // Find all DistractionInteractables in scene and check if player is looking at them
+        DistractionInteractable[] allDistractions = FindObjectsOfType<DistractionInteractable>();
+        foreach (DistractionInteractable distraction in allDistractions)
+        {
+            if (distraction == null) continue;
+            
+            Vector3 toDistraction = distraction.transform.position - cam.transform.position;
+            float distance = toDistraction.magnitude;
+            
+            // Check if within interaction distance
+            if (distance > interactionDistance) continue;
+            
+            // Check if player is looking at it (within reasonable angle)
+            float angle = Vector3.Angle(cam.transform.forward, toDistraction.normalized);
+            if (angle < 10f) // 10 degree cone
+            {
+                // Double check with raycast to ensure line of sight
+                RaycastHit losHit;
+                if (Physics.Raycast(cam.transform.position, toDistraction.normalized, out losHit, distance))
+                {
+                    if (losHit.collider.GetComponent<DistractionInteractable>() == distraction)
+                    {
+                        distraction.BaseInteract();
+                        return;
+                    }
+                }
+            }
         }
     }
     

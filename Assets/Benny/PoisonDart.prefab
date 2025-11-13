@@ -101,7 +101,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Projectile
   damage: 10
   headshotMultiplier: 2
-  impactEffect: {fileID: 0}
+  impactEffect: {fileID: 9154229115824779020, guid: a5e1e2c4d2cd81f4abed6272a2b8187a, type: 3}
+  stickLifetime: 10
 --- !u!135 &4032506741734427441
 SphereCollider:
   m_ObjectHideFlags: 0

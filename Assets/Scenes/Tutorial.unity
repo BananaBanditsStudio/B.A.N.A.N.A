@@ -64750,6 +64750,63 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1001 &496870655515122628
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1761018821918230776, guid: 7d439bb8ec973442da71363b0a665858, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 21.613207
+      objectReference: {fileID: 0}
+    - target: {fileID: 1761018821918230776, guid: 7d439bb8ec973442da71363b0a665858, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.553
+      objectReference: {fileID: 0}
+    - target: {fileID: 1761018821918230776, guid: 7d439bb8ec973442da71363b0a665858, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -41.916763
+      objectReference: {fileID: 0}
+    - target: {fileID: 1761018821918230776, guid: 7d439bb8ec973442da71363b0a665858, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: -0.6887342
+      objectReference: {fileID: 0}
+    - target: {fileID: 1761018821918230776, guid: 7d439bb8ec973442da71363b0a665858, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1761018821918230776, guid: 7d439bb8ec973442da71363b0a665858, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.725014
+      objectReference: {fileID: 0}
+    - target: {fileID: 1761018821918230776, guid: 7d439bb8ec973442da71363b0a665858, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1761018821918230776, guid: 7d439bb8ec973442da71363b0a665858, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1761018821918230776, guid: 7d439bb8ec973442da71363b0a665858, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1761018821918230776, guid: 7d439bb8ec973442da71363b0a665858, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6532526852346712676, guid: 7d439bb8ec973442da71363b0a665858, type: 3}
+      propertyPath: m_Name
+      value: GrappleGun (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 7d439bb8ec973442da71363b0a665858, type: 3}
 --- !u!4 &512437450273619369
 Transform:
   m_ObjectHideFlags: 0
@@ -68989,6 +69046,7 @@ SceneRoots:
   - {fileID: 478800149}
   - {fileID: 2277796931020935040}
   - {fileID: 2007567724}
+  - {fileID: 496870655515122628}
   - {fileID: 5886049342573702524}
   - {fileID: 7402409749248676200}
   - {fileID: 1783797242}
