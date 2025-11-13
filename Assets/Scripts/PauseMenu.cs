@@ -1,218 +1,168 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class PauseMenu : MonoBehaviour
 {
     [Header("UI References")]
-    public GameObject pauseMenuUI;
+    public GameObject pauseMenuUI;   // assign the PauseMenu panel (the one with PauseMenuUI)
     public Button resumeButton;
     public Button quitButton;
-    
+
     [Header("Settings")]
     public string titleScreenSceneName = "TitleScreen";
     public KeyCode pauseKey = KeyCode.Escape;
-    
-    [Header("Audio")]
+
+    [Header("Audio (optional)")]
     public AudioSource audioSource;
     public AudioClip pauseSound;
     public AudioClip resumeSound;
-    
-    private bool isPaused = false;
-    private float originalTimeScale;
-    private GameStateManager gameStateManager;
-    
+
+    [SerializeField] private bool isPaused = false;
+    private float originalTimeScale = 1f;
+
+    // Prevent fast double toggles (e.g., click + Esc same frame)
+    private float lastToggleTime;
+    private const float ToggleCooldown = 0.12f;
+
+    void Awake()
+    {
+        // Ensure sane initial state
+        Time.timeScale = 1f;
+        isPaused = false;
+    }
+
     void Start()
     {
-        // Get or create GameStateManager
-        gameStateManager = GameStateManager.Instance;
-        if (gameStateManager == null)
+        // Auto-wire buttons (keep Button OnClick lists EMPTY)
+        if (resumeButton)
         {
-            GameObject gameStateGO = new GameObject("GameStateManager");
-            gameStateManager = gameStateGO.AddComponent<GameStateManager>();
-        }
-        
-        // Ensure pause menu is hidden at start
-        if (pauseMenuUI != null)
-        {
-            pauseMenuUI.SetActive(false);
-        }
-        
-        // Set up button listeners
-        if (resumeButton != null)
-        {
+            resumeButton.onClick.RemoveAllListeners();
             resumeButton.onClick.AddListener(ResumeGame);
         }
-        
-        if (quitButton != null)
+        else Debug.LogWarning("[PauseMenu] resumeButton is NULL");
+
+        if (quitButton)
         {
+            quitButton.onClick.RemoveAllListeners();
             quitButton.onClick.AddListener(QuitToTitleScreen);
         }
-        
-        // Store original time scale
-        originalTimeScale = Time.timeScale;
+        else Debug.LogWarning("[PauseMenu] quitButton is NULL");
+
+        // Make sure the pause panel can receive input and draw on top
+        EnsureTopCanvasAndRaycaster();
     }
-    
+
     void Update()
     {
-        // Check for pause input
+        if (Time.unscaledTime - lastToggleTime < ToggleCooldown) return;
+
         if (Input.GetKeyDown(pauseKey))
         {
-            if (isPaused)
-            {
-                ResumeGame();
-            }
-            else
-            {
-                PauseGame();
-            }
+            lastToggleTime = Time.unscaledTime;
+            TogglePause();
         }
     }
-    
+
+    public void TogglePause()
+    {
+        if (isPaused) ResumeGame();
+        else PauseGame();
+    }
+
     public void PauseGame()
     {
         if (isPaused) return;
-        
         isPaused = true;
-        
-        // Use GameStateManager to properly pause
-        if (gameStateManager != null)
+
+        // Show UI (no SetActive off/on; use CanvasGroup fade)
+        if (pauseMenuUI)
         {
-            gameStateManager.SetPaused(true);
+            var ui = pauseMenuUI.GetComponent<PauseMenuUI>();
+            if (ui) ui.ShowPauseMenu();
+            else pauseMenuUI.SetActive(true);
         }
-        
-        // Show pause menu
-        if (pauseMenuUI != null)
-        {
-            pauseMenuUI.SetActive(true);
-        }
-        
-        // Play pause sound
-        PlaySound(pauseSound);
-        
-        // Pause audio sources
-        PauseAllAudio();
+
+        if (audioSource && pauseSound) audioSource.PlayOneShot(pauseSound);
+
+        originalTimeScale = 1f;
+        Time.timeScale = 0f;
+
+        // Give UI focus and mouse
+        var es = EventSystem.current;
+        if (es) es.SetSelectedGameObject(null);
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
-    
+
     public void ResumeGame()
     {
         if (!isPaused) return;
-        
         isPaused = false;
-        
-        // Use GameStateManager to properly resume
-        if (gameStateManager != null)
+
+        if (pauseMenuUI)
         {
-            gameStateManager.SetPaused(false);
+            var ui = pauseMenuUI.GetComponent<PauseMenuUI>();
+            if (ui) ui.HidePauseMenu();
+            else pauseMenuUI.SetActive(false);
         }
-        
-        // Hide pause menu
-        if (pauseMenuUI != null)
-        {
-            pauseMenuUI.SetActive(false);
-        }
-        
-        // Play resume sound
-        PlaySound(resumeSound);
-        
-        // Resume audio sources
-        ResumeAllAudio();
+
+        if (audioSource && resumeSound) audioSource.PlayOneShot(resumeSound);
+
+        Time.timeScale = 1f;
+
+        // Clear any UI selection so Esc is read cleanly next toggle
+        var es = EventSystem.current;
+        if (es) es.SetSelectedGameObject(null);
+
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
-    
+
     public void QuitToTitleScreen()
     {
-        // Reset game state before scene change
-        if (gameStateManager != null)
-        {
-            gameStateManager.ResetState();
-        }
-        
-        // Resume time scale before scene change
-        Time.timeScale = originalTimeScale;
-        
-        // Load title screen scene
+        // Restore timescale first to avoid sticky 0 in next scene
+        Time.timeScale = 1f;
+        isPaused = false;
         SceneManager.LoadScene(titleScreenSceneName);
     }
-    
+
     public void QuitGame()
     {
-        // Resume time scale before quitting
-        Time.timeScale = originalTimeScale;
-        
-        // Quit the application
-        Application.Quit();
-        
-        // For editor testing
-        #if UNITY_EDITOR
+        Time.timeScale = 1f;
+        isPaused = false;
+#if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
-        #endif
+#else
+        Application.Quit();
+#endif
     }
-    
-    private void PlaySound(AudioClip clip)
+
+    void OnDisable()
     {
-        if (audioSource != null && clip != null)
+        // If something disables this, ensure game isn’t left paused
+        if (Time.timeScale == 0f) Time.timeScale = 1f;
+        isPaused = false;
+    }
+
+    private void EnsureTopCanvasAndRaycaster()
+    {
+        if (!pauseMenuUI) return;
+
+        var canvas = pauseMenuUI.GetComponentInParent<Canvas>();
+        if (!canvas)
         {
-            audioSource.PlayOneShot(clip);
+            canvas = pauseMenuUI.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
         }
-    }
-    
-    private void PauseAllAudio()
-    {
-        // Pause all audio sources in the scene
-        AudioSource[] allAudioSources = FindObjectsByType<AudioSource>(FindObjectsSortMode.None);
-        foreach (AudioSource source in allAudioSources)
-        {
-            if (source.isPlaying)
-            {
-                source.Pause();
-            }
-        }
-    }
-    
-    private void ResumeAllAudio()
-    {
-        // Resume all audio sources in the scene
-        AudioSource[] allAudioSources = FindObjectsByType<AudioSource>(FindObjectsSortMode.None);
-        foreach (AudioSource source in allAudioSources)
-        {
-            if (source.clip != null && !source.isPlaying)
-            {
-                source.UnPause();
-            }
-        }
-    }
-    
-    // Public getter for pause state (useful for other scripts)
-    public bool IsPaused()
-    {
-        return isPaused;
-    }
-    
-    // Method to toggle pause state (useful for other scripts)
-    public void TogglePause()
-    {
-        if (isPaused)
-        {
-            ResumeGame();
-        }
-        else
-        {
-            PauseGame();
-        }
-    }
-    
-    void OnDestroy()
-    {
-        // Ensure time scale is reset when script is destroyed
-        Time.timeScale = originalTimeScale;
-    }
-    
-    void OnApplicationPause(bool pauseStatus)
-    {
-        // Handle application pause (mobile/background)
-        if (pauseStatus && !isPaused)
-        {
-            PauseGame();
-        }
+
+        // Make sure this pause canvas is on top
+        canvas.overrideSorting = true;
+        canvas.sortingOrder = 1000;
+
+        // Raycaster so UI gets clicks
+        var ray = pauseMenuUI.GetComponentInParent<UnityEngine.UI.GraphicRaycaster>();
+        if (!ray) pauseMenuUI.AddComponent<UnityEngine.UI.GraphicRaycaster>();
     }
 }

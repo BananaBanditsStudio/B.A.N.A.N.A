@@ -5,170 +5,172 @@ using TMPro;
 public class PauseMenuUI : MonoBehaviour
 {
     [Header("UI Components")]
-    public GameObject pauseMenuPanel;
+    public GameObject pauseMenuPanel;   // If null, this GameObject is used
     public Button resumeButton;
     public Button quitButton;
     public TextMeshProUGUI pauseTitle;
-    
-    [Header("Styling")]
-    public Color backgroundColor = new Color(0, 0, 0, 0.8f);
-    public Color buttonColor = new Color(0.2f, 0.2f, 0.2f, 0.9f);
-    public Color textColor = Color.white;
-    
+
+    [Header("Background (panel)")]
+    public Color backgroundColor = new Color(0f, 0f, 0f, 0.8f);
+
+    [Header("Button Tint Colors (like your screenshot)")]
+    // Strong banana yellow
+    public Color btnNormal = new Color(1.00f, 0.96f, 0.35f, 1f);  // #FFF55A-ish
+    // Slightly brighter on hover
+    public Color btnHighlighted = new Color(1.00f, 0.98f, 0.55f, 1f);  // a touch brighter
+    // Warm orange on press
+    public Color btnPressed = new Color(0.98f, 0.72f, 0.29f, 1f);  // #F4B84A-ish
+    // Selected same as normal
+    public Color btnSelected = new Color(1.00f, 0.96f, 0.35f, 1f);
+    // Disabled white/gray
+    public Color btnDisabled = new Color(0.90f, 0.90f, 0.90f, 0.65f);
+    public float btnColorMultiplier = 1f;
+
+    [Header("Text Colors")]
+    // Title text face color (yellow like screenshot)
+    public Color titleFaceColor = new Color(1.00f, 0.96f, 0.35f, 1f);
+    // Button label face color (dark for contrast)
+    public Color buttonLabelFaceColor = new Color(0.10f, 0.10f, 0.10f, 1f);
+
+    [Header("Text Outline (like screenshot)")]
+    public Color outlineColor = Color.black;
+    [Range(0f, 1f)] public float outlineWidth = 0.35f;
+    public bool applyOutlineToButtonLabels = true;
+
     [Header("Animation")]
-    public float fadeInDuration = 0.3f;
-    public float fadeOutDuration = 0.2f;
-    
+    public float fadeInDuration = 0.25f;
+    public float fadeOutDuration = 0.18f;
+
+    [Header("Title")]
+    public string pausedTitle = "POTASSIUM BREAK!";
+
     private CanvasGroup canvasGroup;
     private Image backgroundImage;
-    private PauseMenu pauseMenuScript;
-    
+    private GameObject panelTarget;
+
+    void Awake()
+    {
+        panelTarget = pauseMenuPanel ? pauseMenuPanel : gameObject;
+
+        canvasGroup = panelTarget.GetComponent<CanvasGroup>();
+        if (!canvasGroup) canvasGroup = panelTarget.AddComponent<CanvasGroup>();
+
+        backgroundImage = panelTarget.GetComponent<Image>();
+        if (!backgroundImage) backgroundImage = panelTarget.AddComponent<Image>();
+    }
+
     void Start()
     {
-        // Get or add components
-        canvasGroup = GetComponent<CanvasGroup>();
-        if (canvasGroup == null)
-        {
-            canvasGroup = gameObject.AddComponent<CanvasGroup>();
-        }
-        
-        backgroundImage = GetComponent<Image>();
-        if (backgroundImage == null)
-        {
-            backgroundImage = gameObject.AddComponent<Image>();
-        }
-        
-        // Find the pause menu script
-        pauseMenuScript = FindFirstObjectByType<PauseMenu>();
-        
-        // Set up UI
         SetupUI();
-        
-        // Initially hide the menu
-        if (pauseMenuPanel != null)
-        {
-            pauseMenuPanel.SetActive(false);
-        }
-        
+
+        // Start hidden; fade with unscaled time
         canvasGroup.alpha = 0f;
         canvasGroup.interactable = false;
         canvasGroup.blocksRaycasts = false;
     }
-    
-    void SetupUI()
+
+    private void SetupUI()
     {
-        // Set up background
-        if (backgroundImage != null)
-        {
-            backgroundImage.color = backgroundColor;
-        }
-        
-        // Set up title
+        // Panel look
+        backgroundImage.color = backgroundColor;
+
+        // Title look
         if (pauseTitle != null)
         {
-            pauseTitle.text = "PAUSED";
-            pauseTitle.color = textColor;
+            pauseTitle.text = pausedTitle;
+            ApplyTMPStyle(pauseTitle, titleFaceColor, outlineColor, outlineWidth);
         }
-        
-        // Set up buttons
-        if (resumeButton != null)
-        {
-            SetupButton(resumeButton, "Resume");
-        }
-        
-        if (quitButton != null)
-        {
-            SetupButton(quitButton, "Quit to Title");
-        }
+
+        // Buttons look
+        if (resumeButton) SetupBananaButton(resumeButton, "Resume");
+        if (quitButton) SetupBananaButton(quitButton, "Quit");
     }
-    
-    void SetupButton(Button button, string text)
+
+    private void SetupBananaButton(Button btn, string label)
     {
-        // Set button text
-        TextMeshProUGUI buttonText = button.GetComponentInChildren<TextMeshProUGUI>();
-        if (buttonText != null)
+        // label text
+        var tmp = btn.GetComponentInChildren<TextMeshProUGUI>(true);
+        if (tmp)
         {
-            buttonText.text = text;
-            buttonText.color = textColor;
+            tmp.text = label;
+            if (applyOutlineToButtonLabels)
+                ApplyTMPStyle(tmp, buttonLabelFaceColor, outlineColor, outlineWidth);
+            else
+                tmp.color = buttonLabelFaceColor;
         }
-        
-        // Set button colors
-        ColorBlock colors = button.colors;
-        colors.normalColor = buttonColor;
-        colors.highlightedColor = new Color(buttonColor.r + 0.1f, buttonColor.g + 0.1f, buttonColor.b + 0.1f, buttonColor.a);
-        colors.pressedColor = new Color(buttonColor.r - 0.1f, buttonColor.g - 0.1f, buttonColor.b - 0.1f, buttonColor.a);
-        button.colors = colors;
+
+        // keep sprite bright; tint comes from Button.colors
+        if (btn.targetGraphic) btn.targetGraphic.color = Color.white;
+
+        // color-tint states (exact look from your screenshot)
+        var c = btn.colors;
+        c.normalColor = btnNormal;
+        c.highlightedColor = btnHighlighted;
+        c.pressedColor = btnPressed;
+        c.selectedColor = btnSelected;
+        c.disabledColor = btnDisabled;
+        c.colorMultiplier = btnColorMultiplier;
+        btn.colors = c;
+
+        // make sure the Button is using Color Tint
+        if (btn.transition != Selectable.Transition.ColorTint)
+            btn.transition = Selectable.Transition.ColorTint;
     }
-    
+
+    /// <summary>
+    /// Apply TextMeshPro face color and black outline (like your screenshot).
+    /// Uses a material instance per object so you don't mutate shared assets.
+    /// </summary>
+    private void ApplyTMPStyle(TextMeshProUGUI tmp, Color face, Color outline, float width)
+    {
+        // Get a unique material instance for this text object
+        var mat = tmp.fontMaterial; // accessing fontMaterial creates an instance
+        mat.SetColor(ShaderUtilities.ID_FaceColor, face);
+        mat.SetFloat(ShaderUtilities.ID_OutlineWidth, width);
+        mat.SetColor(ShaderUtilities.ID_OutlineColor, outline);
+
+        // Optional: underlay similar to your screenshot (subtle shadow)
+        mat.EnableKeyword(ShaderUtilities.Keyword_Outline);
+        // If you want underlay, uncomment:
+        // mat.EnableKeyword(ShaderUtilities.Keyword_Underlay);
+        // mat.SetColor(ShaderUtilities.ID_UnderlayColor, new Color(0f,0f,0f,1f));
+        // mat.SetFloat(ShaderUtilities.ID_UnderlayOffsetX, 0f);
+        // mat.SetFloat(ShaderUtilities.ID_UnderlayOffsetY, 0f);
+        // mat.SetFloat(ShaderUtilities.ID_UnderlayDilate, 0f);
+        // mat.SetFloat(ShaderUtilities.ID_UnderlaySoftness, 0f);
+
+        tmp.fontMaterial = mat; // assign back (ensures instance is used)
+        tmp.color = face;       // keep inspector preview consistent
+    }
+
     public void ShowPauseMenu()
     {
-        if (pauseMenuPanel != null)
-        {
-            pauseMenuPanel.SetActive(true);
-        }
-        
+        StopAllCoroutines();
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
-        
-        // Animate fade in
-        StartCoroutine(FadeIn());
+        StartCoroutine(FadeTo(1f, fadeInDuration));
     }
-    
+
     public void HidePauseMenu()
     {
-        // Animate fade out
-        StartCoroutine(FadeOut());
-    }
-    
-    System.Collections.IEnumerator FadeIn()
-    {
-        float elapsed = 0f;
-        
-        while (elapsed < fadeInDuration)
+        StopAllCoroutines();
+        StartCoroutine(FadeTo(0f, fadeOutDuration, () =>
         {
-            elapsed += Time.unscaledDeltaTime;
-            canvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsed / fadeInDuration);
+            canvasGroup.interactable = false;
+            canvasGroup.blocksRaycasts = false;
+        }));
+    }
+
+    private System.Collections.IEnumerator FadeTo(float target, float duration, System.Action onDone = null)
+    {
+        float start = canvasGroup.alpha, t = 0f;
+        while (t < duration)
+        {
+            t += Time.unscaledDeltaTime;
+            canvasGroup.alpha = Mathf.Lerp(start, target, duration <= 0f ? 1f : t / duration);
             yield return null;
         }
-        
-        canvasGroup.alpha = 1f;
-    }
-    
-    System.Collections.IEnumerator FadeOut()
-    {
-        float elapsed = 0f;
-        
-        while (elapsed < fadeOutDuration)
-        {
-            elapsed += Time.unscaledDeltaTime;
-            canvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsed / fadeOutDuration);
-            yield return null;
-        }
-        
-        canvasGroup.alpha = 0f;
-        canvasGroup.interactable = false;
-        canvasGroup.blocksRaycasts = false;
-        
-        if (pauseMenuPanel != null)
-        {
-            pauseMenuPanel.SetActive(false);
-        }
-    }
-    
-    // Public methods for button events
-    public void OnResumeClicked()
-    {
-        if (pauseMenuScript != null)
-        {
-            pauseMenuScript.ResumeGame();
-        }
-    }
-    
-    public void OnQuitClicked()
-    {
-        if (pauseMenuScript != null)
-        {
-            pauseMenuScript.QuitToTitleScreen();
-        }
+        canvasGroup.alpha = target;
+        onDone?.Invoke();
     }
 }
