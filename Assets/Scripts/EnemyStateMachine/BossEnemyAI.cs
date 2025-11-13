@@ -19,6 +19,7 @@ public class BossEnemyAI : MonoBehaviour
     private float originalChaseSpeed;
     private float originalPatrolSpeed;
     private int lastEnragedAttackIndex = -1;
+    private bool wasInAttackAnimation = false; // Track previous frame's attack animation state
     
     private void Start()
     {
@@ -38,6 +39,12 @@ public class BossEnemyAI : MonoBehaviour
         if (!isEnraged)
         {
             CheckEnragedPhase();
+        }
+        else
+        {
+            // While enraged, periodically check if we should swap to the next attack
+            // This allows the boss to cycle through different attack types
+            CheckAndSwapEnragedAttack();
         }
     }
     
@@ -94,6 +101,54 @@ public class BossEnemyAI : MonoBehaviour
     public bool IsEnraged()
     {
         return isEnraged;
+    }
+    
+    /// <summary>
+    /// Checks if the boss should swap to the next enraged attack.
+    /// Swaps after each attack completes (detects transition from attack animation to idle/movement).
+    /// </summary>
+    private void CheckAndSwapEnragedAttack()
+    {
+        if (enemyWithSM == null || enragedPhaseAttacks.Length <= 1) return;
+        
+        // Check if enemy is in AttackState
+        if (enemyWithSM.StateMachine != null && 
+            enemyWithSM.StateMachine.activeState is AttackState)
+        {
+            if (enemyWithSM.Animator != null)
+            {
+                AnimatorStateInfo stateInfo = enemyWithSM.Animator.GetCurrentAnimatorStateInfo(0);
+                bool isInAttackAnimation = stateInfo.IsName("BigJump") || 
+                                          stateInfo.IsName("BigMelee") || 
+                                          stateInfo.IsName("Melee");
+                
+                // Detect transition from attack animation to non-attack (attack just completed)
+                if (wasInAttackAnimation && !isInAttackAnimation)
+                {
+                    // Attack just completed, swap to next attack type
+                    AttackBehaviorType currentType = enemyWithSM.attackBehaviorType;
+                    bool isCurrentEnragedAttack = System.Array.IndexOf(enragedPhaseAttacks, currentType) >= 0;
+                    
+                    if (isCurrentEnragedAttack)
+                    {
+                        AttackBehaviorType nextAttack = GetNextEnragedAttack();
+                        if (nextAttack != currentType)
+                        {
+                            enemyWithSM.attackBehaviorType = nextAttack;
+                            Debug.Log($"BossEnemyAI: Attack completed, swapped to next enraged attack: {nextAttack}");
+                        }
+                    }
+                }
+                
+                // Update tracking for next frame
+                wasInAttackAnimation = isInAttackAnimation;
+            }
+        }
+        else
+        {
+            // Not in attack state, reset tracking
+            wasInAttackAnimation = false;
+        }
     }
 }
 

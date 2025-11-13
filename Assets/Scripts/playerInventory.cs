@@ -5,6 +5,7 @@ public class PlayerInventory : MonoBehaviour
 {
     public static bool hasBanana = false;
     public int bananaCount = 0;
+    public static int keyCount = 0;
 
     public void AddBananas(int amount)
     {

@@ -310,4 +310,21 @@ public class EnemyWithSM : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Applies a stun effect to the enemy for the specified duration.
+    /// Transitions to StunState, which stops movement and plays stun animation.
+    /// </summary>
+    /// <param name="duration">Duration of the stun in seconds</param>
+    public void ApplyStun(float duration)
+    {
+        if (stateMachine != null)
+        {
+            stateMachine.ChangeState(new StunState(duration));
+        }
+        else
+        {
+            Debug.LogWarning("EnemyWithSM: Cannot apply stun - StateMachine is null");
+        }
+    }
+
 }

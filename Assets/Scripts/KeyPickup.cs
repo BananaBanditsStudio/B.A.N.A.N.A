@@ -5,6 +5,7 @@ public class KeyPickup : Interactable
     protected override void Interact()
     {
         PlayerInventory.hasKey = true;
+        PlayerInventory.keyCount++;
 
         PlayerUI ui = FindObjectOfType<PlayerUI>();
         if (ui != null)

@@ -93,12 +93,20 @@ public class Throwable : MonoBehaviour
                 rb.AddExplosionForce(explosionForce, transform.position, damageRadius);
             }
 
-            // Simple: call enemy's own stun if present (robust parent search)
+            // Apply stun to SimplePatrol enemies
             var patrol = nearbyObject.GetComponentInParent<SimplePatrol>();
             if (patrol != null) 
             {
                 // Apply stun to the enemy
                 patrol.ApplyStun(stunDuration);
+            }
+            
+            // Apply stun to EnemyWithSM enemies (state machine based)
+            var enemyWithSM = nearbyObject.GetComponentInParent<EnemyWithSM>();
+            if (enemyWithSM != null)
+            {
+                // Apply stun to the enemy
+                enemyWithSM.ApplyStun(stunDuration);
             }
         }
         

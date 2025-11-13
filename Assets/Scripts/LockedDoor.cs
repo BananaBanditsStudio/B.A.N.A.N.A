@@ -25,11 +25,11 @@ public class LockedDoor : Interactable
     {
         // Continuously refresh the prompt if the door is locked
         // so it updates as soon as you pick up the key
-        if (isLocked && PlayerInventory.hasKey)
+        if (isLocked && PlayerInventory.keyCount >= 2)
         {
             promptMessage = "Access granted. Press E to unlock.";
         }
-        else if (isLocked && !PlayerInventory.hasKey)
+        else if (isLocked && PlayerInventory.keyCount < 2)
         {
             promptMessage = "Door secured. Use the key to unlock.";
         }
@@ -43,7 +43,7 @@ public class LockedDoor : Interactable
     {
         if (isLocked)
         {
-            if (PlayerInventory.hasKey)
+            if (PlayerInventory.keyCount >= 2)
             {
                 UnlockDoor();
             }

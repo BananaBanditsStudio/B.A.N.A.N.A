@@ -8963,11 +8963,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 0ee37198b24b2164fbbccfbe92fe5d35, type: 3}
   m_PrefabInstance: {fileID: 426459718}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &312646838 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8103048744920176668, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
-  m_PrefabInstance: {fileID: 1068433362}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &312900447
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9732,6 +9727,37 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2821076802832285878, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
   m_PrefabInstance: {fileID: 73605339}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &340674989
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 340674990}
+  m_Layer: 6
+  m_Name: Grenade Throwpoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &340674990
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 340674989}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.362, y: 1.909, z: 0.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 711744250}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &341325871
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -21090,14 +21116,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 711744217}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1b9276c34b05e4a74a3138103187b3ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Grenade
   range: 100
   grenadePrefab: {fileID: 7430179988462413191, guid: a1cd9676ca3247247b8e5b06f6929765, type: 3}
-  throwPoint: {fileID: 312646838}
+  throwPoint: {fileID: 340674990}
   fpsCam: {fileID: 1722874812}
 --- !u!82 &711744239
 AudioSource:
@@ -30302,6 +30328,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7463290814208057072, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 957041432}
+    - targetCorrespondingSourceObject: {fileID: 7463290814208057072, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 340674990}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6346763951983229444, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       insertIndex: -1

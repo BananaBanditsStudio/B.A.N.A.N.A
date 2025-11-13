@@ -8,6 +8,7 @@ public class AttackState : BaseState
 {
     private float losePlayerTimer = 0f;
     private IAttackBehavior attackBehavior;
+    private AttackBehaviorType currentBehaviorType; // Track current behavior type to detect changes
     
     public override void Enter()
     {
@@ -20,6 +21,7 @@ public class AttackState : BaseState
         
         // Create a new attack behavior instance based on the enemy's attackBehaviorType
         // This allows swapping behaviors at runtime and ensures fresh state
+        currentBehaviorType = enemy.attackBehaviorType;
         attackBehavior = AttackBehaviorFactory.Create(enemy.attackBehaviorType);
         attackBehavior.OnEnter(enemy);
     }
@@ -40,6 +42,13 @@ public class AttackState : BaseState
 
     public override void Perform()
     {
+        // Check if attack behavior type has changed (e.g., boss phase transition)
+        // If so, swap to the new behavior seamlessly
+        if (enemy.attackBehaviorType != currentBehaviorType)
+        {
+            SwapAttackBehavior(enemy.attackBehaviorType);
+        }
+        
         if (enemy.CanSeePlayer())
         {
             losePlayerTimer = 0f;
@@ -57,6 +66,28 @@ public class AttackState : BaseState
             {
                 stateMachine.ChangeState(new PatrolState());
             }
+        }
+    }
+    
+    /// <summary>
+    /// Swaps the attack behavior to a new type while remaining in AttackState.
+    /// Used for boss phase transitions and other runtime behavior changes.
+    /// </summary>
+    private void SwapAttackBehavior(AttackBehaviorType newType)
+    {
+        // Exit the old behavior
+        if (attackBehavior != null)
+        {
+            attackBehavior.OnExit(enemy);
+        }
+        
+        // Create and enter the new behavior
+        currentBehaviorType = newType;
+        attackBehavior = AttackBehaviorFactory.Create(newType);
+        if (attackBehavior != null)
+        {
+            attackBehavior.OnEnter(enemy);
+            Debug.Log($"AttackState: Swapped attack behavior to {newType}");
         }
     }
     

@@ -11,6 +11,7 @@ public class ThrowAttackBehavior : IAttackBehavior
     private float throwStartTime = 0f;
     private EnemyDamage enemyDamage;
     private const float THROW_TIMEOUT = 5f;
+    private bool hasFiredThisThrow = false; // Track if we've fired for this throw cycle
     
     public void OnEnter(EnemyWithSM enemy)
     {
@@ -24,6 +25,7 @@ public class ThrowAttackBehavior : IAttackBehavior
             enemy.Animator.ResetTrigger("Throw");
         }
         isThrowing = false;
+        hasFiredThisThrow = false;
         shootTimer = 0f;
         
         if (enemy.Agent != null)
@@ -62,6 +64,7 @@ public class ThrowAttackBehavior : IAttackBehavior
                 enemy.Animator.SetTrigger("Throw");
             }
             isThrowing = true;
+            hasFiredThisThrow = false; // Reset fire flag for new throw
             throwStartTime = Time.time;
             shootTimer = 0f;
             
@@ -83,6 +86,34 @@ public class ThrowAttackBehavior : IAttackBehavior
         
         // Check if throw animation has completed
         CheckThrowAnimationComplete(enemy);
+        
+        // Fallback: If animation event doesn't fire, try to fire after a delay
+        // This helps when animation events aren't set up properly
+        if (isThrowing && enemy.Animator != null)
+        {
+            AnimatorStateInfo stateInfo = enemy.Animator.GetCurrentAnimatorStateInfo(0);
+            bool isInThrowAnimation = stateInfo.IsName("Throw") || stateInfo.IsName("Throwing");
+            
+            // If we're in throw animation and past the release point (around 0.5 normalized time)
+            // and haven't fired yet, fire as fallback
+            if (isInThrowAnimation && stateInfo.normalizedTime >= 0.5f && stateInfo.normalizedTime < 0.7f)
+            {
+                // Check if EnemyAttackEvents exists and has fired
+                EnemyAttackEvents attackEvents = enemy.Animator.GetComponent<EnemyAttackEvents>();
+                if (attackEvents == null)
+                {
+                    attackEvents = enemy.GetComponentInChildren<EnemyAttackEvents>();
+                }
+                
+                // If no EnemyAttackEvents component, fire directly as fallback
+                if (attackEvents == null && !hasFiredThisThrow)
+                {
+                    Debug.LogWarning("ThrowAttackBehavior: No EnemyAttackEvents component found! Firing directly as fallback.");
+                    Attack(enemy);
+                    hasFiredThisThrow = true; // Mark as fired to prevent duplicate
+                }
+            }
+        }
     }
     
     public bool CanAttack(EnemyWithSM enemy)
@@ -126,14 +157,26 @@ public class ThrowAttackBehavior : IAttackBehavior
         
         if (gunBarrel == null || enemy.bulletPrefab == null)
         {
-            Debug.LogWarning("ThrowAttackBehavior: Missing gunBarrel or bulletPrefab!");
+            Debug.LogWarning($"ThrowAttackBehavior: Missing gunBarrel or bulletPrefab! gunBarrel: {(gunBarrel != null ? "OK" : "NULL")}, bulletPrefab: {(enemy.bulletPrefab != null ? "OK" : "NULL")}");
             return;
         }
         
         // Instantiate the bullet
         GameObject bullet = Object.Instantiate(enemy.bulletPrefab, gunBarrel.position, enemy.transform.rotation);
         
+        if (bullet == null)
+        {
+            Debug.LogError("ThrowAttackBehavior: Failed to instantiate bullet!");
+            return;
+        }
+        
         // Calculate the direction to the player
+        if (enemy.Player == null)
+        {
+            Debug.LogWarning("ThrowAttackBehavior: Player is null, cannot calculate direction!");
+            return;
+        }
+        
         Vector3 playerPosition = enemy.Player.transform.position;
         playerPosition.y += 0.8f;
         Vector3 shootDirection = (playerPosition - gunBarrel.position).normalized;
@@ -143,6 +186,12 @@ public class ThrowAttackBehavior : IAttackBehavior
         if (bulletRb != null)
         {
             bulletRb.linearVelocity = Quaternion.AngleAxis(Random.Range(-3f, 3f), Vector3.up) * shootDirection * 40;
+            Debug.Log($"ThrowAttackBehavior: Bullet spawned at {gunBarrel.position}, velocity: {bulletRb.linearVelocity}");
+            hasFiredThisThrow = true; // Mark as fired successfully
+        }
+        else
+        {
+            Debug.LogWarning("ThrowAttackBehavior: Bullet prefab has no Rigidbody component!");
         }
     }
     
@@ -169,6 +218,7 @@ public class ThrowAttackBehavior : IAttackBehavior
             else if (!isInThrowAnimation || stateInfo.normalizedTime >= 1f)
             {
                 isThrowing = false;
+                hasFiredThisThrow = false; // Reset for next throw
             }
         }
     }
