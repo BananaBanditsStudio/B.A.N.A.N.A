@@ -145,6 +145,12 @@ public class PauseMenuUI : MonoBehaviour
 
     public void ShowPauseMenu()
     {
+        // Ensure GameObject is active before starting coroutine
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }
+        
         StopAllCoroutines();
         canvasGroup.interactable = true;
         canvasGroup.blocksRaycasts = true;
@@ -153,6 +159,19 @@ public class PauseMenuUI : MonoBehaviour
 
     public void HidePauseMenu()
     {
+        // Ensure GameObject is active before starting coroutine
+        if (!gameObject.activeSelf)
+        {
+            // If inactive, just set the state directly without coroutine
+            if (canvasGroup != null)
+            {
+                canvasGroup.alpha = 0f;
+                canvasGroup.interactable = false;
+                canvasGroup.blocksRaycasts = false;
+            }
+            return;
+        }
+        
         StopAllCoroutines();
         StartCoroutine(FadeTo(0f, fadeOutDuration, () =>
         {

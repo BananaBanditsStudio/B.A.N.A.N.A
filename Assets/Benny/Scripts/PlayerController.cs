@@ -159,13 +159,19 @@ namespace UnityTutorial.PlayerControl
 
             var Mouse_X = _inputManager.Look.x;
             var Mouse_Y = _inputManager.Look.y;
+            
+            // Smooth camera position following
             Camera.position = CameraRoot.position;
 
-            _xRotation -= Mouse_Y * MouseSensitivity * Time.smoothDeltaTime;
+            // Use Time.deltaTime instead of Time.smoothDeltaTime for smoother, more responsive camera movement
+            // smoothDeltaTime can cause laggy/jittery movement
+            float deltaTime = Time.deltaTime;
+            
+            _xRotation -= Mouse_Y * MouseSensitivity * deltaTime;
             _xRotation = Mathf.Clamp(_xRotation, UpperLimit, BottomLimit);
 
             Camera.localRotation = Quaternion.Euler(_xRotation, 0, 0);
-            _playerRigidbody.MoveRotation(_playerRigidbody.rotation * Quaternion.Euler(0, Mouse_X * MouseSensitivity * Time.smoothDeltaTime, 0));
+            _playerRigidbody.MoveRotation(_playerRigidbody.rotation * Quaternion.Euler(0, Mouse_X * MouseSensitivity * deltaTime, 0));
         }
 
         private void HandleCrouch()

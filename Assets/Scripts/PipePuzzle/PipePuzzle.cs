@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 using System.Collections;
 
@@ -27,6 +28,10 @@ public class PipePuzzle : Interactable
     private bool isActive = false;
     private bool isSolved = false;
     
+    // Static reference to check if any puzzle is active
+    private static PipePuzzle activePuzzle = null;
+    public static bool IsAnyPuzzleActive => activePuzzle != null && activePuzzle.isActive;
+    
     private TextMeshProUGUI timerText;
     private Button closeButton;
     
@@ -44,7 +49,23 @@ public class PipePuzzle : Interactable
     {
         if (isActive) return;
         
-        
+        // Ensure the parent canvas has GraphicRaycaster for button interactions
+        if (canvas != null)
+        {
+            GraphicRaycaster raycaster = canvas.GetComponent<GraphicRaycaster>();
+            if (raycaster == null)
+            {
+                canvas.gameObject.AddComponent<GraphicRaycaster>();
+            }
+            
+            // Ensure EventSystem exists
+            if (EventSystem.current == null)
+            {
+                GameObject eventSystemGO = new GameObject("EventSystem");
+                eventSystemGO.AddComponent<EventSystem>();
+                eventSystemGO.AddComponent<StandaloneInputModule>();
+            }
+        }
         
         // Create puzzle canvas
         puzzleCanvas = new GameObject("PipePuzzleCanvas");
@@ -97,6 +118,7 @@ public class PipePuzzle : Interactable
         isActive = true;
         isSolved = false;
         timeRemaining = timeLimit;
+        activePuzzle = this; // Set as active puzzle
         
         if (GameStateManager.Instance != null)
         {
@@ -118,6 +140,7 @@ public class PipePuzzle : Interactable
         bgRect.offsetMax = Vector2.zero;
         Image bgImage = bg.AddComponent<Image>();
         bgImage.color = new Color(0, 0, 0, 0.85f);
+        bgImage.raycastTarget = false; // Don't block clicks on buttons
         
         // Main container (centered)
         GameObject container = new GameObject("Container");
@@ -135,6 +158,7 @@ public class PipePuzzle : Interactable
         
         Image containerImage = container.AddComponent<Image>();
         containerImage.color = new Color(0.2f, 0.2f, 0.2f, 0.95f);
+        containerImage.raycastTarget = false; // Don't block clicks on buttons
         
         // Title
         GameObject titleGO = new GameObject("Title");
@@ -261,6 +285,7 @@ public class PipePuzzle : Interactable
                 Image pipeImage = pipeGO.AddComponent<Image>();
                 pipeImage.sprite = puzzleSprites[spriteIndex];
                 pipeImage.preserveAspect = true;
+                pipeImage.raycastTarget = false; // Don't block clicks on button
                 
                 puzzleGrid[row, col] = pipeImage;
                 
@@ -476,6 +501,10 @@ public class PipePuzzle : Interactable
     void ClosePuzzle()
     {
         isActive = false;
+        if (activePuzzle == this)
+        {
+            activePuzzle = null; // Clear active puzzle reference
+        }
         
         if (puzzleCanvas != null)
         {

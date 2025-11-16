@@ -20,7 +20,7 @@ public class PauseMenu : MonoBehaviour
     public AudioClip resumeSound;
 
     [SerializeField] private bool isPaused = false;
-    private float originalTimeScale = 1f;
+    private GameStateManager gameStateManager;
 
     // Prevent fast double toggles (e.g., click + Esc same frame)
     private float lastToggleTime;
@@ -28,9 +28,20 @@ public class PauseMenu : MonoBehaviour
 
     void Awake()
     {
+        // Get or create GameStateManager
+        gameStateManager = GameStateManager.Instance;
+        if (gameStateManager == null)
+        {
+            GameObject gameStateGO = new GameObject("GameStateManager");
+            gameStateManager = gameStateGO.AddComponent<GameStateManager>();
+        }
+        
+        // Don't sync with GameStateManager - we manage our own pause state independently
+        // This ensures the pause menu only shows when Escape is pressed, not when other systems pause
+        isPaused = false;
+        
         // Ensure sane initial state
         Time.timeScale = 1f;
-        isPaused = false;
     }
 
     void Start()
@@ -56,6 +67,39 @@ public class PauseMenu : MonoBehaviour
 
     void Update()
     {
+        // If puzzle is active, disable pause menu canvas to prevent blocking puzzle UI
+        if (PipePuzzle.IsAnyPuzzleActive)
+        {
+            if (isPaused)
+            {
+                // Puzzle opened while pause menu was active - close it
+                ResumeGame();
+            }
+            
+            // Disable pause menu canvas to prevent it from blocking puzzle UI
+            if (pauseMenuUI != null)
+            {
+                var canvas = pauseMenuUI.GetComponentInParent<Canvas>();
+                if (canvas != null)
+                {
+                    canvas.enabled = false; // Disable canvas to prevent blocking
+                }
+            }
+            return;
+        }
+        
+        // Re-enable pause menu canvas when puzzle is not active
+        if (pauseMenuUI != null)
+        {
+            var canvas = pauseMenuUI.GetComponentInParent<Canvas>();
+            if (canvas != null && !canvas.enabled)
+            {
+                canvas.enabled = true; // Re-enable when puzzle closes
+            }
+        }
+        
+        // Only respond to Escape key - don't sync with other pause systems
+        // This ensures the pause menu only shows when user presses Escape
         if (Time.unscaledTime - lastToggleTime < ToggleCooldown) return;
 
         if (Input.GetKeyDown(pauseKey))
@@ -76,24 +120,37 @@ public class PauseMenu : MonoBehaviour
         if (isPaused) return;
         isPaused = true;
 
+        // Pause the game - but don't interfere with GameStateManager
+        // We manage our own pause state independently
+        Time.timeScale = 0f;
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
         // Show UI (no SetActive off/on; use CanvasGroup fade)
         if (pauseMenuUI)
         {
+            // Ensure GameObject is active before trying to start coroutine
+            if (!pauseMenuUI.activeSelf)
+            {
+                pauseMenuUI.SetActive(true);
+            }
+            
             var ui = pauseMenuUI.GetComponent<PauseMenuUI>();
-            if (ui) ui.ShowPauseMenu();
-            else pauseMenuUI.SetActive(true);
+            if (ui && pauseMenuUI.activeSelf)
+            {
+                ui.ShowPauseMenu();
+            }
+            else
+            {
+                pauseMenuUI.SetActive(true);
+            }
         }
 
         if (audioSource && pauseSound) audioSource.PlayOneShot(pauseSound);
 
-        originalTimeScale = 1f;
-        Time.timeScale = 0f;
-
         // Give UI focus and mouse
         var es = EventSystem.current;
         if (es) es.SetSelectedGameObject(null);
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
     }
 
     public void ResumeGame()
@@ -101,28 +158,44 @@ public class PauseMenu : MonoBehaviour
         if (!isPaused) return;
         isPaused = false;
 
+        // Resume the game - manage our own pause state independently
+        // But don't change time scale if puzzle is active (puzzle manages it)
+        if (!PipePuzzle.IsAnyPuzzleActive)
+        {
+            Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+
         if (pauseMenuUI)
         {
+            // Ensure GameObject is active before trying to start coroutine
+            if (!pauseMenuUI.activeSelf)
+            {
+                pauseMenuUI.SetActive(true);
+            }
+            
             var ui = pauseMenuUI.GetComponent<PauseMenuUI>();
-            if (ui) ui.HidePauseMenu();
-            else pauseMenuUI.SetActive(false);
+            if (ui && pauseMenuUI.activeSelf)
+            {
+                ui.HidePauseMenu();
+            }
+            else
+            {
+                pauseMenuUI.SetActive(false);
+            }
         }
 
         if (audioSource && resumeSound) audioSource.PlayOneShot(resumeSound);
 
-        Time.timeScale = 1f;
-
         // Clear any UI selection so Esc is read cleanly next toggle
         var es = EventSystem.current;
         if (es) es.SetSelectedGameObject(null);
-
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public void QuitToTitleScreen()
     {
-        // Restore timescale first to avoid sticky 0 in next scene
+        // Restore timescale before loading scene
         Time.timeScale = 1f;
         isPaused = false;
         SceneManager.LoadScene(titleScreenSceneName);
@@ -130,6 +203,7 @@ public class PauseMenu : MonoBehaviour
 
     public void QuitGame()
     {
+        // Restore timescale before quitting
         Time.timeScale = 1f;
         isPaused = false;
 #if UNITY_EDITOR
@@ -141,8 +215,11 @@ public class PauseMenu : MonoBehaviour
 
     void OnDisable()
     {
-        // If something disables this, ensure game isn’t left paused
-        if (Time.timeScale == 0f) Time.timeScale = 1f;
+        // If something disables this, ensure game isn't left paused
+        if (isPaused && Time.timeScale == 0f)
+        {
+            Time.timeScale = 1f;
+        }
         isPaused = false;
     }
 
