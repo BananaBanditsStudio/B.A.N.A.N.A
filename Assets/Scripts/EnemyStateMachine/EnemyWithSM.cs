@@ -81,6 +81,9 @@ public class EnemyWithSM : MonoBehaviour
     public AudioClip chargeAttackSound;
     public AudioClip bigJumpAttackSound;
     public AudioClip bigMeleeAttackSound;
+    public AudioSource AudioSource;
+    public AudioClip preExplosionDialogueClip;
+
 
     void Start()
     {
