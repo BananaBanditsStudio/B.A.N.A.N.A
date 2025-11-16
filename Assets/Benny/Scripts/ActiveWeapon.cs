@@ -5,22 +5,22 @@ using UnityEngine.Animations.Rigging;
 public class ActiveWeapon : MonoBehaviour
 {
     public Transform crossHairTarget;
-    
+
     [SerializeField] private Transform handIk;
     [SerializeField] private Transform weaponParent;
     [SerializeField] private Transform weaponLeftGrip;
     [SerializeField] private Transform weaponRightGrip;
-    
+
     [Header("Alternative: Direct GameObject Control")]
     [SerializeField] private GameObject handIkGameObject;
-    
+
     [Header("Animation")]
     [SerializeField] private AnimationClip weaponAnimClip;
     [SerializeField] private string weaponAnimStateName = "Empty_anim";
 
     [Header("Multiple Weapons")]
     [SerializeField] private RaycastWeapon[] availableWeapons; // Array of all available weapons
-    
+
     private RaycastWeapon weapon;
     private RaycastWeapon availableWeapon; // Kept for backward compatibility
     private int currentWeaponIndex = -1; // -1 means no weapon equipped
@@ -31,44 +31,45 @@ public class ActiveWeapon : MonoBehaviour
     private IRigConstraint handIkConstraint;
     private IRigConstraint[] allHandIkConstraints; // Store ALL IK constraints under Hand_IK
     private RigBuilder rigBuilder;
-    
+
     // Store left and right hand IK constraints separately for easier targeting
     private Component leftHandIKConstraint;
     private Component rightHandIKConstraint;
-    
+
     // Reference to InputManager to check crouch state
     private UnityTutorial.Manager.InputManager inputManager;
 
     // Start is called before the first frame update
+
     void Start()
     {
         animator = GetComponent<Animator>();
         animatorOverrideController = new AnimatorOverrideController(animator.runtimeAnimatorController);
         animator.runtimeAnimatorController = animatorOverrideController;
-        
+
         // Get InputManager component to check crouch state
         inputManager = GetComponent<UnityTutorial.Manager.InputManager>();
         if (inputManager == null)
         {
             Debug.LogWarning("InputManager not found on ActiveWeapon GameObject. Crouch conflict detection may not work.");
         }
-        
+
         // Find the clip to override
         FindWeaponAnimationClip();
-        
+
         // Get RigBuilder component
         rigBuilder = GetComponent<RigBuilder>();
         if (rigBuilder == null)
         {
             Debug.LogWarning("No RigBuilder found on this GameObject!");
         }
-        
+
         // Get ALL hand IK constraints under Hand_IK
         if (handIk != null)
         {
             // Find ALL IK constraints in children (this will get both left and right hand IKs)
             allHandIkConstraints = handIk.GetComponentsInChildren<IRigConstraint>(true);
-            
+
             if (allHandIkConstraints != null && allHandIkConstraints.Length > 0)
             {
                 Debug.Log($"✓ Found {allHandIkConstraints.Length} Hand IK constraint(s) under '{handIk.name}':");
@@ -76,7 +77,7 @@ public class ActiveWeapon : MonoBehaviour
                 {
                     Component comp = (Component)constraint;
                     Debug.Log($"  - {constraint.GetType().Name} on {comp.gameObject.name} (current weight: {constraint.weight})");
-                    
+
                     // Try to identify left and right hand constraints by name
                     string constraintName = comp.gameObject.name.ToLower();
                     if (constraintName.Contains("left") && leftHandIKConstraint == null)
@@ -90,7 +91,7 @@ public class ActiveWeapon : MonoBehaviour
                         Debug.Log($"  → Identified as RIGHT hand constraint");
                     }
                 }
-                
+
                 // If we couldn't identify by name, try to assign by order (first = left, second = right)
                 if (leftHandIKConstraint == null && allHandIkConstraints.Length >= 1)
                 {
@@ -102,7 +103,7 @@ public class ActiveWeapon : MonoBehaviour
                     rightHandIKConstraint = (Component)allHandIkConstraints[1];
                     Debug.Log($"  → Assigned second constraint as RIGHT hand (by order)");
                 }
-                
+
                 // Store the first one for legacy compatibility
                 handIkConstraint = allHandIkConstraints[0];
             }
@@ -116,10 +117,10 @@ public class ActiveWeapon : MonoBehaviour
         {
             Debug.LogError("❌ handIk transform is not assigned in Inspector!");
         }
-        
+
         // Initialize weapons array
         InitializeWeapons();
-        
+
         // Start with weapon unequipped
         if (availableWeapons != null && availableWeapons.Length > 0)
         {
@@ -131,7 +132,7 @@ public class ActiveWeapon : MonoBehaviour
                 }
             }
         }
-        
+
         // Backward compatibility: if no array assigned, try to find weapon automatically
         if (availableWeapons == null || availableWeapons.Length == 0)
         {
@@ -141,41 +142,41 @@ public class ActiveWeapon : MonoBehaviour
                 availableWeapon.gameObject.SetActive(false);
             }
         }
-        
+
         // Ensure hand IKs are disabled at start
         if (animator != null)
         {
             animator.SetLayerWeight(1, 0.0f);
             animator.SetBool("1_pressed", false);
         }
-        
+
         // Set hand IK weight to 0 at start
         Debug.Log("=== Setting initial Hand IK weight to 0 ===");
         SetHandIkWeight(0f);
-        
+
         // Verify the weight was set
         if (handIkConstraint != null)
         {
             Debug.Log($"Verified Hand IK weight after setting: {handIkConstraint.weight}");
         }
-        
+
         Debug.Log("Started with weapon unequipped. Hand IK disabled. Press '1' to equip/unequip weapon.");
     }
-    
+
     private void FindWeaponAnimationClip()
     {
         var overrides = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<AnimationClip, AnimationClip>>();
         animatorOverrideController.GetOverrides(overrides);
-        
+
         Debug.Log($"=== Finding Animation Clips (Total: {overrides.Count}) ===");
-        
+
         for (int i = 0; i < overrides.Count; i++)
         {
             var pair = overrides[i];
             if (pair.Key != null)
             {
                 Debug.Log($"[{i}] Key: {pair.Key.name}, Current Value: {(pair.Value != null ? pair.Value.name : "NULL")}");
-                
+
                 // Find the clip that matches our weapon animation state name
                 if (pair.Key.name == weaponAnimStateName)
                 {
@@ -188,7 +189,7 @@ public class ActiveWeapon : MonoBehaviour
                 Debug.LogWarning($"[{i}] Key is NULL!");
             }
         }
-        
+
         if (defaultWeaponClip == null && overrides.Count > 0)
         {
             // If not found by name, use the first clip as fallback
@@ -217,7 +218,7 @@ public class ActiveWeapon : MonoBehaviour
                 Debug.Log($"Auto-found {availableWeapons.Length} weapon(s) in children");
             }
         }
-        
+
         // Validate weapons array
         if (availableWeapons != null && availableWeapons.Length > 0)
         {
@@ -239,7 +240,7 @@ public class ActiveWeapon : MonoBehaviour
             Debug.LogWarning("No weapons found! Assign weapons in Inspector or ensure RaycastWeapon components exist in children.");
         }
     }
-    
+
     // Update is called once per frame
     void Update()
     {
@@ -256,13 +257,13 @@ public class ActiveWeapon : MonoBehaviour
                 }
             }
         }
-        
+
         // Toggle weapon equip/unequip when "1" key is pressed (only if using old single-weapon system)
         if (Input.GetKeyDown(KeyCode.Alpha1) && (availableWeapons == null || availableWeapons.Length == 0))
         {
             ToggleWeapon();
         }
-        
+
         // Mouse scroll wheel for cycling weapons
         if (availableWeapons != null && availableWeapons.Length > 1 && isWeaponEquipped)
         {
@@ -281,15 +282,18 @@ public class ActiveWeapon : MonoBehaviour
                 SwitchToWeapon(prevIndex);
             }
         }
-        
+
         // Handle E key interaction with DistractionInteractable when no weapon is equipped
         if (!isWeaponEquipped && Input.GetKeyDown(KeyCode.E))
         {
             HandleDistractionInteraction();
         }
-        
+
         if (weapon && isWeaponEquipped)
         {
+            // ⭐ ALWAYS call UpdateFiring so reload + ammo logic works
+            weapon.UpdateFiring(Time.deltaTime);
+
             // Check if crouch is active FIRST (prevents firing while crouching)
             // Since Fire1 is mapped to Ctrl (same as crouch), we need to check crouch state first
             bool isCrouching = false;
@@ -300,10 +304,10 @@ public class ActiveWeapon : MonoBehaviour
             else
             {
                 // Fallback: check for common crouch keys
-                isCrouching = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || 
-                             Input.GetKey(KeyCode.C) || Input.GetKey(KeyCode.LeftShift);
+                isCrouching = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) ||
+                              Input.GetKey(KeyCode.C) || Input.GetKey(KeyCode.LeftShift);
             }
-            
+
             // If crouching, completely ignore Fire1 input (since Fire1 = Ctrl = crouch key)
             if (!isCrouching)
             {
@@ -311,7 +315,7 @@ public class ActiveWeapon : MonoBehaviour
                 if (Input.GetButtonDown("Fire1"))
                 {
                     // Additional check: make sure crouch keys aren't being held
-                    if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || 
+                    if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) ||
                         Input.GetKey(KeyCode.C) || Input.GetKey(KeyCode.LeftShift))
                     {
                         Debug.LogWarning("Fire1 triggered while crouch keys pressed - ignoring");
@@ -322,13 +326,13 @@ public class ActiveWeapon : MonoBehaviour
                         Debug.Log("Fire1 pressed - Starting to fire");
                     }
                 }
-                
+
                 // Continue firing
                 if (weapon.isFiring)
                 {
-                    weapon.UpdateFiring(Time.deltaTime);
+                    // (We no longer call UpdateFiring here — it's now always called above)
                 }
-                
+
                 if (Input.GetButtonUp("Fire1"))
                 {
                     weapon.StopFiring();
@@ -343,12 +347,13 @@ public class ActiveWeapon : MonoBehaviour
                     weapon.StopFiring();
                 }
             }
-            
+
             weapon.UpdateBullets(Time.deltaTime);
             HandleWeaponAiming();
         }
     }
-    
+
+
     /// <summary>
     /// Handles E key interaction with DistractionInteractable when no weapon is equipped.
     /// Casts a ray from the camera center (crosshair) to detect interactables.
@@ -369,20 +374,20 @@ public class ActiveWeapon : MonoBehaviour
         {
             cam = Camera.main;
         }
-        
+
         if (cam == null)
         {
             return; // No camera found
         }
-        
+
         // Cast ray from camera center (crosshair position)
         float interactionDistance = 30f; // Increased distance for far interaction
         Ray ray = new Ray(cam.transform.position, cam.transform.forward);
-        
+
         // Use RaycastAll to check all hits along the ray
         // This allows interaction even if there are objects in between
         RaycastHit[] hits = Physics.RaycastAll(ray, interactionDistance);
-        
+
         // Check all hits to find a DistractionInteractable
         foreach (RaycastHit hitInfo in hits)
         {
@@ -395,20 +400,20 @@ public class ActiveWeapon : MonoBehaviour
                 return; // Only interact with the first one found
             }
         }
-        
+
         // Alternative: If raycast doesn't work due to colliders, try direct distance/angle check
         // Find all DistractionInteractables in scene and check if player is looking at them
         DistractionInteractable[] allDistractions = FindObjectsOfType<DistractionInteractable>();
         foreach (DistractionInteractable distraction in allDistractions)
         {
             if (distraction == null) continue;
-            
+
             Vector3 toDistraction = distraction.transform.position - cam.transform.position;
             float distance = toDistraction.magnitude;
-            
+
             // Check if within interaction distance
             if (distance > interactionDistance) continue;
-            
+
             // Check if player is looking at it (within reasonable angle)
             float angle = Vector3.Angle(cam.transform.forward, toDistraction.normalized);
             if (angle < 10f) // 10 degree cone
@@ -426,7 +431,7 @@ public class ActiveWeapon : MonoBehaviour
             }
         }
     }
-    
+
     private void SwitchToWeapon(int weaponIndex)
     {
         // Validate index
@@ -435,53 +440,53 @@ public class ActiveWeapon : MonoBehaviour
             Debug.LogWarning($"Invalid weapon index: {weaponIndex}");
             return;
         }
-        
+
         if (availableWeapons[weaponIndex] == null)
         {
             Debug.LogWarning($"Weapon at index {weaponIndex} is null!");
             return;
         }
-        
+
         // If switching to the same weapon, toggle it off
         if (currentWeaponIndex == weaponIndex && isWeaponEquipped)
         {
             UnequipCurrentWeapon();
             return;
         }
-        
+
         // Unequip current weapon if one is equipped
         if (isWeaponEquipped && currentWeaponIndex >= 0)
         {
             UnequipCurrentWeapon();
         }
-        
+
         // Equip new weapon
         currentWeaponIndex = weaponIndex;
         Equip(availableWeapons[weaponIndex]);
         availableWeapons[weaponIndex].gameObject.SetActive(true);
         isWeaponEquipped = true;
-        
+
         // Update IK constraint targets to use weapon-specific grips
         UpdateIKConstraintTargets();
-        
+
         SetHandIkWeight(1f);
         Debug.Log($"✓ Weapon {weaponIndex + 1} EQUIPPED: {availableWeapons[weaponIndex].name}");
     }
-    
+
     private void UnequipCurrentWeapon()
     {
         if (currentWeaponIndex >= 0 && currentWeaponIndex < availableWeapons.Length && availableWeapons[currentWeaponIndex] != null)
         {
             availableWeapons[currentWeaponIndex].gameObject.SetActive(false);
         }
-        
+
         Unequip();
         SetHandIkWeight(0f);
         Debug.Log($"✓ Weapon {currentWeaponIndex + 1} UNEQUIPPED");
         currentWeaponIndex = -1;
         isWeaponEquipped = false;
     }
-    
+
     private void ToggleWeapon()
     {
         // Legacy method for single weapon system
@@ -490,9 +495,9 @@ public class ActiveWeapon : MonoBehaviour
             Debug.LogWarning("No weapon available to equip!");
             return;
         }
-        
+
         isWeaponEquipped = !isWeaponEquipped;
-        
+
         if (isWeaponEquipped)
         {
             // Equip weapon
@@ -512,11 +517,11 @@ public class ActiveWeapon : MonoBehaviour
             Debug.Log("✓ Hand IK weight set to 0");
         }
     }
-    
+
     private void SetHandIkWeight(float weight)
     {
         bool success = false;
-        
+
         // Method 1: Set weight on ALL IK constraints found (both left and right hands)
         if (allHandIkConstraints != null && allHandIkConstraints.Length > 0)
         {
@@ -529,7 +534,7 @@ public class ActiveWeapon : MonoBehaviour
                     Debug.Log($"  ✓ {((Component)constraint).gameObject.name}: {constraint.GetType().Name} weight = {weight}");
                 }
             }
-            
+
             // Force the rig to rebuild/update
             if (rigBuilder != null)
             {
@@ -538,7 +543,7 @@ public class ActiveWeapon : MonoBehaviour
             }
             success = true;
         }
-        
+
         // Method 2: If no constraints, try enabling/disabling the GameObject directly
         if (!success && handIkGameObject != null)
         {
@@ -547,7 +552,7 @@ public class ActiveWeapon : MonoBehaviour
             Debug.Log($"Setting Hand IK GameObject active state to: {shouldBeActive}");
             success = true;
         }
-        
+
         // Method 3: Try enabling/disabling the handIk transform's GameObject
         if (!success && handIk != null)
         {
@@ -556,7 +561,7 @@ public class ActiveWeapon : MonoBehaviour
             Debug.Log($"Setting handIk GameObject '{handIk.name}' active state to: {shouldBeActive}");
             success = true;
         }
-        
+
         if (!success)
         {
             Debug.LogWarning("Cannot set Hand IK weight - no valid IK constraint or GameObject found!");
@@ -581,7 +586,7 @@ public class ActiveWeapon : MonoBehaviour
     {
         if (animator == null)
             animator = GetComponent<Animator>();
-        
+
         if (animator == null) return;
 
         // Only apply IK when weapon is equipped
@@ -590,7 +595,7 @@ public class ActiveWeapon : MonoBehaviour
             // Get grip positions - prefer weapon-specific grips, fallback to shared grips
             Transform leftGrip = GetLeftHandGrip();
             Transform rightGrip = GetRightHandGrip();
-            
+
             // Set left hand IK to weapon grip position
             if (leftGrip != null)
             {
@@ -618,7 +623,7 @@ public class ActiveWeapon : MonoBehaviour
             animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 0f);
         }
     }
-    
+
     /// <summary>
     /// Gets the left hand grip transform for the current weapon.
     /// Returns weapon-specific grip if available, otherwise falls back to shared grip.
@@ -631,7 +636,7 @@ public class ActiveWeapon : MonoBehaviour
         }
         return weaponLeftGrip; // Fallback to shared grip
     }
-    
+
     /// <summary>
     /// Gets the right hand grip transform for the current weapon.
     /// Returns weapon-specific grip if available, otherwise falls back to shared grip.
@@ -644,7 +649,7 @@ public class ActiveWeapon : MonoBehaviour
         }
         return weaponRightGrip; // Fallback to shared grip
     }
-    
+
     /// <summary>
     /// Updates the Animation Rigging IK constraint targets to use the current weapon's grip positions.
     /// This ensures that when switching weapons, the IK constraints point to the correct grip transforms.
@@ -653,26 +658,26 @@ public class ActiveWeapon : MonoBehaviour
     {
         Transform leftGrip = GetLeftHandGrip();
         Transform rightGrip = GetRightHandGrip();
-        
+
         // Update left hand IK constraint target
         if (leftHandIKConstraint != null && leftGrip != null)
         {
             UpdateConstraintTarget(leftHandIKConstraint, leftGrip, "Left");
         }
-        
+
         // Update right hand IK constraint target
         if (rightHandIKConstraint != null && rightGrip != null)
         {
             UpdateConstraintTarget(rightHandIKConstraint, rightGrip, "Right");
         }
-        
+
         // Force rig rebuild to apply changes
         if (rigBuilder != null)
         {
             rigBuilder.Build();
         }
     }
-    
+
     /// <summary>
     /// Updates a single IK constraint's target transform using Unity's SerializedObject API.
     /// Works with TwoBoneIKConstraint, ChainIKConstraint, and other common IK constraint types.
@@ -680,8 +685,8 @@ public class ActiveWeapon : MonoBehaviour
     private void UpdateConstraintTarget(Component constraint, Transform target, string handName)
     {
         if (constraint == null || target == null) return;
-        
-        #if UNITY_EDITOR
+
+#if UNITY_EDITOR
         try
         {
             UnityEditor.SerializedObject so = new UnityEditor.SerializedObject(constraint);
@@ -734,14 +739,14 @@ public class ActiveWeapon : MonoBehaviour
         {
             Debug.LogWarning($"Failed to update {handName} hand IK constraint via SerializedObject: {e.Message}");
         }
-        #else
+#else
         // Runtime fallback: Use reflection
         System.Type constraintType = constraint.GetType();
-        
+
         // Try common property names
-        System.Reflection.PropertyInfo targetProp = constraintType.GetProperty("target") ?? 
+        System.Reflection.PropertyInfo targetProp = constraintType.GetProperty("target") ??
                                                    constraintType.GetProperty("m_Target");
-        
+
         if (targetProp != null && targetProp.CanWrite)
         {
             try
@@ -755,7 +760,7 @@ public class ActiveWeapon : MonoBehaviour
                 Debug.LogWarning($"Failed to set target property on {constraintType.Name}: {e.Message}");
             }
         }
-        
+
         // Try data.target pattern
         System.Reflection.PropertyInfo dataProp = constraintType.GetProperty("data");
         if (dataProp != null)
@@ -764,7 +769,7 @@ public class ActiveWeapon : MonoBehaviour
             if (data != null)
             {
                 System.Type dataType = data.GetType();
-                System.Reflection.PropertyInfo dataTargetProp = dataType.GetProperty("target") ?? 
+                System.Reflection.PropertyInfo dataTargetProp = dataType.GetProperty("target") ??
                                                               dataType.GetProperty("m_Target");
                 if (dataTargetProp != null && dataTargetProp.CanWrite)
                 {
@@ -782,15 +787,15 @@ public class ActiveWeapon : MonoBehaviour
                 }
             }
         }
-        
+
         Debug.LogWarning($"⚠ Could not update {handName} hand IK constraint target at runtime. Constraint type: {constraintType.Name}");
-        #endif
+#endif
     }
 
     public void Equip(RaycastWeapon newWeapon)
     {
         weapon = newWeapon;
-        
+
         // Set raycast destination if not already set
         if (weapon.raycastDestination == null)
         {
@@ -801,7 +806,7 @@ public class ActiveWeapon : MonoBehaviour
         {
             Debug.LogWarning($"⚠ {newWeapon.name} has a different raycastDestination assigned. Using assigned value instead of crossHairTarget.");
         }
-        
+
         Debug.Log("=== EQUIPPING WEAPON ===");
         Debug.Log($"Weapon: {newWeapon.name}");
         Debug.Log($"Weapon AnimationClip: {(newWeapon.AnimationClip != null ? newWeapon.AnimationClip.name : "NULL")}");
@@ -811,27 +816,27 @@ public class ActiveWeapon : MonoBehaviour
         Debug.Log($"Bullet Spawn Point: {(weapon.bulletSpawnPoint != null ? weapon.bulletSpawnPoint.name : "NULL - Will use weapon position")}");
         Debug.Log($"Use Projectiles: {weapon.useProjectiles}");
         Debug.Log($"Projectile Prefab: {(weapon.projectilePrefab != null ? weapon.projectilePrefab.name : "NULL - REQUIRED FOR PROJECTILE MODE!")}");
-        
+
         // Set animation overrides if weapon has animation clip
         if (newWeapon.AnimationClip != null && animatorOverrideController != null && defaultWeaponClip != null)
         {
             // Apply the override
             animatorOverrideController[defaultWeaponClip] = newWeapon.AnimationClip;
-            
+
             // Force animator to update
             animator.runtimeAnimatorController = animatorOverrideController;
             animator.Rebind();
             animator.Update(0f);
-            
+
             // Enable weapon layer and animation
             animator.SetLayerWeight(1, 1.0f);
             animator.SetBool("1_pressed", true);
-            
+
             Debug.Log($"✓ Animation override applied: {defaultWeaponClip.name} -> {newWeapon.AnimationClip.name}");
             Debug.Log($"✓ Layer 1 weight: {animator.GetLayerWeight(1)}");
             Debug.Log($"✓ 1_pressed: true");
             Debug.Log($"✓ Animator rebound and updated");
-            
+
             // Verify the override was applied
             var currentOverride = animatorOverrideController[defaultWeaponClip];
             Debug.Log($"✓ Verification - Current override: {(currentOverride != null ? currentOverride.name : "NULL")}");
@@ -847,11 +852,11 @@ public class ActiveWeapon : MonoBehaviour
                 Debug.LogError("❌ animatorOverrideController is null!");
         }
     }
-    
+
     public void Unequip()
     {
         Debug.Log("=== UNEQUIPPING WEAPON ===");
-        
+
         // Disable weapon layer and animation
         if (animator != null)
         {
@@ -860,7 +865,7 @@ public class ActiveWeapon : MonoBehaviour
             Debug.Log($"✓ Layer 1 weight: 0");
             Debug.Log($"✓ 1_pressed: false");
         }
-        
+
         weapon = null;
         Debug.Log("✓ Weapon reference cleared");
     }
@@ -875,26 +880,26 @@ public class ActiveWeapon : MonoBehaviour
     public void SaveWeaponPose()
     {
         GameObjectRecorder recorder = new GameObjectRecorder(gameObject);
-        
+
         if (weaponParent != null)
             recorder.BindComponentsOfType<Transform>(weaponParent.gameObject, false);
-        
+
         // Use current weapon's grips if available, otherwise use shared grips
         Transform leftGrip = GetLeftHandGrip();
         Transform rightGrip = GetRightHandGrip();
-        
+
         if (leftGrip != null)
             recorder.BindComponentsOfType<Transform>(leftGrip.gameObject, false);
-        
+
         if (rightGrip != null)
             recorder.BindComponentsOfType<Transform>(rightGrip.gameObject, false);
-        
+
         recorder.TakeSnapshot(0.0f);
         recorder.SaveToClip(weaponAnimClip);
-        
+
         Debug.Log("Weapon pose saved to clip!");
     }
-    
+
     [ContextMenu("Debug: List All Animation Clips")]
     public void DebugListAnimationClips()
     {
@@ -903,10 +908,10 @@ public class ActiveWeapon : MonoBehaviour
             Debug.LogError("AnimatorOverrideController is null!");
             return;
         }
-        
+
         var overrides = new System.Collections.Generic.List<System.Collections.Generic.KeyValuePair<AnimationClip, AnimationClip>>();
         animatorOverrideController.GetOverrides(overrides);
-        
+
         Debug.Log("=== All Available Animation Clips ===");
         for (int i = 0; i < overrides.Count; i++)
         {
@@ -916,7 +921,7 @@ public class ActiveWeapon : MonoBehaviour
                 Debug.Log($"{i}: {pair.Key.name} (Current: {(pair.Value != null ? pair.Value.name : "None")})");
             }
         }
-        
+
         if (defaultWeaponClip != null)
         {
             Debug.Log($"\nCurrently using clip: {defaultWeaponClip.name}");
@@ -926,26 +931,26 @@ public class ActiveWeapon : MonoBehaviour
             Debug.LogWarning("\nNo default weapon clip is set!");
         }
     }
-    
+
     [ContextMenu("Debug: Test Animation Override")]
     public void DebugTestOverride()
     {
         Debug.Log("=== MANUAL OVERRIDE TEST ===");
-        
+
         if (weapon != null && weapon.AnimationClip != null)
         {
             Debug.Log($"Weapon found: {weapon.name}");
             Debug.Log($"Weapon clip: {weapon.AnimationClip.name}");
-            
+
             if (defaultWeaponClip != null)
             {
                 Debug.Log($"Attempting to override {defaultWeaponClip.name} with {weapon.AnimationClip.name}");
                 animatorOverrideController[defaultWeaponClip] = weapon.AnimationClip;
-                
+
                 // Force update
                 animator.runtimeAnimatorController = animatorOverrideController;
                 animator.Rebind();
-                
+
                 Debug.Log("✓ Override applied and animator rebound");
             }
             else
@@ -960,7 +965,7 @@ public class ActiveWeapon : MonoBehaviour
             if (weapon != null && weapon.AnimationClip == null) Debug.LogError("weapon.AnimationClip is null");
         }
     }
-    
+
     [ContextMenu("Debug: Set Hand IK Weight to 0")]
     public void DebugSetHandIkToZero()
     {
@@ -971,7 +976,7 @@ public class ActiveWeapon : MonoBehaviour
             Debug.Log($"Current weight after setting: {handIkConstraint.weight}");
         }
     }
-    
+
     [ContextMenu("Debug: Set Hand IK Weight to 1")]
     public void DebugSetHandIkToOne()
     {
@@ -982,7 +987,7 @@ public class ActiveWeapon : MonoBehaviour
             Debug.Log($"Current weight after setting: {handIkConstraint.weight}");
         }
     }
-    
+
     [ContextMenu("Debug: Check Hand IK Status")]
     public void DebugCheckHandIkStatus()
     {
@@ -990,7 +995,7 @@ public class ActiveWeapon : MonoBehaviour
         Debug.Log($"handIk Transform: {(handIk != null ? handIk.name : "NULL")}");
         Debug.Log($"RigBuilder: {(rigBuilder != null ? "Found" : "NULL")}");
         Debug.Log($"Weapon equipped: {isWeaponEquipped}");
-        
+
         // Show ALL constraints
         if (allHandIkConstraints != null && allHandIkConstraints.Length > 0)
         {
@@ -1007,7 +1012,7 @@ public class ActiveWeapon : MonoBehaviour
         {
             Debug.Log("\n=== No IK Constraints Found ===");
         }
-        
+
         // List all components on handIk if it exists
         if (handIk != null)
         {
@@ -1019,13 +1024,13 @@ public class ActiveWeapon : MonoBehaviour
             }
         }
     }
-    
+
     [ContextMenu("Debug: Find All IK Constraints")]
     public void DebugFindAllIKConstraints()
     {
         Debug.Log("=== SEARCHING FOR ALL IK CONSTRAINTS ===");
         var allConstraints = GetComponentsInChildren<IRigConstraint>(true);
-        
+
         if (allConstraints.Length > 0)
         {
             Debug.Log($"Found {allConstraints.Length} IK constraint(s):");
@@ -1039,25 +1044,25 @@ public class ActiveWeapon : MonoBehaviour
             Debug.LogWarning("No IK constraints found anywhere in children!");
         }
     }
-    
+
     [ContextMenu("Debug: Update IK Constraint Targets")]
     public void DebugUpdateIKConstraintTargets()
     {
         Debug.Log("=== MANUALLY UPDATING IK CONSTRAINT TARGETS ===");
         Debug.Log($"Left Hand Constraint: {(leftHandIKConstraint != null ? leftHandIKConstraint.name : "NULL")}");
         Debug.Log($"Right Hand Constraint: {(rightHandIKConstraint != null ? rightHandIKConstraint.name : "NULL")}");
-        
+
         Transform leftGrip = GetLeftHandGrip();
         Transform rightGrip = GetRightHandGrip();
-        
+
         Debug.Log($"Left Hand Grip: {(leftGrip != null ? leftGrip.name : "NULL")}");
         Debug.Log($"Right Hand Grip: {(rightGrip != null ? rightGrip.name : "NULL")}");
-        
+
         UpdateIKConstraintTargets();
-        
+
         Debug.Log("✓ IK constraint targets updated!");
     }
-    
+
     [ContextMenu("Debug: Show Current Weapon Grips")]
     public void DebugShowCurrentWeaponGrips()
     {
@@ -1067,17 +1072,17 @@ public class ActiveWeapon : MonoBehaviour
             Debug.LogWarning("No weapon currently equipped!");
             return;
         }
-        
+
         Debug.Log($"Current Weapon: {weapon.name}");
         Debug.Log($"Weapon Left Hand Grip: {(weapon.leftHandGrip != null ? weapon.leftHandGrip.name : "NULL (using shared)")}");
         Debug.Log($"Weapon Right Hand Grip: {(weapon.rightHandGrip != null ? weapon.rightHandGrip.name : "NULL (using shared)")}");
-        
+
         Transform leftGrip = GetLeftHandGrip();
         Transform rightGrip = GetRightHandGrip();
-        
+
         Debug.Log($"Active Left Grip: {(leftGrip != null ? leftGrip.name : "NULL")}");
         Debug.Log($"Active Right Grip: {(rightGrip != null ? rightGrip.name : "NULL")}");
-        
+
         if (leftGrip != null)
         {
             Debug.Log($"  Left Grip Position: {leftGrip.position}");

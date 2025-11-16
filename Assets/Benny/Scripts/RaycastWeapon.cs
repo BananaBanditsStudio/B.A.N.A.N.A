@@ -23,13 +23,13 @@ public class RaycastWeapon : MonoBehaviour
     [Header("References")]
     public Transform raycastDestination;
     public Transform bulletSpawnPoint;
-    
+
     [Header("Hand Grip Positions")]
     [Tooltip("Left hand grip position for this weapon. If not set, will use ActiveWeapon's default.")]
     public Transform leftHandGrip;
     [Tooltip("Right hand grip position for this weapon. If not set, will use ActiveWeapon's default.")]
     public Transform rightHandGrip;
-    
+
     [Header("Effects")]
     public GameObject gunEffect;
     public GameObject impactEffect;
@@ -37,6 +37,15 @@ public class RaycastWeapon : MonoBehaviour
     public LineRenderer bulletTrailPrefab;
     public TrailRenderer dartTrail;
     public ParticleSystem impactParticleSystem;
+
+    [Header("Ammo Settings")]
+    public int magazineSize = 30;     // Max bullets in a mag
+    public int currentAmmo = 30;      // Current ammo
+    public float reloadTime = 1.5f;   // Reload duration
+    public bool isReloading = false;
+
+    public AudioClip reloadSound;     // Optional
+
 
     [Header("Bullet Trail Settings")]
     public float bulletSpeed = 100f;
@@ -69,16 +78,17 @@ public class RaycastWeapon : MonoBehaviour
         get => animationClip;
         set => animationClip = value;
     }
+    
 
     void Start()
     {
         if (shootingSound == null)
             shootingSound = GetComponent<AudioSource>();
-        
+
         // Validate weapon configuration
         ValidateWeaponConfiguration();
     }
-    
+
     /// <summary>
     /// Validates that the weapon has all required components and settings configured
     /// </summary>
@@ -90,12 +100,12 @@ public class RaycastWeapon : MonoBehaviour
             {
                 Debug.LogError($"[{gameObject.name}] Weapon is set to use projectiles but projectilePrefab is not assigned!");
             }
-            
+
             if (raycastDestination == null)
             {
                 Debug.LogWarning($"[{gameObject.name}] Weapon is set to use projectiles but raycastDestination is not assigned! This will be set automatically by ActiveWeapon when equipped.");
             }
-            
+
             if (bulletSpawnPoint == null)
             {
                 Debug.LogWarning($"[{gameObject.name}] Bullet spawn point not set. Projectiles will spawn at weapon position.");
@@ -110,6 +120,27 @@ public class RaycastWeapon : MonoBehaviour
     // Call this from your update loop
     public void UpdateFiring(float deltaTime)
     {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            Debug.Log("R pressed | ammo = " + currentAmmo + "/" + magazineSize);
+        }
+
+        if (isReloading)
+            return;
+
+        // Press R to reload
+        if (Input.GetKeyDown(KeyCode.R) && currentAmmo < magazineSize)
+        {
+            StartCoroutine(Reload());
+            return;
+        }
+
+        // Out of ammo? Auto reload
+        if (currentAmmo <= 0)
+        {
+            StartCoroutine(Reload());
+            return;
+        }
         // Fire once on tap only; ignores holding
         if (readyToFire && Time.time >= nextFireTime && Input.GetMouseButtonDown(0))
         {
@@ -118,6 +149,7 @@ public class RaycastWeapon : MonoBehaviour
 
             if (useProjectiles) ShootProjectile();
             else Shoot();
+            currentAmmo--;
         }
 
         // Re-arm after button fully released so next tap can register
@@ -145,7 +177,7 @@ public class RaycastWeapon : MonoBehaviour
             Debug.LogWarning($"[{gameObject.name}] Raycast destination not set! Cannot fire. Please assign raycastDestination in the Inspector.");
             return;
         }
-        
+
         if (bulletSpawnPoint == null)
         {
             Debug.LogWarning($"[{gameObject.name}] Bullet spawn point not set! Using weapon position as fallback.");
@@ -195,6 +227,28 @@ public class RaycastWeapon : MonoBehaviour
 
         Debug.Log($"[{gameObject.name}] Projectile fired from {spawnPosition} towards {raycastDestination.position}!");
     }
+    public IEnumerator Reload()
+    {
+        if (isReloading) yield break;
+
+        isReloading = true;
+        Debug.Log("Reloading...");
+
+        // Play reload audio
+        if (reloadSound != null && shootingSound != null)
+        {
+            shootingSound.PlayOneShot(reloadSound);
+        }
+
+        // Wait for reload animation/time
+        yield return new WaitForSeconds(reloadTime);
+
+        currentAmmo = magazineSize;
+        isReloading = false;
+
+        Debug.Log("Reload complete!");
+    }
+
 
     void Shoot()
     {
@@ -374,7 +428,7 @@ public class RaycastWeapon : MonoBehaviour
         trail.transform.position = hit.point;
         Destroy(trail.gameObject, trail.time);
     }
-    
+
     /// <summary>
     /// Ignores collisions between the projectile and player model/weapon model
     /// </summary>
@@ -386,7 +440,7 @@ public class RaycastWeapon : MonoBehaviour
             Debug.LogWarning("Projectile prefab needs a Collider component for collision ignoring!");
             return;
         }
-        
+
         // Find player by tag
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
@@ -398,7 +452,7 @@ public class RaycastWeapon : MonoBehaviour
                 Physics.IgnoreCollision(projectileCollider, playerCollider, true);
             }
         }
-        
+
         // Find weapon (this weapon's GameObject and its children)
         if (gameObject != null)
         {
@@ -408,7 +462,7 @@ public class RaycastWeapon : MonoBehaviour
                 Physics.IgnoreCollision(projectileCollider, weaponCollider, true);
             }
         }
-        
+
         // Also check for PlayerHealth component (in case player isn't tagged)
         PlayerHealth playerHealth = FindFirstObjectByType<PlayerHealth>();
         if (playerHealth != null && playerHealth.gameObject != player)

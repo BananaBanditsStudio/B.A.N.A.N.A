@@ -20389,108 +20389,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: ffa95796af8d5884f9d08f66e6bb627e, type: 3}
   m_PrefabInstance: {fileID: 1202617676}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &611526965 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4738366154221066009, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
-  m_PrefabInstance: {fileID: 1068433362}
-  m_PrefabAsset: {fileID: 0}
---- !u!82 &611526970
-AudioSource:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 611526965}
-  m_Enabled: 1
-  serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: bb37da4270b557c4194d679e69e284a6, type: 3}
-  m_PlayOnAwake: 0
-  m_Volume: 1
-  m_Pitch: 1
-  Loop: 0
-  Mute: 0
-  Spatialize: 0
-  SpatializePostEffects: 0
-  Priority: 128
-  DopplerLevel: 1
-  MinDistance: 1
-  MaxDistance: 500
-  Pan2D: 0
-  rolloffMode: 0
-  BypassEffects: 0
-  BypassListenerEffects: 0
-  BypassReverbZones: 0
-  rolloffCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  panLevelCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  spreadCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  reverbZoneMixCustomCurve:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
 --- !u!4 &612468396 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 22106dc63dce41746ad234a91af2d657, type: 3}
@@ -33347,18 +33245,6 @@ PrefabInstance:
       propertyPath: frontHealthBar
       value: 
       objectReference: {fileID: 429252679}
-    - target: {fileID: 4636544139169876711, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
-      propertyPath: reloadTime
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 4636544139169876711, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
-      propertyPath: currentAmmo
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 4636544139169876711, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
-      propertyPath: magazineSize
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 5419771158054404690, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       propertyPath: m_Data.m_SourceObjects.m_Item0.transform
       value: 
@@ -33436,21 +33322,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7475488359316654935, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
-      propertyPath: damage
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 7475488359316654935, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
-      propertyPath: reloadTime
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7475488359316654935, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       propertyPath: currentAmmo
       value: 5
       objectReference: {fileID: 0}
-    - target: {fileID: 7475488359316654935, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
-      propertyPath: reloadSound
-      value: 
-      objectReference: {fileID: 8300000, guid: 5e3e9ee5024a846428dbb8206f7705ed, type: 3}
     - target: {fileID: 7475488359316654935, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       propertyPath: impactEffect
       value: 
@@ -33458,20 +33332,6 @@ PrefabInstance:
     - target: {fileID: 7475488359316654935, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       propertyPath: magazineSize
       value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 7475488359316654935, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
-      propertyPath: shootingSound
-      value: 
-      objectReference: {fileID: 611526970}
-    - target: {fileID: 8449552199949546627, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
-      propertyPath: m_WarningMessage
-      value: "\nBinding warning: Some generic clip(s) animate transforms that are
-        already bound by a Humanoid avatar. These transforms can only be changed
-        by Humanoid clips.\n\tTransform 'mixamorig:Spine1'\n\tTransform 'mixamorig:LeftShoulder'\n\tTransform
-        'mixamorig:Head'\n\tTransform 'mixamorig:RightHand'\n\tTransform 'mixamorig:RightShoulder'\n\tTransform
-        'mixamorig:LeftForeArm'\n\tTransform 'mixamorig:RightForeArm'\n\tTransform
-        'mixamorig:Neck'\n\tTransform 'mixamorig:Spine'\n\tTransform 'mixamorig:LeftHand'\n\tand
-        more ..."
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -33516,9 +33376,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6346763951983229444, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 711744239}
-    - targetCorrespondingSourceObject: {fileID: 4738366154221066009, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 611526970}
   m_SourcePrefab: {fileID: 100100000, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
 --- !u!1001 &1081142449
 PrefabInstance:
