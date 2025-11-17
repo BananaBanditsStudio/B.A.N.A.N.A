@@ -57383,6 +57383,10 @@ PrefabInstance:
       propertyPath: crossHairTarget
       value: 
       objectReference: {fileID: 1734870545}
+    - target: {fileID: 5499739178056400973, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+      propertyPath: JumpFactor
+      value: 1500
+      objectReference: {fileID: 0}
     - target: {fileID: 6346763951983229444, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       propertyPath: m_Name
       value: benny@T-Pose 2
@@ -66751,6 +66755,8 @@ MonoBehaviour:
   chargeAttackSound: {fileID: 0}
   bigJumpAttackSound: {fileID: 0}
   bigMeleeAttackSound: {fileID: 0}
+  AudioSource: {fileID: 0}
+  preExplosionDialogueClip: {fileID: 0}
 --- !u!4 &8861886941913117734
 Transform:
   m_ObjectHideFlags: 0

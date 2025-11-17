@@ -10,16 +10,9 @@ public class Door : MonoBehaviour
 
     void Update()
     {
-        Debug.Log("Door Update running");
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            Debug.Log("F key is pressed");
-        }
-
+        // Only check input if door is not unlocked
         if (Input.GetKeyDown(KeyCode.F) && !isUnlocked)
         {
-            Debug.Log("F key pressed!");
-
             if (lockpickPrefab == null)
             {
                 Debug.LogError("Lockpick Prefab NOT assigned!");
@@ -33,14 +26,10 @@ public class Door : MonoBehaviour
 
             if (lockInstance == null)
             {
-                Debug.Log("Instantiating LockPick prefab");
                 lockInstance = Instantiate(lockpickPrefab, lockPoint.position, lockPoint.rotation);
                 lockInstance.transform.SetParent(lockPoint); // Optional: keeps it attached!
             }
-            else
-            {
-                Debug.Log("LockPick prefab already exists, just activating");
-            }
+            
             lockInstance.SetActive(true);
         }
     }
@@ -48,7 +37,6 @@ public class Door : MonoBehaviour
     // Call this from your LockPick script when unlocked
     public void UnlockDoor()
     {
-        Debug.Log("Door unlocked via lockpick!");
         isUnlocked = true;
         // Play unlock animation, enable door opening, etc.
     }

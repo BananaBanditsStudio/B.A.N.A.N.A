@@ -9,22 +9,30 @@ public class LockedDoor : Interactable
 
     private bool isLocked;
     private bool isOpen = false;
+    private int lastKeyCount = -1; // Track key count to only update when it changes
 
     private void Start()
     {
         isLocked = startsLocked;
+        lastKeyCount = PlayerInventory.keyCount;
 
         // Initialize prompt message at start
-        if (isLocked)
-            promptMessage = "Door secured. Use the key to unlock.";
-        else
-            promptMessage = "Press E to Open";
+        UpdatePromptMessage();
     }
 
     private void Update()
     {
-        // Continuously refresh the prompt if the door is locked
-        // so it updates as soon as you pick up the key
+        // Only update prompt message when key count changes (performance optimization)
+        int currentKeyCount = PlayerInventory.keyCount;
+        if (currentKeyCount != lastKeyCount)
+        {
+            lastKeyCount = currentKeyCount;
+            UpdatePromptMessage();
+        }
+    }
+
+    private void UpdatePromptMessage()
+    {
         if (isLocked && PlayerInventory.keyCount >= 2)
         {
             promptMessage = "Access granted. Press E to unlock.";
@@ -49,7 +57,7 @@ public class LockedDoor : Interactable
             }
             else
             {
-                promptMessage = "Door secured. Use the key to unlock.";
+                UpdatePromptMessage();
                 return;
             }
         }
@@ -66,7 +74,7 @@ public class LockedDoor : Interactable
         if (ui != null)
             ui.ShowFeedback("Door unlocked!");
 
-        promptMessage = "Press E to Open";
+        UpdatePromptMessage();
     }
 
     private void ToggleDoor()
@@ -79,6 +87,6 @@ public class LockedDoor : Interactable
         if (doorSound != null)
             doorSound.Play();
 
-        promptMessage = isOpen ? "Press E to Close" : "Press E to Open";
+        UpdatePromptMessage();
     }
 }

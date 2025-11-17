@@ -83,8 +83,10 @@ public class GameOverManager : MonoBehaviour
     
     void Update()
     {
-        // Check if player is dead
-        if (!isGameOver && playerHealth != null && playerHealth.Health <= 0)
+        // Check if player is dead (only check once per frame, early exit if already game over)
+        if (isGameOver || playerHealth == null) return;
+        
+        if (playerHealth.Health <= 0)
         {
             TriggerGameOver();
         }

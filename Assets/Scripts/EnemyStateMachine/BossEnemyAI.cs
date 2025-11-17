@@ -20,11 +20,20 @@ public class BossEnemyAI : MonoBehaviour
     private float originalPatrolSpeed;
     private int lastEnragedAttackIndex = -1;
     private bool wasInAttackAnimation = false; // Track previous frame's attack animation state
+    private int[] attackAnimationHashes; // Cache animation hashes for performance
     
     private void Start()
     {
         enemyWithSM = GetComponent<EnemyWithSM>();
         enemyDamage = GetComponent<EnemyDamage>();
+        
+        // Cache animation hashes for better performance (avoids string comparisons)
+        attackAnimationHashes = new int[]
+        {
+            Animator.StringToHash("BigJump"),
+            Animator.StringToHash("BigMelee"),
+            Animator.StringToHash("Melee")
+        };
         
         if (enemyWithSM != null)
         {
@@ -118,16 +127,19 @@ public class BossEnemyAI : MonoBehaviour
             if (enemyWithSM.Animator != null)
             {
                 AnimatorStateInfo stateInfo = enemyWithSM.Animator.GetCurrentAnimatorStateInfo(0);
-                bool isInAttackAnimation = stateInfo.IsName("BigJump") || 
-                                          stateInfo.IsName("BigMelee") || 
-                                          stateInfo.IsName("Melee");
+                int currentStateHash = stateInfo.shortNameHash;
+                // Use cached hashes instead of string comparisons (much faster)
+                bool isInAttackAnimation = currentStateHash == attackAnimationHashes[0] || 
+                                          currentStateHash == attackAnimationHashes[1] || 
+                                          currentStateHash == attackAnimationHashes[2];
                 
                 // Detect transition from attack animation to non-attack (attack just completed)
                 if (wasInAttackAnimation && !isInAttackAnimation)
                 {
                     // Attack just completed, swap to next attack type
                     AttackBehaviorType currentType = enemyWithSM.attackBehaviorType;
-                    bool isCurrentEnragedAttack = System.Array.IndexOf(enragedPhaseAttacks, currentType) >= 0;
+                    // Use Array.Exists instead of IndexOf for better performance
+                    bool isCurrentEnragedAttack = System.Array.Exists(enragedPhaseAttacks, x => x == currentType);
                     
                     if (isCurrentEnragedAttack)
                     {
