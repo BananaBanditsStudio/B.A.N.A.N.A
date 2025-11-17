@@ -5,6 +5,8 @@ using UnityEngine.Animations.Rigging;
 public class ActiveWeapon : MonoBehaviour
 {
     public Transform crossHairTarget;
+    public WeaponUI weaponUI;
+
 
     [SerializeField] private Transform handIk;
     [SerializeField] private Transform weaponParent;
@@ -21,7 +23,7 @@ public class ActiveWeapon : MonoBehaviour
     [Header("Multiple Weapons")]
     [SerializeField] private RaycastWeapon[] availableWeapons; // Array of all available weapons
 
-    private RaycastWeapon weapon;
+    public RaycastWeapon weapon;
     private RaycastWeapon availableWeapon; // Kept for backward compatibility
     private int currentWeaponIndex = -1; // -1 means no weapon equipped
     private Animator animator;
@@ -253,6 +255,13 @@ public class ActiveWeapon : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.Alpha1 + i))
                 {
                     SwitchToWeapon(i);
+                    WeaponUI ui = FindFirstObjectByType<WeaponUI>();
+                    if (ui != null)
+                    {
+                        ui.SetWeapon(weapon);
+                    }
+
+
                     return; // Exit early to avoid multiple switches
                 }
             }
@@ -1094,4 +1103,9 @@ public class ActiveWeapon : MonoBehaviour
             Debug.Log($"  Right Grip Rotation: {rightGrip.rotation.eulerAngles}");
         }
     }
+    public RaycastWeapon GetCurrentWeapon()
+    {
+        return weapon; // or whatever variable stores the ACTIVE gun
+    }
+
 }

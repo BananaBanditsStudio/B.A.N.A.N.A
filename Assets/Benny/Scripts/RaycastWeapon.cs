@@ -1,8 +1,12 @@
 using UnityEngine;
 using System.Collections;
 
+
 public class RaycastWeapon : MonoBehaviour
 {
+    [Header("UI")]
+    public Sprite weaponIcon;
+
     [Header("Animation Recording")]
     [SerializeField] private AnimationClip animationClip;
 
@@ -78,7 +82,7 @@ public class RaycastWeapon : MonoBehaviour
         get => animationClip;
         set => animationClip = value;
     }
-    
+
 
     void Start()
     {
