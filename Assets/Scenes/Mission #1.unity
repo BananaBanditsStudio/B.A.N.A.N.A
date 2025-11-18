@@ -23058,6 +23058,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31f24f85edfd04630af770957b79988b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+--- !u!82 &711744253 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 3882435273178933288, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+  m_PrefabInstance: {fileID: 1068433362}
+  m_PrefabAsset: {fileID: 0}
+--- !u!82 &711744258 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 4368141659954590227, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+  m_PrefabInstance: {fileID: 1068433362}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &711751226
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -32811,6 +32821,14 @@ PrefabInstance:
       propertyPath: frontHealthBar
       value: 
       objectReference: {fileID: 429252679}
+    - target: {fileID: 4515788165647387408, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+      propertyPath: jumpSound
+      value: 
+      objectReference: {fileID: 711744258}
+    - target: {fileID: 4515788165647387408, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+      propertyPath: sprintSound
+      value: 
+      objectReference: {fileID: 711744253}
     - target: {fileID: 4636544139169876711, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       propertyPath: reloadTime
       value: 2
