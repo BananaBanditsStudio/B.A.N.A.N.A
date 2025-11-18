@@ -22923,7 +22923,7 @@ MonoBehaviour:
   nextSceneName: Cutscene_TutorialtoMission1
   fadeTransition: {fileID: 580055164}
   interactPrompt: {fileID: 293792973}
-  playerCamera: {fileID: 0}
+  playerCamera: {fileID: 682138328}
   interactDistance: 3
   objectiveTracker: {fileID: 0}
 --- !u!4 &600008285 stripped
@@ -45945,7 +45945,7 @@ MonoBehaviour:
   carTrigger: {fileID: 0}
   objectiveTracker: {fileID: 0}
   interactPrompt: {fileID: 335121092}
-  playerCamera: {fileID: 0}
+  playerCamera: {fileID: 682138328}
 --- !u!4 &1118154691 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -3910990755373119420, guid: aa14ab3445aa59741a94e99acc27d5b8, type: 3}
