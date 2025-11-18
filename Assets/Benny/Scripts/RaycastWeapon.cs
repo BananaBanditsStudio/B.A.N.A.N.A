@@ -252,6 +252,13 @@ public class RaycastWeapon : MonoBehaviour
 
         Debug.Log("Reload complete!");
     }
+    void OnEnable()
+    {
+        readyToFire = true;
+        isReloading = false;
+        StopAllCoroutines();
+    }
+
 
 
     void Shoot()
