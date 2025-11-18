@@ -6,7 +6,7 @@ public class FadeTransition : MonoBehaviour
     public CanvasGroup fadeCanvas;
     public AudioSource carAudio;
     public AudioClip carSound;
-    public float fadeDuration = 2f;
+    public float fadeDuration = 0.8f; // Fade to black duration (total transition will be ~1 second)
     public string nextSceneName = "TitleScreen";
 
     void Awake()
@@ -39,7 +39,7 @@ public class FadeTransition : MonoBehaviour
 
         fadeCanvas.alpha = 1f;
 
-        yield return new WaitForSeconds(0.5f); // pause on black
+        yield return new WaitForSeconds(0.2f); // brief pause on black (total transition ~1 second)
 
         SceneManager.LoadScene(nextSceneName);
     }

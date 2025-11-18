@@ -90,7 +90,7 @@ public class ObjectiveTracker : MonoBehaviour
     {
         if (Keyboard.current == null) return;
 
-        if (Keyboard.current.cKey.isPressed)
+        if (Keyboard.current.ctrlKey.isPressed)
         {
             CompleteObjective(2);
         }
