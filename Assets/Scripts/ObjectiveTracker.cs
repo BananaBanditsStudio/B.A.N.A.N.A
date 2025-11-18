@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 public class ObjectiveTracker : MonoBehaviour
 {
     [Header("Objective UI Reference")]
-    public ObjectiveUI objectiveUI;
+    public ObjectiveUI objectiveUI; // Auto-finds if not assigned
 
     [Header("Objective States")]
     private bool objective0_WASD_Complete = false;
@@ -18,6 +18,15 @@ public class ObjectiveTracker : MonoBehaviour
     private bool aPressed = false;
     private bool sPressed = false;
     private bool dPressed = false;
+
+    void Start()
+    {
+        // Auto-find ObjectiveUI if not assigned
+        if (objectiveUI == null)
+        {
+            objectiveUI = FindFirstObjectByType<ObjectiveUI>();
+        }
+    }
 
     void Update()
     {

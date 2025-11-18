@@ -19,14 +19,51 @@ public class BananaPickup : MonoBehaviour
 
     [Header("UI Prompt")]
     public GameObject interactPrompt; // "Press E to steal" UI
-    public Camera playerCamera; // Assign your main camera in Inspector
+    public Camera playerCamera; // Assign your main camera in Inspector (auto-finds if null)
 
     private bool canBeCollected = false;
     private bool isCollected = false;
     private PlayerInventory cachedInventory;
+    private GameObject playerObject;
 
     void Start()
     {
+        // Auto-find player camera if not assigned
+        if (playerCamera == null)
+        {
+            playerCamera = Camera.main;
+            if (playerCamera == null)
+            {
+                playerCamera = FindFirstObjectByType<Camera>();
+            }
+        }
+
+        // Auto-find player object
+        if (playerCamera != null)
+        {
+            playerObject = playerCamera.transform.root.gameObject;
+        }
+        else
+        {
+            // Try to find by tag
+            GameObject playerTagged = GameObject.FindGameObjectWithTag("Player");
+            if (playerTagged != null)
+            {
+                playerObject = playerTagged;
+                playerCamera = playerObject.GetComponentInChildren<Camera>();
+            }
+        }
+
+        // Auto-find ObjectiveTracker if not assigned
+        if (objectiveTracker == null && playerObject != null)
+        {
+            objectiveTracker = playerObject.GetComponent<ObjectiveTracker>();
+            if (objectiveTracker == null)
+            {
+                objectiveTracker = playerObject.GetComponentInChildren<ObjectiveTracker>();
+            }
+        }
+
         StartCoroutine(EnableCollectionAfterDelay(1f));
         if (bananaMarker != null) bananaMarker.gameObject.SetActive(true);
         if (carMarker != null) carMarker.gameObject.SetActive(false);
@@ -58,11 +95,9 @@ public class BananaPickup : MonoBehaviour
                 {
                     lookingAtMe = true;
                     // Cache inventory for efficiency
-                    if (cachedInventory == null && hit.transform != null)
+                    if (cachedInventory == null && playerObject != null)
                     {
-                        // See if the player is the object holding the camera
-                        GameObject playerObj = playerCamera.transform.root.gameObject;
-                        cachedInventory = playerObj.GetComponent<PlayerInventory>() ?? playerObj.GetComponentInChildren<PlayerInventory>();
+                        cachedInventory = playerObject.GetComponent<PlayerInventory>() ?? playerObject.GetComponentInChildren<PlayerInventory>();
                     }
                 }
             }

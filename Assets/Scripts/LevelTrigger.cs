@@ -9,15 +9,52 @@ public class LevelTrigger : MonoBehaviour
 
     [Header("UI Prompt")]
     public GameObject interactPrompt; // Drag your "Press E to drive" UI here
-    public Camera playerCamera; // Drag your player camera here
+    public Camera playerCamera; // Drag your player camera here (auto-finds if null)
     public float interactDistance = 3f; // Adjust for how far away 'drive' can be triggered
-    public ObjectiveTracker objectiveTracker;  // Reference to ObjectiveTracker (usually on Benny)
+    public ObjectiveTracker objectiveTracker;  // Reference to ObjectiveTracker (usually on Benny, auto-finds if null)
 
     private bool isCollected => PlayerInventory.hasBanana; // For clarity
     private bool isLevelEnding = false;
+    private GameObject playerObject;
 
     void Start()
     {
+        // Auto-find player camera if not assigned
+        if (playerCamera == null)
+        {
+            playerCamera = Camera.main;
+            if (playerCamera == null)
+            {
+                playerCamera = FindFirstObjectByType<Camera>();
+            }
+        }
+
+        // Auto-find player object
+        if (playerCamera != null)
+        {
+            playerObject = playerCamera.transform.root.gameObject;
+        }
+        else
+        {
+            // Try to find by tag
+            GameObject playerTagged = GameObject.FindGameObjectWithTag("Player");
+            if (playerTagged != null)
+            {
+                playerObject = playerTagged;
+                playerCamera = playerObject.GetComponentInChildren<Camera>();
+            }
+        }
+
+        // Auto-find ObjectiveTracker if not assigned
+        if (objectiveTracker == null && playerObject != null)
+        {
+            objectiveTracker = playerObject.GetComponent<ObjectiveTracker>();
+            if (objectiveTracker == null)
+            {
+                objectiveTracker = playerObject.GetComponentInChildren<ObjectiveTracker>();
+            }
+        }
+
         // Get or create GameStateManager
         gameStateManager = GameStateManager.Instance;
         if (gameStateManager == null)
