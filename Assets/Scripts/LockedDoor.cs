@@ -6,6 +6,7 @@ public class LockedDoor : Interactable
     [SerializeField] private Animator doorAnimator;
     [SerializeField] private AudioSource doorSound; // optional
     [SerializeField] private bool startsLocked = true; // toggle in Inspector
+    [SerializeField] private int requiredKeyCount = 3;
 
     private bool isLocked;
     private bool isOpen = false;
@@ -33,11 +34,11 @@ public class LockedDoor : Interactable
 
     private void UpdatePromptMessage()
     {
-        if (isLocked && PlayerInventory.keyCount >= 2)
+        if (isLocked && PlayerInventory.keyCount >= requiredKeyCount)
         {
             promptMessage = "Access granted. Press E to unlock.";
         }
-        else if (isLocked && PlayerInventory.keyCount < 2)
+        else if (isLocked && PlayerInventory.keyCount < requiredKeyCount)
         {
             promptMessage = "Door secured. Use the key to unlock.";
         }
@@ -51,7 +52,7 @@ public class LockedDoor : Interactable
     {
         if (isLocked)
         {
-            if (PlayerInventory.keyCount >= 2)
+            if (PlayerInventory.keyCount >= requiredKeyCount)
             {
                 UnlockDoor();
             }

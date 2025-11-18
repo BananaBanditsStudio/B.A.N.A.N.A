@@ -13,6 +13,16 @@ public class BossEnemyAI : MonoBehaviour
     };
     public float enragedSpeedMultiplier = 1.5f;
     
+    [Header("Enraged Visual Effects")]
+    [Tooltip("Enable outline effect when enraged")]
+    public bool useEnragedOutline = true;
+    [Tooltip("Color of the outline (red/orange for enraged effect)")]
+    public Color outlineColor = new Color(1f, 0.3f, 0f, 1f); // Orange-red
+    [Tooltip("Width/thickness of the outline")]
+    public float outlineWidth = 0.1f;
+    [Tooltip("Optional: Particle system prefab for fire/glow effect")]
+    public GameObject enragedParticleEffect;
+    
     private EnemyWithSM enemyWithSM;
     private EnemyDamage enemyDamage;
     private bool isEnraged = false;
@@ -21,6 +31,11 @@ public class BossEnemyAI : MonoBehaviour
     private int lastEnragedAttackIndex = -1;
     private bool wasInAttackAnimation = false; // Track previous frame's attack animation state
     private int[] attackAnimationHashes; // Cache animation hashes for performance
+    
+    // Visual effect components
+    private Renderer[] renderers; // All renderers on the boss
+    private GameObject[] outlineObjects; // Outline renderer objects
+    private GameObject particleEffectInstance; // Particle effect instance
     
     private void Start()
     {
@@ -34,6 +49,10 @@ public class BossEnemyAI : MonoBehaviour
             Animator.StringToHash("BigMelee"),
             Animator.StringToHash("Melee")
         };
+        
+        // Get all renderers for visual effects
+        renderers = GetComponentsInChildren<Renderer>();
+        outlineObjects = new GameObject[renderers != null ? renderers.Length : 0];
         
         if (enemyWithSM != null)
         {
@@ -105,6 +124,139 @@ public class BossEnemyAI : MonoBehaviour
             
             enemyWithSM.attackBehaviorType = GetNextEnragedAttack();
         }
+        
+        // Apply visual enraged effects
+        ApplyEnragedVisuals();
+    }
+    
+    /// <summary>
+    /// Applies visual effects to make the boss look enraged (outline effect, particles, etc.)
+    /// </summary>
+    private void ApplyEnragedVisuals()
+    {
+        if (!useEnragedOutline) return;
+        
+        // Create outline effect using scaled duplicate meshes
+        if (renderers != null && outlineObjects != null)
+        {
+            for (int i = 0; i < renderers.Length && i < outlineObjects.Length; i++)
+            {
+                if (renderers[i] == null) continue;
+                
+                // Skip if outline already exists
+                if (outlineObjects[i] != null) continue;
+                
+                // Get mesh filter and mesh renderer
+                MeshFilter meshFilter = renderers[i].GetComponent<MeshFilter>();
+                SkinnedMeshRenderer skinnedRenderer = renderers[i] as SkinnedMeshRenderer;
+                
+                if (meshFilter != null && meshFilter.sharedMesh != null)
+                {
+                    // Create outline object for regular mesh
+                    GameObject outlineObj = new GameObject(renderers[i].name + "_Outline");
+                    outlineObj.transform.SetParent(renderers[i].transform, false);
+                    outlineObj.transform.localPosition = Vector3.zero;
+                    outlineObj.transform.localRotation = Quaternion.identity;
+                    outlineObj.transform.localScale = Vector3.one * (1f + outlineWidth);
+                    
+                    // Copy mesh filter
+                    MeshFilter outlineMeshFilter = outlineObj.AddComponent<MeshFilter>();
+                    outlineMeshFilter.sharedMesh = meshFilter.sharedMesh;
+                    
+                    // Add renderer with outline material
+                    MeshRenderer outlineRenderer = outlineObj.AddComponent<MeshRenderer>();
+                    
+                    // Create simple unlit outline material
+                    Material outlineMat = new Material(Shader.Find("Unlit/Color"));
+                    if (outlineMat.shader.name == "Hidden/InternalErrorShader")
+                    {
+                        // Fallback to standard shader if unlit not found
+                        outlineMat = new Material(Shader.Find("Standard"));
+                        outlineMat.SetFloat("_Metallic", 0f);
+                        outlineMat.SetFloat("_Glossiness", 0f);
+                    }
+                    outlineMat.color = outlineColor;
+                    outlineRenderer.material = outlineMat;
+                    outlineRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    outlineRenderer.receiveShadows = false;
+                    
+                    // Set render queue to render before main mesh (creates outline effect)
+                    outlineMat.renderQueue = 3000; // Render before geometry
+                    
+                    outlineObjects[i] = outlineObj;
+                }
+                else if (skinnedRenderer != null && skinnedRenderer.sharedMesh != null)
+                {
+                    // Create outline object for skinned mesh
+                    GameObject outlineObj = new GameObject(renderers[i].name + "_Outline");
+                    outlineObj.transform.SetParent(renderers[i].transform, false);
+                    outlineObj.transform.localPosition = Vector3.zero;
+                    outlineObj.transform.localRotation = Quaternion.identity;
+                    outlineObj.transform.localScale = Vector3.one * (1f + outlineWidth);
+                    
+                    // Copy skinned mesh renderer
+                    SkinnedMeshRenderer outlineSkinned = outlineObj.AddComponent<SkinnedMeshRenderer>();
+                    outlineSkinned.sharedMesh = skinnedRenderer.sharedMesh;
+                    outlineSkinned.bones = skinnedRenderer.bones;
+                    outlineSkinned.rootBone = skinnedRenderer.rootBone;
+                    
+                    // Create simple unlit outline material
+                    Material outlineMat = new Material(Shader.Find("Unlit/Color"));
+                    if (outlineMat.shader.name == "Hidden/InternalErrorShader")
+                    {
+                        // Fallback to standard shader if unlit not found
+                        outlineMat = new Material(Shader.Find("Standard"));
+                        outlineMat.SetFloat("_Metallic", 0f);
+                        outlineMat.SetFloat("_Glossiness", 0f);
+                    }
+                    outlineMat.color = outlineColor;
+                    outlineSkinned.material = outlineMat;
+                    outlineSkinned.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    outlineSkinned.receiveShadows = false;
+                    
+                    outlineObjects[i] = outlineObj;
+                }
+            }
+        }
+        
+        // Spawn particle effect if provided
+        if (enragedParticleEffect != null && particleEffectInstance == null)
+        {
+            particleEffectInstance = Instantiate(enragedParticleEffect, transform);
+            particleEffectInstance.transform.localPosition = Vector3.zero;
+        }
+    }
+    
+    /// <summary>
+    /// Removes enraged visual effects (if needed for cleanup)
+    /// </summary>
+    private void RemoveEnragedVisuals()
+    {
+        // Remove outline objects
+        if (outlineObjects != null)
+        {
+            for (int i = 0; i < outlineObjects.Length; i++)
+            {
+                if (outlineObjects[i] != null)
+                {
+                    Destroy(outlineObjects[i]);
+                    outlineObjects[i] = null;
+                }
+            }
+        }
+        
+        // Remove particle effect
+        if (particleEffectInstance != null)
+        {
+            Destroy(particleEffectInstance);
+            particleEffectInstance = null;
+        }
+    }
+    
+    private void OnDestroy()
+    {
+        // Cleanup outline objects
+        RemoveEnragedVisuals();
     }
     
     public bool IsEnraged()
