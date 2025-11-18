@@ -5,6 +5,7 @@ public class BigJumpAttackBehavior : IAttackBehavior
 {
     private float lastAttackTime = 0f;
     private bool isAttackInProgress = false;
+    private bool damageDealt = false; // Track if damage has been dealt for this attack
     private EnemyDamage enemyDamage;
     private Coroutine damageCoroutine;
     private MonoBehaviour coroutineRunner;
@@ -139,6 +140,7 @@ public class BigJumpAttackBehavior : IAttackBehavior
     private void StartAttack(EnemyWithSM enemy)
     {
         isAttackInProgress = true;
+        damageDealt = false; // Reset damage flag for new attack
         lastAttackTime = Time.time;
 
         if (enemy.Agent != null)
@@ -161,7 +163,12 @@ public class BigJumpAttackBehavior : IAttackBehavior
 
     private void FinishAttack(EnemyWithSM enemy)
     {
-        isAttackInProgress = false;
+        // Don't reset isAttackInProgress if damage hasn't been dealt yet
+        // This allows the damage coroutine to complete even after animation finishes
+        if (damageDealt)
+        {
+            isAttackInProgress = false;
+        }
 
         if (enemy.Agent != null)
         {
@@ -177,7 +184,8 @@ public class BigJumpAttackBehavior : IAttackBehavior
     {
         yield return new WaitForSeconds(delay);
 
-        if (isAttackInProgress && enemy.Player != null)
+        // Check if attack is still valid (either in progress OR animation just finished but damage not dealt yet)
+        if ((isAttackInProgress || !damageDealt) && enemy.Player != null)
         {
             ShakeCamera(enemy);
 
@@ -193,6 +201,7 @@ public class BigJumpAttackBehavior : IAttackBehavior
                 if (playerHealth != null)
                 {
                     playerHealth.TakeDamage(damage);
+                    damageDealt = true; // Mark damage as dealt
                 }
             }
 
@@ -209,6 +218,8 @@ public class BigJumpAttackBehavior : IAttackBehavior
             }
         }
 
+        // Now safe to reset attack state
+        isAttackInProgress = false;
         damageCoroutine = null;
     }
 

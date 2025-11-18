@@ -82,8 +82,10 @@ public class LockedDoor : Interactable
     {
         isOpen = !isOpen;
 
-        if (doorAnimator != null)
+        if (doorAnimator != null) {
+            Debug.Log("Toggling door animation");
             doorAnimator.SetBool("isOpen", isOpen);
+        }
 
         if (doorSound != null)
             doorSound.Play();
