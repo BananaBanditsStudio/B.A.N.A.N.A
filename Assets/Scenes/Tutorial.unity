@@ -31276,59 +31276,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1499481555}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &969462540
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 969462542}
-  - component: {fileID: 969462541}
-  m_Layer: 0
-  m_Name: PauseManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &969462541
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 969462540}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac8d41ade56e0e4409f63068fefc00aa, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PauseMenu
-  pauseMenuUI: {fileID: 1253634971}
-  resumeButton: {fileID: 540732418}
-  quitButton: {fileID: 1864320244}
-  titleScreenSceneName: TitleScreen
-  pauseKey: 27
-  audioSource: {fileID: 0}
-  pauseSound: {fileID: 0}
-  resumeSound: {fileID: 0}
-  isPaused: 0
---- !u!4 &969462542
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 969462540}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &972390915
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -44341,8 +44288,6 @@ RectTransform:
   - {fileID: 133562801}
   - {fileID: 335121093}
   - {fileID: 293792974}
-  - {fileID: 1430121391}
-  - {fileID: 1917369407}
   - {fileID: 2053326690}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -51461,70 +51406,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 83d0ec3c099b45e44b769c5f2a30890b, type: 3}
---- !u!1 &1430121390
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1430121391}
-  - component: {fileID: 1430121392}
-  m_Layer: 5
-  m_Name: PauseMenuSetup
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1430121391
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1430121390}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1030698915}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1430121392
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1430121390}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eea90e38dc60c864cbf09edea8b7b396, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PauseMenuSetup
-  setupInstructions: 'PAUSE MENU SETUP INSTRUCTIONS:
-
-
-    1. Create a Canvas in
-    your scene (this tool will create one if missing)
-
-    2. Add the PauseMenu script
-    to an empty GameObject (this tool will create it)
-
-    3. This will auto-build
-    a Pause panel with Resume & Quit buttons
-
-    4. Press ESC to toggle pause
-
-'
-  createBasicUI: 1
 --- !u!1 &1435827463
 GameObject:
   m_ObjectHideFlags: 0
@@ -57397,10 +57278,6 @@ PrefabInstance:
       propertyPath: frontHealthBar
       value: 
       objectReference: {fileID: 2125868726}
-    - target: {fileID: 5419771158054404690, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
-      propertyPath: m_Data.m_SourceObjects.m_Item0.transform
-      value: 
-      objectReference: {fileID: 1734870545}
     - target: {fileID: 4515788165647387408, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       propertyPath: jumpSound
       value: 
@@ -57409,6 +57286,10 @@ PrefabInstance:
       propertyPath: sprintSound
       value: 
       objectReference: {fileID: 1800222626}
+    - target: {fileID: 5419771158054404690, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+      propertyPath: m_Data.m_SourceObjects.m_Item0.transform
+      value: 
+      objectReference: {fileID: 1734870545}
     - target: {fileID: 5486121179126273186, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       propertyPath: crossHairTarget
       value: 
@@ -57476,6 +57357,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6346763951983229444, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1720470613}
+    - targetCorrespondingSourceObject: {fileID: 4738366154221066009, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1800222628}
+    - targetCorrespondingSourceObject: {fileID: 4738366154221066009, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1800222629}
   m_SourcePrefab: {fileID: 100100000, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
 --- !u!1 &1800222625 stripped
 GameObject:
@@ -58898,14 +58785,14 @@ RectTransform:
   m_GameObject: {fileID: 1917369406}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.6664063, y: 0.6664063, z: 0.6664063}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1030698915}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 640, y: 371.39508}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1917369408
@@ -67299,6 +67186,7 @@ SceneRoots:
   - {fileID: 405529065}
   - {fileID: 646617729550529625}
   - {fileID: 1030698915}
+  - {fileID: 1917369407}
   - {fileID: 638235841}
   - {fileID: 1846708488}
   - {fileID: 2039177088}
@@ -67398,7 +67286,6 @@ SceneRoots:
   - {fileID: 1526330299}
   - {fileID: 924526726}
   - {fileID: 7953677541440661020}
-  - {fileID: 969462542}
   - {fileID: 1754875594}
   - {fileID: 1806091694}
   - {fileID: 439620794}
