@@ -58,12 +58,19 @@ public class RaycastWeapon : MonoBehaviour
     // Tap-only firing control
     private float nextFireTime = 0f;
     private bool readyToFire = true;
+    
+    // Reference to BananaPeelThrower to avoid conflicts
+    private BananaPeelThrower bananaPeelThrower;
 
     // Backwards compatibility property
     public bool isFiring
     {
         get
         {
+            // Don't report as firing if BananaPeelThrower is handling input
+            if (bananaPeelThrower != null && bananaPeelThrower.enabled)
+                return false;
+                
             bool pressed = Input.GetMouseButton(0); // holding state
             return pressed && Time.time >= nextFireTime;
         }
@@ -71,7 +78,7 @@ public class RaycastWeapon : MonoBehaviour
         {
             if (!value)
             {
-                // Treat “stop firing” as disarm until release
+                // Treat "stop firing" as disarm until release
                 readyToFire = true;
             }
         }
@@ -88,6 +95,9 @@ public class RaycastWeapon : MonoBehaviour
     {
         if (shootingSound == null)
             shootingSound = GetComponent<AudioSource>();
+
+        // Check for BananaPeelThrower to avoid conflicts
+        bananaPeelThrower = GetComponent<BananaPeelThrower>();
 
         // Validate weapon configuration
         ValidateWeaponConfiguration();
@@ -124,6 +134,31 @@ public class RaycastWeapon : MonoBehaviour
     // Call this from your update loop
     public void UpdateFiring(float deltaTime)
     {
+        // Skip firing logic if BananaPeelThrower is present and enabled (it handles firing)
+        if (bananaPeelThrower != null && bananaPeelThrower.enabled)
+        {
+            // Still allow reload logic to work
+            if (isReloading)
+                return;
+
+            // Press R to reload
+            if (Input.GetKeyDown(KeyCode.R) && currentAmmo < magazineSize)
+            {
+                StartCoroutine(Reload());
+                return;
+            }
+
+            // Out of ammo? Auto reload
+            if (currentAmmo <= 0)
+            {
+                StartCoroutine(Reload());
+                return;
+            }
+            
+            // Don't process firing input - BananaPeelThrower handles it
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.R))
         {
             Debug.Log("R pressed | ammo = " + currentAmmo + "/" + magazineSize);

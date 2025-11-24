@@ -186,6 +186,12 @@ public class MeleeAttackBehavior : IAttackBehavior
 
         if (enemy.Agent != null)
         {
+            // Check if agent is enabled and on NavMesh before setting destination
+            if (!enemy.Agent.enabled || !enemy.Agent.isOnNavMesh)
+            {
+                return;
+            }
+
             enemy.Agent.isStopped = false;
             if (enemy.Player != null)
             {
@@ -225,6 +231,12 @@ public class MeleeAttackBehavior : IAttackBehavior
     {
         if (enemy.Agent != null && enemy.Player != null && !isAttackInProgress)
         {
+            // Check if agent is enabled and on NavMesh before setting destination
+            if (!enemy.Agent.enabled || !enemy.Agent.isOnNavMesh)
+            {
+                return;
+            }
+
             Vector3 playerPosition = enemy.Player.transform.position;
             Vector3 toPlayer = playerPosition - enemy.transform.position;
             toPlayer.y = 0f;

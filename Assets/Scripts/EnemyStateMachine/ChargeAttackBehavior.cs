@@ -210,6 +210,12 @@ public class ChargeAttackBehavior : IAttackBehavior
         // Charge directly towards player
         if (enemy.Agent != null && enemy.Player != null && !hasExploded)
         {
+            // Check if agent is enabled and on NavMesh before setting destination
+            if (!enemy.Agent.enabled || !enemy.Agent.isOnNavMesh)
+            {
+                return;
+            }
+
             // Ensure agent is not stopped
             if (enemy.Agent.isStopped)
             {
@@ -218,6 +224,7 @@ public class ChargeAttackBehavior : IAttackBehavior
 
             // Always update destination to player's current position
             Vector3 destination = enemy.Player.transform.position;
+
             enemy.Agent.SetDestination(destination);
         }
     }
