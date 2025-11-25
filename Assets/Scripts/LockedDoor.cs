@@ -4,43 +4,63 @@ public class LockedDoor : Interactable
 {
     [Header("Door Settings")]
     [SerializeField] private Animator doorAnimator;
-    [SerializeField] private AudioSource doorSound; // optional
-    [SerializeField] private bool startsLocked = true; // toggle in Inspector
+    [SerializeField] private AudioSource doorSound;
+    [SerializeField] private bool startsLocked = true;
     [SerializeField] private int requiredKeyCount = 3;
+
+    [Header("Puzzle Requirement")]
+    [SerializeField] private bool requiresPuzzleSolved = true;
 
     private bool isLocked;
     private bool isOpen = false;
-    private int lastKeyCount = -1; // Track key count to only update when it changes
+    private int lastKeyCount = -1;
+    private bool lastPuzzleState = false;
 
     private void Start()
     {
         isLocked = startsLocked;
         lastKeyCount = PlayerInventory.keyCount;
+        lastPuzzleState = PipePuzzle.IsPuzzleSolved;
 
-        // Initialize prompt message at start
         UpdatePromptMessage();
     }
 
     private void Update()
     {
-        // Only update prompt message when key count changes (performance optimization)
         int currentKeyCount = PlayerInventory.keyCount;
-        if (currentKeyCount != lastKeyCount)
+        bool currentPuzzleState = PipePuzzle.IsPuzzleSolved;
+
+        if (currentKeyCount != lastKeyCount || currentPuzzleState != lastPuzzleState)
         {
             lastKeyCount = currentKeyCount;
+            lastPuzzleState = currentPuzzleState;
             UpdatePromptMessage();
         }
     }
 
     private void UpdatePromptMessage()
     {
-        if (isLocked && PlayerInventory.keyCount >= requiredKeyCount)
+        if (isLocked)
         {
-            promptMessage = "Access granted. Press E to unlock.";
-        }
-        else if (isLocked && PlayerInventory.keyCount < requiredKeyCount)
-        {
-            promptMessage = "Door secured. Use the key to unlock.";
+            bool hasKeys = PlayerInventory.keyCount >= requiredKeyCount;
+            bool puzzleSolved = !requiresPuzzleSolved || PipePuzzle.IsPuzzleSolved;
+
+            if (hasKeys && puzzleSolved)
+            {
+                promptMessage = "Access granted. Press E to unlock.";
+            }
+            else if (!hasKeys && !puzzleSolved)
+            {
+                promptMessage = "Door secured. Find keys and solve the puzzle.";
+            }
+            else if (!hasKeys)
+            {
+                promptMessage = "Door secured. Find the keys.";
+            }
+            else
+            {
+                promptMessage = "Door secured. Solve the banana puzzle first.";
+            }
         }
         else
         {
@@ -52,12 +72,25 @@ public class LockedDoor : Interactable
     {
         if (isLocked)
         {
-            if (PlayerInventory.keyCount >= requiredKeyCount)
+            bool hasKeys = PlayerInventory.keyCount >= requiredKeyCount;
+            bool puzzleSolved = !requiresPuzzleSolved || PipePuzzle.IsPuzzleSolved;
+
+            if (hasKeys && puzzleSolved)
             {
                 UnlockDoor();
             }
             else
             {
+                PlayerUI ui = FindObjectOfType<PlayerUI>();
+                if (ui != null)
+                {
+                    if (!hasKeys && !puzzleSolved)
+                        ui.ShowFeedback("Need keys and puzzle solution!");
+                    else if (!hasKeys)
+                        ui.ShowFeedback("Need more keys!");
+                    else
+                        ui.ShowFeedback("Solve the puzzle first!");
+                }
                 UpdatePromptMessage();
                 return;
             }
@@ -70,7 +103,6 @@ public class LockedDoor : Interactable
     {
         isLocked = false;
 
-        // Show feedback text via PlayerUI
         PlayerUI ui = FindObjectOfType<PlayerUI>();
         if (ui != null)
             ui.ShowFeedback("Door unlocked!");
@@ -82,10 +114,8 @@ public class LockedDoor : Interactable
     {
         isOpen = !isOpen;
 
-        if (doorAnimator != null) {
-            Debug.Log("Toggling door animation");
+        if (doorAnimator != null)
             doorAnimator.SetBool("isOpen", isOpen);
-        }
 
         if (doorSound != null)
             doorSound.Play();

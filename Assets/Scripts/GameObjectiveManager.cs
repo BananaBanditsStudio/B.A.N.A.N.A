@@ -2,30 +2,33 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 
-/// <summary>
-/// Manages game objectives like finding keys, collecting pickups, and reaching locations.
-/// This is separate from the tutorial objective system (ObjectiveDisplay/ObjectiveTracker).
-/// </summary>
 public class GameObjectiveManager : MonoBehaviour
 {
+    public static GameObjectiveManager Instance { get; private set; }
+
     [Header("Objective Text UI")]
-    [Tooltip("Text component to display objective text (e.g., 'Find 3 keys (1/3)')")]
     public TextMeshProUGUI objectiveText;
 
     [Header("Objective UI (Optional - Legacy)")]
-    [Tooltip("Optional reference to ObjectiveUI sprite system (if you use it)")]
-    public ObjectiveUI objectiveUI; // Optional reference to ObjectiveUI for visual feedback
+    public ObjectiveUI objectiveUI;
 
     [Header("Key Objective Settings")]
-    [Tooltip("Number of keys required to complete the first objective")]
     public int requiredKeys = 3;
-    
-    [Header("Objective Text Settings")]
-    [Tooltip("Format for key objective text. {0} = current keys, {1} = required keys")]
     public string keyObjectiveFormat = "Find {1} keys ({0}/{1})";
-    
-    [Tooltip("Text to show when key objective is complete")]
-    public string keyObjectiveCompleteText = "All keys found!";
+    public string keyObjectiveCompleteText = "Keys found!";
+
+    [Header("Puzzle Objective Settings")]
+    public string puzzleObjectiveText = "Solve the banana puzzle";
+    public string puzzleObjectiveCompleteText = "Puzzle solved!";
+
+    [Header("Vault Secrets Objective Settings")]
+    public int requiredKeyCards = 1;
+    public string vaultSecretsFormat = "Collect the vault secrets from the locked room ({0}/{1})";
+    public string vaultSecretsCompleteText = "Vault secrets collected!";
+
+    [Header("Bank Vault Objective Settings")]
+    public string findVaultText = "Find the bank vault";
+    public string findVaultCompleteText = "Bank vault found!";
 
     [Header("Debug")]
     public bool showDebugLogs = true;
@@ -33,89 +36,140 @@ public class GameObjectiveManager : MonoBehaviour
     // Objective tracking
     private int currentObjectiveIndex = 0;
     private int keysCollected = 0;
+    private int keyCardsCollected = 0;
     private bool keyObjectiveComplete = false;
+    private bool puzzleObjectiveComplete = false;
+    private bool vaultSecretsObjectiveComplete = false;
+    private bool bankVaultObjectiveComplete = false;
 
-    // Track collected items/objects for future objectives
+    // Static counters for pickups
+    public static int keyCardCount = 0;
+    public static bool bankVaultFound = false;
+
     private HashSet<string> collectedItems = new HashSet<string>();
     private HashSet<string> reachedLocations = new HashSet<string>();
 
-    // Events for extensibility
+    // Events
     public System.Action<int> OnKeyCollected;
     public System.Action OnKeyObjectiveComplete;
-    public System.Action<int> OnObjectiveComplete; // Passes objective index
+    public System.Action OnPuzzleObjectiveComplete;
+    public System.Action<int> OnKeyCardCollected;
+    public System.Action OnVaultSecretsObjectiveComplete;
+    public System.Action OnBankVaultFound;
+    public System.Action<int> OnObjectiveComplete;
+
+    void Awake()
+    {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+    }
 
     void Start()
     {
-        // Auto-find ObjectiveUI if not assigned (optional legacy support)
         if (objectiveUI == null)
-        {
             objectiveUI = FindFirstObjectByType<ObjectiveUI>();
-        }
 
-        // Initialize key count from PlayerInventory
         keysCollected = PlayerInventory.keyCount;
-        
-        // Check if objective is already complete (in case keys were collected before manager started)
+        keyCardsCollected = keyCardCount;
+
+        // Check if objectives are already complete
         if (keysCollected >= requiredKeys && !keyObjectiveComplete)
         {
             CompleteKeyObjective();
         }
-        else
+        if (PipePuzzle.IsPuzzleSolved && !puzzleObjectiveComplete && keyObjectiveComplete)
         {
-            // Update objective text on start
-            UpdateObjectiveText();
+            CompletePuzzleObjective();
         }
-        
+        if (keyCardsCollected >= requiredKeyCards && !vaultSecretsObjectiveComplete && puzzleObjectiveComplete)
+        {
+            CompleteVaultSecretsObjective();
+        }
+        if (bankVaultFound && !bankVaultObjectiveComplete && vaultSecretsObjectiveComplete)
+        {
+            CompleteBankVaultObjective();
+        }
+
+        UpdateObjectiveText();
+
         if (showDebugLogs)
-        {
-            Debug.Log($"GameObjectiveManager: Started. Keys required: {requiredKeys}, Current keys: {keysCollected}");
-        }
+            Debug.Log($"GameObjectiveManager: Started. Keys: {keysCollected}/{requiredKeys}");
     }
 
     void Update()
     {
-        // Check key objective if not complete
         if (!keyObjectiveComplete)
         {
             CheckKeyObjective();
         }
-    }
-
-    /// <summary>
-    /// Checks if the key collection objective is complete.
-    /// Monitors PlayerInventory.keyCount for changes.
-    /// </summary>
-    void CheckKeyObjective()
-    {
-        int currentKeyCount = PlayerInventory.keyCount;
-        
-        // Check if key count increased
-        if (currentKeyCount > keysCollected)
+        else if (!puzzleObjectiveComplete)
         {
-            keysCollected = currentKeyCount;
-            
-            if (showDebugLogs)
-            {
-                Debug.Log($"GameObjectiveManager: Key collected! Progress: {keysCollected}/{requiredKeys}");
-            }
-
-            // Notify listeners
-            OnKeyCollected?.Invoke(keysCollected);
-
-            // Update objective text
-            UpdateObjectiveText();
-
-            // Check if objective is complete
-            if (keysCollected >= requiredKeys)
-            {
-                CompleteKeyObjective();
-            }
+            CheckPuzzleObjective();
+        }
+        else if (!vaultSecretsObjectiveComplete)
+        {
+            CheckVaultSecretsObjective();
+        }
+        else if (!bankVaultObjectiveComplete)
+        {
+            CheckBankVaultObjective();
         }
     }
 
-    /// <summary>
-    /// Completes the key finding objective.
-    /// </summary>
+    void CheckKeyObjective()
+    {
+        int currentKeyCount = PlayerInventory.keyCount;
+
+        if (currentKeyCount > keysCollected)
+        {
+            keysCollected = currentKeyCount;
+
+            if (showDebugLogs)
+                Debug.Log($"GameObjectiveManager: Key collected! {keysCollected}/{requiredKeys}");
+
+            OnKeyCollected?.Invoke(keysCollected);
+            UpdateObjectiveText();
+
+            if (keysCollected >= requiredKeys)
+                CompleteKeyObjective();
+        }
+    }
+
+    void CheckPuzzleObjective()
+    {
+        if (PipePuzzle.IsPuzzleSolved)
+        {
+            CompletePuzzleObjective();
+        }
+    }
+
+    void CheckVaultSecretsObjective()
+    {
+        if (keyCardCount > keyCardsCollected)
+        {
+            keyCardsCollected = keyCardCount;
+
+            if (showDebugLogs)
+                Debug.Log($"GameObjectiveManager: KeyCard collected! {keyCardsCollected}/{requiredKeyCards}");
+
+            OnKeyCardCollected?.Invoke(keyCardsCollected);
+            UpdateObjectiveText();
+
+            if (keyCardsCollected >= requiredKeyCards)
+                CompleteVaultSecretsObjective();
+        }
+    }
+
+    void CheckBankVaultObjective()
+    {
+        if (bankVaultFound)
+        {
+            CompleteBankVaultObjective();
+        }
+    }
+
     void CompleteKeyObjective()
     {
         if (keyObjectiveComplete) return;
@@ -124,170 +178,146 @@ public class GameObjectiveManager : MonoBehaviour
         currentObjectiveIndex++;
 
         if (showDebugLogs)
-        {
-            Debug.Log($"GameObjectiveManager: Key objective complete! Found {keysCollected} keys.");
-        }
+            Debug.Log("GameObjectiveManager: Key objective complete!");
 
-        // Notify listeners
         OnKeyObjectiveComplete?.Invoke();
-        OnObjectiveComplete?.Invoke(0); // 0 = first objective (key finding)
-
-        // Update objective text
+        OnObjectiveComplete?.Invoke(0);
         UpdateObjectiveText();
 
-        // Optional: Notify ObjectiveUI if assigned (legacy support)
         if (objectiveUI != null)
-        {
             objectiveUI.MarkObjectiveComplete();
-        }
     }
 
-    /// <summary>
-    /// Updates the objective text display based on current progress.
-    /// </summary>
+    void CompletePuzzleObjective()
+    {
+        if (puzzleObjectiveComplete) return;
+
+        puzzleObjectiveComplete = true;
+        currentObjectiveIndex++;
+
+        if (showDebugLogs)
+            Debug.Log("GameObjectiveManager: Puzzle objective complete!");
+
+        OnPuzzleObjectiveComplete?.Invoke();
+        OnObjectiveComplete?.Invoke(1);
+        UpdateObjectiveText();
+    }
+
+    void CompleteVaultSecretsObjective()
+    {
+        if (vaultSecretsObjectiveComplete) return;
+
+        vaultSecretsObjectiveComplete = true;
+        currentObjectiveIndex++;
+
+        if (showDebugLogs)
+            Debug.Log("GameObjectiveManager: Vault secrets objective complete!");
+
+        OnVaultSecretsObjectiveComplete?.Invoke();
+        OnObjectiveComplete?.Invoke(2);
+        UpdateObjectiveText();
+    }
+
+    void CompleteBankVaultObjective()
+    {
+        if (bankVaultObjectiveComplete) return;
+
+        bankVaultObjectiveComplete = true;
+        currentObjectiveIndex++;
+
+        if (showDebugLogs)
+            Debug.Log("GameObjectiveManager: Bank vault objective complete!");
+
+        OnBankVaultFound?.Invoke();
+        OnObjectiveComplete?.Invoke(3);
+        UpdateObjectiveText();
+    }
+
     void UpdateObjectiveText()
     {
         if (objectiveText == null) return;
 
-        if (keyObjectiveComplete)
+        if (!keyObjectiveComplete)
         {
-            objectiveText.text = keyObjectiveCompleteText;
+            objectiveText.text = string.Format(keyObjectiveFormat, keysCollected, requiredKeys);
+        }
+        else if (!puzzleObjectiveComplete)
+        {
+            objectiveText.text = puzzleObjectiveText;
+        }
+        else if (!vaultSecretsObjectiveComplete)
+        {
+            objectiveText.text = string.Format(vaultSecretsFormat, keyCardsCollected, requiredKeyCards);
+        }
+        else if (!bankVaultObjectiveComplete)
+        {
+            objectiveText.text = findVaultText;
         }
         else
         {
-            // Format: "Find 3 keys (1/3)"
-            objectiveText.text = string.Format(keyObjectiveFormat, keysCollected, requiredKeys);
+            objectiveText.text = "All objectives complete!";
         }
     }
 
-    // ========== Public API for Future Objectives ==========
-
-    /// <summary>
-    /// Register that a pickup/item was collected.
-    /// Useful for future objectives like "Collect 5 bananas" or "Find all collectibles".
-    /// </summary>
+    // Public API
     public void RegisterItemCollected(string itemName)
     {
-        if (collectedItems.Add(itemName))
-        {
-            if (showDebugLogs)
-            {
-                Debug.Log($"GameObjectiveManager: Item collected: {itemName}");
-            }
-        }
+        if (collectedItems.Add(itemName) && showDebugLogs)
+            Debug.Log($"GameObjectiveManager: Item collected: {itemName}");
     }
 
-    /// <summary>
-    /// Check if a specific item has been collected.
-    /// </summary>
-    public bool HasCollectedItem(string itemName)
-    {
-        return collectedItems.Contains(itemName);
-    }
+    public bool HasCollectedItem(string itemName) => collectedItems.Contains(itemName);
+    public int GetCollectedItemCount() => collectedItems.Count;
 
-    /// <summary>
-    /// Get count of unique items collected.
-    /// </summary>
-    public int GetCollectedItemCount()
-    {
-        return collectedItems.Count;
-    }
-
-    /// <summary>
-    /// Register that a location was reached.
-    /// Useful for future objectives like "Reach the exit" or "Visit all checkpoints".
-    /// </summary>
     public void RegisterLocationReached(string locationName)
     {
-        if (reachedLocations.Add(locationName))
-        {
-            if (showDebugLogs)
-            {
-                Debug.Log($"GameObjectiveManager: Location reached: {locationName}");
-            }
-        }
+        if (reachedLocations.Add(locationName) && showDebugLogs)
+            Debug.Log($"GameObjectiveManager: Location reached: {locationName}");
     }
 
-    /// <summary>
-    /// Check if a specific location has been reached.
-    /// </summary>
-    public bool HasReachedLocation(string locationName)
-    {
-        return reachedLocations.Contains(locationName);
-    }
+    public bool HasReachedLocation(string locationName) => reachedLocations.Contains(locationName);
+    public int GetReachedLocationCount() => reachedLocations.Count;
 
-    /// <summary>
-    /// Get count of unique locations reached.
-    /// </summary>
-    public int GetReachedLocationCount()
-    {
-        return reachedLocations.Count;
-    }
-
-    /// <summary>
-    /// Manually complete an objective by index.
-    /// Useful for custom objectives or testing.
-    /// </summary>
     public void CompleteObjective(int objectiveIndex)
     {
         if (showDebugLogs)
-        {
             Debug.Log($"GameObjectiveManager: Objective {objectiveIndex} manually completed.");
-        }
 
         OnObjectiveComplete?.Invoke(objectiveIndex);
-
-        // Update objective text
         UpdateObjectiveText();
 
-        // Optional: Notify ObjectiveUI if assigned (legacy support)
         if (objectiveUI != null)
-        {
             objectiveUI.MarkObjectiveComplete();
-        }
     }
 
-    // ========== Getters for UI/Other Systems ==========
+    // Getters
+    public int GetKeysCollected() => keysCollected;
+    public int GetRequiredKeys() => requiredKeys;
+    public bool IsKeyObjectiveComplete() => keyObjectiveComplete;
+    public bool IsPuzzleObjectiveComplete() => puzzleObjectiveComplete;
+    public bool IsVaultSecretsObjectiveComplete() => vaultSecretsObjectiveComplete;
+    public bool IsBankVaultObjectiveComplete() => bankVaultObjectiveComplete;
+    public int GetCurrentObjectiveIndex() => currentObjectiveIndex;
+    public float GetKeyProgress() => requiredKeys <= 0 ? 1f : Mathf.Clamp01((float)keysCollected / requiredKeys);
 
-    /// <summary>
-    /// Get current key collection progress.
-    /// </summary>
-    public int GetKeysCollected()
+    // Static methods for pickups to call
+    public static void CollectKeyCard()
     {
-        return keysCollected;
+        keyCardCount++;
+        if (Instance != null && Instance.showDebugLogs)
+            Debug.Log($"KeyCard collected! Total: {keyCardCount}");
     }
 
-    /// <summary>
-    /// Get required number of keys.
-    /// </summary>
-    public int GetRequiredKeys()
+    public static void FoundBankVault()
     {
-        return requiredKeys;
+        bankVaultFound = true;
+        if (Instance != null && Instance.showDebugLogs)
+            Debug.Log("Bank vault found!");
     }
 
-    /// <summary>
-    /// Check if key objective is complete.
-    /// </summary>
-    public bool IsKeyObjectiveComplete()
+    public static void ResetObjectives()
     {
-        return keyObjectiveComplete;
-    }
-
-    /// <summary>
-    /// Get current objective index.
-    /// </summary>
-    public int GetCurrentObjectiveIndex()
-    {
-        return currentObjectiveIndex;
-    }
-
-    /// <summary>
-    /// Get key collection progress as a normalized value (0-1).
-    /// </summary>
-    public float GetKeyProgress()
-    {
-        if (requiredKeys <= 0) return 1f;
-        return Mathf.Clamp01((float)keysCollected / requiredKeys);
+        keyCardCount = 0;
+        bankVaultFound = false;
     }
 }
-

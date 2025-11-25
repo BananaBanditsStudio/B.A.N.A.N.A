@@ -32,6 +32,10 @@ public class PipePuzzle : Interactable
     private static PipePuzzle activePuzzle = null;
     public static bool IsAnyPuzzleActive => activePuzzle != null && activePuzzle.isActive;
     
+    // Static flag to track if puzzle has been solved (persists across scenes)
+    private static bool puzzleSolvedGlobal = false;
+    public static bool IsPuzzleSolved => puzzleSolvedGlobal;
+    
     private TextMeshProUGUI timerText;
     private Button closeButton;
     
@@ -343,6 +347,7 @@ public class PipePuzzle : Interactable
         if (solved)
         {
             isSolved = true;
+            puzzleSolvedGlobal = true; // Set global flag for other scripts to check
             StartCoroutine(DelayedWinPanel());
         }
     }

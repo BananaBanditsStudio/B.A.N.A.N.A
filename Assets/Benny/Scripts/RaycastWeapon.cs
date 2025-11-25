@@ -55,6 +55,10 @@ public class RaycastWeapon : MonoBehaviour
     public float bulletSpeed = 100f;
     public float bulletTrailTime = 0.05f;
 
+    [Header("Accuracy Settings")]
+    [Tooltip("Maximum spread angle in degrees for non-projectile weapons. Higher values = less accurate.")]
+    public float bulletSpread = 2f; // Spread in degrees
+
     // Tap-only firing control
     private float nextFireTime = 0f;
     private bool readyToFire = true;
@@ -307,7 +311,10 @@ public class RaycastWeapon : MonoBehaviour
         RaycastHit[] hits;
         RaycastHit hit = default(RaycastHit);
         Vector3 shootOrigin = GetBulletStartPosition();
-        Vector3 shootDirection = (raycastDestination.position - shootOrigin).normalized;
+        Vector3 baseDirection = (raycastDestination.position - shootOrigin).normalized;
+        
+        // Apply random spread to the bullet direction
+        Vector3 shootDirection = ApplyBulletSpread(baseDirection);
         Vector3 bulletEndPoint = shootOrigin + shootDirection * range;
 
         // Play effects
@@ -427,6 +434,32 @@ public class RaycastWeapon : MonoBehaviour
     Vector3 GetBulletStartPosition()
     {
         return bulletSpawnPoint != null ? bulletSpawnPoint.position : transform.position;
+    }
+
+    /// <summary>
+    /// Applies random spread to the bullet direction for non-projectile weapons
+    /// </summary>
+    Vector3 ApplyBulletSpread(Vector3 direction)
+    {
+        if (bulletSpread <= 0f)
+            return direction;
+
+        // Generate random angles within the spread range
+        float spreadAngle = Random.Range(0f, bulletSpread);
+        float spreadRotation = Random.Range(0f, 360f); // Random rotation around the axis
+
+        // Create a random direction perpendicular to the base direction
+        Vector3 perpendicular = Vector3.Cross(direction, Vector3.up).normalized;
+        if (perpendicular.magnitude < 0.1f) // If direction is too close to up/down, use forward
+            perpendicular = Vector3.Cross(direction, Vector3.forward).normalized;
+
+        // Rotate the perpendicular vector around the base direction
+        Quaternion rotation = Quaternion.AngleAxis(spreadRotation, direction);
+        Vector3 spreadDirection = rotation * perpendicular;
+
+        // Apply the spread angle
+        Quaternion spreadRotationQuat = Quaternion.AngleAxis(spreadAngle, spreadDirection);
+        return spreadRotationQuat * direction;
     }
 
     IEnumerator SpawnBulletTrail(Vector3 startPoint, Vector3 endPoint)

@@ -2709,7 +2709,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -42.08, y: 0.865, z: -23.85}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4402682483381159860}
@@ -2907,8 +2907,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13976b17c936e7f4facf07f0e77fbd48, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  maxHealth: 500
-  health: 500
+  maxHealth: 100
+  health: 100
   healthBarUI: {fileID: 7334540794051501724}
   healthBarSprite: {fileID: 6940564312677484032}
   damagePopupPrefab: {fileID: 7387775422977122372, guid: ad263f193647e4e39bdeee729e904388, type: 3}
@@ -3061,6 +3061,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWithSM
   path: {fileID: 0}
   currentState: 
+  playerReference: {fileID: 0}
   sightDistance: 10
   fieldOfView: 180
   attackBehaviorType: 3
@@ -3090,7 +3091,14 @@ MonoBehaviour:
   bigMeleeKnockback: 5
   patrolSpeed: 2
   chaseSpeed: 4
-  showSightCircle: 1
+  showSightCircle: 0
+  meleeAttackSound: {fileID: 0}
+  rangedAttackSound: {fileID: 0}
+  chargeAttackSound: {fileID: 0}
+  bigJumpAttackSound: {fileID: 8300000, guid: 0fddfb95bcb8c2d47ae22741fbb7408f, type: 3}
+  bigMeleeAttackSound: {fileID: 0}
+  AudioSource: {fileID: 0}
+  preExplosionDialogueClip: {fileID: 0}
 --- !u!114 &4718221054492420163
 MonoBehaviour:
   m_ObjectHideFlags: 0

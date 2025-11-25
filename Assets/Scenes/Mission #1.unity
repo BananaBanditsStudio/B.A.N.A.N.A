@@ -2661,6 +2661,10 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: explosionDamage
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: playerReference
       value: 
       objectReference: {fileID: 711744217}
@@ -6198,6 +6202,10 @@ PrefabInstance:
     - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: sightDistance
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: explosionDamage
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: playerReference
@@ -16924,7 +16932,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 5c48149d3960045e4ace73948ae5823c, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 8a1b83b705be94d0c81147c4343db19e, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -20736,6 +20744,91 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: b82e76f4092b7d24aaeecddf36fe8d3b, type: 3}
   m_PrefabInstance: {fileID: 1093219919}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &635351324
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 119182, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+      propertyPath: m_Name
+      value: SM_Prop_Paper_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 119182, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 403710, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -11.622476
+      objectReference: {fileID: 0}
+    - target: {fileID: 403710, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.015
+      objectReference: {fileID: 0}
+    - target: {fileID: 403710, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -23.474
+      objectReference: {fileID: 0}
+    - target: {fileID: 403710, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 403710, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 403710, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 403710, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 403710, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 403710, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 403710, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 119182, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 635351326}
+  m_SourcePrefab: {fileID: 100100000, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+--- !u!1 &635351325 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 119182, guid: 9e7b9a5d5dab450459315a75ec16fa02, type: 3}
+  m_PrefabInstance: {fileID: 635351324}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &635351326
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 635351325}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e76cdc442ed0a48feb56fc517e6e2025, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KeyCardPickup
+  useEvents: 0
+  promptMessage: Press E to Steal
+  feedbackMessage: You collected the vault secrets!
+  pickupSound: {fileID: 8300000, guid: 332ae1af2fad8b843977fc839e0d9611, type: 3}
 --- !u!1 &637134335
 GameObject:
   m_ObjectHideFlags: 0
@@ -32381,6 +32474,26 @@ PrefabInstance:
       propertyPath: m_Data.m_SourceObjects.m_Item0.transform
       value: 
       objectReference: {fileID: 854971264}
+    - target: {fileID: 2531321659606367546, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2531321659606367546, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2531321659606367546, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2797430700393900243, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+      propertyPath: m_Height
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2797430700393900243, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 4485488206551258971, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       propertyPath: overlay
       value: 
@@ -32724,6 +32837,59 @@ MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 937442897543555413, guid: c3a7f39286d774e47916d153fdfa3e1f, type: 3}
   m_PrefabInstance: {fileID: 1068955064}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1080722618
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1080722620}
+  - component: {fileID: 1080722619}
+  m_Layer: 0
+  m_Name: Vault Marker
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1080722619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080722618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e75f8e60cfcb94852ac843af5de11574, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VaultMarker
+  cylinderHeight: 12.79
+  cylinderRadius: 2
+  glowColor: {r: 1, g: 0.8, b: 0, a: 0.3}
+  pulseSpeed: 2
+  minAlpha: 0.1
+  maxAlpha: 0.4
+  rotationSpeed: 30
+  triggerRadius: 3
+  feedbackMessage: You found the bank vault!
+--- !u!4 &1080722620
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1080722618}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 6.067, y: 0, z: -65.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1081142449
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -35568,7 +35734,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1195949376
 Transform:
   m_ObjectHideFlags: 0
@@ -37841,6 +38007,10 @@ PrefabInstance:
     - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: sightDistance
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: explosionDamage
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: playerReference
@@ -40124,14 +40294,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1195949376}
     m_Modifications:
-    - target: {fileID: 2013362853843930040, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: health
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 2013362853843930040, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: maxHealth
-      value: 100
-      objectReference: {fileID: 0}
     - target: {fileID: 6137476196133733988, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
       propertyPath: path
       value: 
@@ -40140,26 +40302,6 @@ PrefabInstance:
       propertyPath: playerReference
       value: 
       objectReference: {fileID: 711744217}
-    - target: {fileID: 6137476196133733988, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: showSightCircle
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6137476196133733988, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: bigJumpAttackSound
-      value: 
-      objectReference: {fileID: 8300000, guid: 0fddfb95bcb8c2d47ae22741fbb7408f, type: 3}
-    - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 6887855653283761874, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -45778,6 +45920,10 @@ PrefabInstance:
     - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: sightDistance
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: explosionDamage
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: playerReference
@@ -56087,6 +56233,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8300000, guid: 0fddfb95bcb8c2d47ae22741fbb7408f, type: 3}
     - target: {fileID: 6137476196133733988, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
+      propertyPath: bigJumpEffectPrefab
+      value: 
+      objectReference: {fileID: 4021103657954561961, guid: 5c755f9bc5253ea418e919994537dcc7, type: 3}
+    - target: {fileID: 6137476196133733988, guid: 4898af2c1302b924aa50070bab6f16ea, type: 3}
       propertyPath: bigMeleeAttackRange
       value: 5
       objectReference: {fileID: 0}
@@ -56754,6 +56904,13 @@ MonoBehaviour:
   requiredKeys: 3
   keyObjectiveFormat: Find {1} keys ({0}/{1})
   keyObjectiveCompleteText: All keys found!
+  puzzleObjectiveText: Solve the banana puzzle
+  puzzleObjectiveCompleteText: Puzzle solved!
+  requiredKeyCards: 1
+  vaultSecretsFormat: Collect the vault secrets ({0}/{1})
+  vaultSecretsCompleteText: Vault secrets collected!
+  findVaultText: Find the bank vault
+  findVaultCompleteText: Bank vault found!
   showDebugLogs: 1
 --- !u!1 &1878815274
 GameObject:
@@ -59514,6 +59671,10 @@ PrefabInstance:
       value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: explosionDamage
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: playerReference
       value: 
       objectReference: {fileID: 711744217}
@@ -60031,6 +60192,10 @@ PrefabInstance:
     - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: sightDistance
       value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
+      propertyPath: explosionDamage
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4483726956651922074, guid: 916946a02d1227c4e94a1f14436aca35, type: 3}
       propertyPath: playerReference
@@ -64895,7 +65060,7 @@ GameObject:
   - component: {fileID: 8014283663520957600}
   - component: {fileID: 8014283663520957601}
   m_Layer: 0
-  m_Name: Normal GUN
+  m_Name: ELECTRO GUN
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -65052,6 +65217,7 @@ MonoBehaviour:
   doorSound: {fileID: 0}
   startsLocked: 1
   requiredKeyCount: 3
+  requiresPuzzleSolved: 1
 --- !u!82 &8014283663520957600
 AudioSource:
   m_ObjectHideFlags: 0
@@ -65176,11 +65342,11 @@ MonoBehaviour:
   leftHandGrip: {fileID: 2097403431}
   rightHandGrip: {fileID: 122351412}
   gunEffect: {fileID: 1000010254994808, guid: 9defeac88977c0d448aa4541073ee9e4, type: 3}
-  impactEffect: {fileID: 8771972552311404799, guid: bbf9e36a48d6c5648a13889afab076fd, type: 3}
+  impactEffect: {fileID: 1141330259687333427, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
   shootingSound: {fileID: 0}
   bulletTrailPrefab: {fileID: 665130570257766949, guid: 876373bcf162245c9b77f48f1752a994, type: 3}
   dartTrail: {fileID: 328621789431213768, guid: 43559d27d223bf340b413fde1315c256, type: 3}
-  impactParticleSystem: {fileID: 9064919875212695174, guid: a5e1e2c4d2cd81f4abed6272a2b8187a, type: 3}
+  impactParticleSystem: {fileID: 1141330259687333425, guid: 6718dc24203da53468af9ada8fef7d6d, type: 3}
   magazineSize: 30
   currentAmmo: 30
   reloadTime: 1.5
@@ -65188,6 +65354,7 @@ MonoBehaviour:
   reloadSound: {fileID: 0}
   bulletSpeed: 100
   bulletTrailTime: 0.05
+  bulletSpread: 2
 --- !u!1001 &8218138990814844853
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -65293,3 +65460,5 @@ SceneRoots:
   - {fileID: 1021830501}
   - {fileID: 1099642510}
   - {fileID: 1883454611}
+  - {fileID: 1080722620}
+  - {fileID: 635351324}
