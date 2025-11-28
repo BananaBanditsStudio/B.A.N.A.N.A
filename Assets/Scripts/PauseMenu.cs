@@ -62,7 +62,7 @@ public class PauseMenu : MonoBehaviour
         else Debug.LogWarning("[PauseMenu] quitButton is NULL");
 
         // Make sure the pause panel can receive input and draw on top
-        EnsureTopCanvasAndRaycaster();
+        // EnsureTopCanvasAndRaycaster();
     }
 
     void Update()

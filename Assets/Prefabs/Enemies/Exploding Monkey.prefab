@@ -2380,6 +2380,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyWithSM
   path: {fileID: 0}
   currentState: 
+  playerReference: {fileID: 0}
   sightDistance: 15
   fieldOfView: 180
   attackBehaviorType: 2
@@ -2410,6 +2411,13 @@ MonoBehaviour:
   patrolSpeed: 3
   chaseSpeed: 7.5
   showSightCircle: 1
+  meleeAttackSound: {fileID: 0}
+  rangedAttackSound: {fileID: 0}
+  chargeAttackSound: {fileID: 0}
+  bigJumpAttackSound: {fileID: 0}
+  bigMeleeAttackSound: {fileID: 0}
+  AudioSource: {fileID: 0}
+  preExplosionDialogueClip: {fileID: 0}
 --- !u!114 &6766600018837088490
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2450,7 +2458,7 @@ RectTransform:
   m_GameObject: {fileID: 5660044324275195658}
   m_LocalRotation: {x: 0, y: 0.7071068, z: -0.7071068, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: 0.27}
-  m_LocalScale: {x: 0.9999999, y: 1, z: 0.9999999}
+  m_LocalScale: {x: 2, y: 2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4890376485913518464}
