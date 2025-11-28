@@ -28,7 +28,7 @@ public class ThrowAttackBehavior : IAttackBehavior
         hasFiredThisThrow = false;
         shootTimer = 0f;
 
-        if (enemy.Agent != null)
+        if (enemy.Agent != null && enemy.Agent.isActiveAndEnabled && enemy.Agent.isOnNavMesh)
         {
             enemy.Agent.ResetPath();
             enemy.Agent.isStopped = false;
@@ -42,7 +42,7 @@ public class ThrowAttackBehavior : IAttackBehavior
             shootTimer += deltaTime;
         }
 
-        if (enemy.Agent != null)
+        if (enemy.Agent != null && enemy.Agent.isActiveAndEnabled && enemy.Agent.isOnNavMesh)
         {
             enemy.Agent.isStopped = true;
             enemy.Agent.ResetPath();

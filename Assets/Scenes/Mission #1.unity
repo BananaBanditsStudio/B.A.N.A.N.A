@@ -31572,7 +31572,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7463290814208057072, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -82.02
+      value: -92.36
       objectReference: {fileID: 0}
     - target: {fileID: 7463290814208057072, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       propertyPath: m_LocalPosition.y
@@ -55297,6 +55297,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1910208107}
     m_Modifications:
+    - target: {fileID: 2047393737173794631, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2970970380871607169, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
       propertyPath: m_LocalScale.x
       value: 1
@@ -55349,6 +55353,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6339141256112920738, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
+      propertyPath: m_Center.y
+      value: -0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 6355556285025435462, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 0269ff65d8224466e9df9b8e9f485d8b, type: 2}
     - target: {fileID: 7104562555100234303, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
       propertyPath: path
       value: 
@@ -55368,6 +55380,10 @@ PrefabInstance:
     - target: {fileID: 7104562555100234303, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
       propertyPath: showSightCircle
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8073501505290845299, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8471735533867782593, guid: 4140d340e8b5caf44893ff62af005e33, type: 3}
       propertyPath: m_Name
@@ -56334,7 +56350,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8668492982123387130, guid: 8b825121765de294ab210025fb06be76, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -56827,7 +56843,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1910208107}
   m_Layer: 0
-  m_Name: Ranged Monkey (1)
+  m_Name: Ranged Monkey Test
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56842,7 +56858,7 @@ Transform:
   m_GameObject: {fileID: 1910208106}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -40.51, y: 7.86, z: -6.86}
+  m_LocalPosition: {x: -66.71, y: 0.18, z: -29.89}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

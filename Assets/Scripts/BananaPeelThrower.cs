@@ -80,7 +80,10 @@ public class BananaPeelThrower : MonoBehaviour
 
                 // Resolve animator and target position now
                 Animator enemyAnimator = hit.transform.GetComponentInChildren<Animator>();
-                Vector3 targetPosition = hit.transform.position; targetPosition.y = 0.09f;
+                Vector3 targetPosition = hit.transform.position;
+                // Adjust height based on enemy scale (some monkeys are 3x scale)
+                float enemyScale = hit.transform.localScale.y;
+                targetPosition.y -= 0.8f * enemyScale;
 
                 if (enemy.IsSlipping() || enemy.health <= 0)
                 {
