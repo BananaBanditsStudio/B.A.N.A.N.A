@@ -35,6 +35,7 @@ public class EnemyWithSM : MonoBehaviour
 
     [Header("Ranged Attack Settings")]
     public float rangedFireRate = 2f;
+    public float throwAnimationSpeed = 1f; // 1 = normal, 2 = twice as fast
     public GameObject bulletPrefab;
     public Transform gunBarrel;
 

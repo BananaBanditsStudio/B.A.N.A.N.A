@@ -23,6 +23,7 @@ public class ThrowAttackBehavior : IAttackBehavior
         if (enemy.Animator != null)
         {
             enemy.Animator.ResetTrigger("Throw");
+            enemy.Animator.speed = 1f; // Reset speed
         }
         isThrowing = false;
         hasFiredThisThrow = false;
@@ -57,6 +58,7 @@ public class ThrowAttackBehavior : IAttackBehavior
         {
             if (enemy.Animator != null)
             {
+                enemy.Animator.speed = enemy.throwAnimationSpeed;
                 enemy.Animator.ResetTrigger("Throw");
                 enemy.Animator.SetTrigger("Throw");
             }
@@ -198,11 +200,14 @@ public class ThrowAttackBehavior : IAttackBehavior
             {
                 isThrowing = false;
                 shootTimer = 0f;
+                enemy.Animator.speed = 1f; // Reset speed
             }
-            else if (!isInThrowAnimation || stateInfo.normalizedTime >= 1f)
+            else if (isInThrowAnimation && stateInfo.normalizedTime >= 0.95f)
             {
+                // Only reset when throw animation is actually finishing (95%+)
                 isThrowing = false;
                 hasFiredThisThrow = false;
+                enemy.Animator.speed = 1f; // Reset speed
             }
         }
     }
