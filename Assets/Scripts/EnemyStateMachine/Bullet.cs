@@ -4,6 +4,7 @@ public class Bullet : MonoBehaviour
 {
     public float damage = 10f;
     public float speed = 40f;
+    public float spinSpeed = 1000f; // Degrees per second
     
     [HideInInspector] public Vector3 targetPosition;
     [HideInInspector] public bool hasTarget = false;
@@ -38,6 +39,15 @@ public class Bullet : MonoBehaviour
             frameCount++;
             Vector3 direction = (targetPosition - transform.position).normalized;
             rb.linearVelocity = direction * speed;
+        }
+    }
+
+    private void Update()
+    {
+        // Spin while travelling
+        if (velocitySet)
+        {
+            transform.Rotate(Vector3.forward, spinSpeed * Time.deltaTime);
         }
     }
 

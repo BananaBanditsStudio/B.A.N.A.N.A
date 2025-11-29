@@ -27,10 +27,15 @@ public class GameOverManager : MonoBehaviour
     public Image fadeOverlay;
     public float fadeSpeed = 1f;
     
+    [Header("Death Camera")]
+    public Camera deathCamera;
+    public float deathAnimationDuration = 3f;
+    
     private bool isGameOver = false;
     private PlayerHealth playerHealth;
     private CanvasGroup canvasGroup;
     private GameStateManager gameStateManager;
+    private Camera mainCamera;
     
     void Start()
     {
@@ -79,6 +84,9 @@ public class GameOverManager : MonoBehaviour
         {
             canvasGroup = gameOverPanel.AddComponent<CanvasGroup>();
         }
+        
+        // Cache main camera
+        mainCamera = Camera.main;
     }
     
     void Update()
@@ -153,10 +161,67 @@ public class GameOverManager : MonoBehaviour
     
     System.Collections.IEnumerator GameOverSequence()
     {
-        // Wait a moment before showing game over
-        yield return new WaitForSeconds(delayBeforeShow);
+        // Block input but DON'T freeze time yet (so animation can play)
+        if (gameStateManager != null)
+        {
+            gameStateManager.BlockInput(true);
+        }
         
-        // Use GameStateManager to properly set game over
+        // Trigger death animation FIRST
+        if (playerHealth != null)
+        {
+            playerHealth.TriggerDeath();
+            
+            // Disable all scripts on the player except Animator
+            MonoBehaviour[] playerScripts = playerHealth.GetComponents<MonoBehaviour>();
+            foreach (var script in playerScripts)
+            {
+                if (script != null && !(script is Animator))
+                {
+                    script.enabled = false;
+                }
+            }
+            
+            // Also disable scripts on children (like camera scripts)
+            MonoBehaviour[] childScripts = playerHealth.GetComponentsInChildren<MonoBehaviour>();
+            foreach (var script in childScripts)
+            {
+                if (script != null && !(script is Animator))
+                {
+                    script.enabled = false;
+                }
+            }
+            
+            // Hide weapons by finding and disabling WeaponHolder
+            Transform[] allChildren = playerHealth.GetComponentsInChildren<Transform>(true);
+            foreach (Transform child in allChildren)
+            {
+                if (child.name == "WeaponHolder" || child.name == "WeaponPivot")
+                {
+                    child.gameObject.SetActive(false);
+                    break;
+                }
+            }
+        }
+        
+        // Switch to death camera
+        if (deathCamera != null && mainCamera != null)
+        {
+            // Only disable camera component, not the whole GameObject
+            mainCamera.enabled = false;
+            
+            // Disable AudioListener on main camera if it has one
+            AudioListener mainListener = mainCamera.GetComponent<AudioListener>();
+            if (mainListener != null) mainListener.enabled = false;
+            
+            // Enable death camera GameObject (it was disabled in scene)
+            deathCamera.gameObject.SetActive(true);
+        }
+        
+        // Wait for death animation (use realtime for consistent timing)
+        yield return new WaitForSecondsRealtime(deathAnimationDuration);
+        
+        // NOW freeze time and set game over
         if (gameStateManager != null)
         {
             gameStateManager.SetGameOver(true);

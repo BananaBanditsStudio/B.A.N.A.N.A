@@ -89,6 +89,12 @@ public class GameStateManager : MonoBehaviour
         }
     }
     
+    // Block input without freezing time (for death animation)
+    public void BlockInput(bool block)
+    {
+        inputBlocked = block;
+    }
+    
     // Input checking methods
     public bool CanMove()
     {

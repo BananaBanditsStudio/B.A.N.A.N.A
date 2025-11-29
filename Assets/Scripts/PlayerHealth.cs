@@ -21,12 +21,23 @@ public class PlayerHealth : MonoBehaviour
     public float duration;
     public float fadeSpeed;
 
+    [Header("Death")]
+    public Animator playerAnimator;
+    public string deathTrigger = "Dead";
+    private bool isDead = false;
+
     private float durationTimer;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    
     void Start()
     {
         health = maxHealth;
         overlay.color = new Color(overlay.color.r, overlay.color.g, overlay.color.b, 0f);
+        
+        if (playerAnimator == null)
+        {
+            // Get the animator component from the player
+            playerAnimator = GetComponent<Animator>();
+        }
     }
 
     // Update is called once per frame
@@ -101,5 +112,22 @@ public class PlayerHealth : MonoBehaviour
     public float Health
     {
         get { return health; }
+    }
+    
+    public bool IsDead
+    {
+        get { return isDead; }
+    }
+    
+    public void TriggerDeath()
+    {
+        if (isDead) return;
+        isDead = true;
+        
+        if (playerAnimator != null)
+        {
+            playerAnimator.SetBool(deathTrigger, true);
+            playerAnimator.SetTrigger(deathTrigger);
+        }
     }
 }
