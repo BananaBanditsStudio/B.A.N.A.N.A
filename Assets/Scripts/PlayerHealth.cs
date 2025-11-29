@@ -126,7 +126,8 @@ public class PlayerHealth : MonoBehaviour
         
         if (playerAnimator != null)
         {
-            playerAnimator.SetBool(deathTrigger, true);
+            // Reset any ongoing animations and trigger death
+            playerAnimator.ResetTrigger(deathTrigger);
             playerAnimator.SetTrigger(deathTrigger);
         }
     }
