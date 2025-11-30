@@ -2032,6 +2032,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   crossHairTarget: {fileID: 0}
+  weaponUI: {fileID: 0}
   handIk: {fileID: 1234660581450198706}
   weaponParent: {fileID: 8103048744920176668}
   weaponLeftGrip: {fileID: 7201475551745038571}
@@ -2042,6 +2043,8 @@ MonoBehaviour:
   availableWeapons:
   - {fileID: 7475488359316654935}
   - {fileID: 4636544139169876711}
+  - {fileID: 0}
+  weapon: {fileID: 0}
 --- !u!114 &4485488206551258971
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2062,6 +2065,8 @@ MonoBehaviour:
   overlay: {fileID: 0}
   duration: 0.5
   fadeSpeed: 2
+  playerAnimator: {fileID: 0}
+  deathTrigger: Dead
 --- !u!114 &1501829508711759091
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3519,6 +3524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71520ec313bd82d4b8eec2e838d8bfb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RaycastWeapon
+  weaponIcon: {fileID: 0}
   animationClip: {fileID: 0}
   useProjectiles: 0
   damage: 10
@@ -3538,8 +3544,14 @@ MonoBehaviour:
   bulletTrailPrefab: {fileID: 0}
   dartTrail: {fileID: 0}
   impactParticleSystem: {fileID: 0}
+  magazineSize: 30
+  currentAmmo: 30
+  reloadTime: 1.5
+  isReloading: 0
+  reloadSound: {fileID: 0}
   bulletSpeed: 100
   bulletTrailTime: 0.05
+  bulletSpread: 2
 --- !u!1001 &1686499888773145288
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3741,6 +3753,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 71520ec313bd82d4b8eec2e838d8bfb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::RaycastWeapon
+  weaponIcon: {fileID: 0}
   animationClip: {fileID: 7400000, guid: f50a93e9ad7a03c409a8c560e6b55584, type: 2}
   useProjectiles: 1
   damage: 10
@@ -3760,8 +3773,14 @@ MonoBehaviour:
   bulletTrailPrefab: {fileID: 665130570257766949, guid: 876373bcf162245c9b77f48f1752a994, type: 3}
   dartTrail: {fileID: 328621789431213768, guid: 43559d27d223bf340b413fde1315c256, type: 3}
   impactParticleSystem: {fileID: 9064919875212695174, guid: a5e1e2c4d2cd81f4abed6272a2b8187a, type: 3}
+  magazineSize: 30
+  currentAmmo: 30
+  reloadTime: 1.5
+  isReloading: 0
+  reloadSound: {fileID: 0}
   bulletSpeed: 100
   bulletTrailTime: 0.05
+  bulletSpread: 2
 --- !u!4 &8197252578639961882 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 309172366698902965, guid: 3fc498ed0293c9a4b82e01a100a51023, type: 3}

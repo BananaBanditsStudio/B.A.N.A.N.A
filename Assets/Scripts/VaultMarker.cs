@@ -20,10 +20,43 @@ public class VaultMarker : MonoBehaviour
     private GameObject cylinderVisual;
     private Material cylinderMaterial;
     private bool hasTriggered = false;
+    private bool isActivated = false;
 
     void Start()
     {
+        // Subscribe to vault secrets objective completion
+        if (GameObjectiveManager.Instance != null)
+        {
+            GameObjectiveManager.Instance.OnVaultSecretsObjectiveComplete += ActivateMarker;
+            
+            // Check if already complete
+            if (GameObjectiveManager.Instance.IsVaultSecretsObjectiveComplete())
+            {
+                ActivateMarker();
+            }
+        }
+        else
+        {
+            // No manager, just activate immediately
+            ActivateMarker();
+        }
+    }
+    
+    void ActivateMarker()
+    {
+        if (isActivated) return;
+        isActivated = true;
+        
         CreateGlowingCylinder();
+    }
+    
+    void OnDestroy()
+    {
+        // Unsubscribe to prevent memory leaks
+        if (GameObjectiveManager.Instance != null)
+        {
+            GameObjectiveManager.Instance.OnVaultSecretsObjectiveComplete -= ActivateMarker;
+        }
     }
 
     void CreateGlowingCylinder()
@@ -38,57 +71,37 @@ public class VaultMarker : MonoBehaviour
         Collider col = cylinderVisual.GetComponent<Collider>();
         if (col != null) Destroy(col);
 
-        // Create glowing material with URP shader
+        // Create glowing material - use Particles/Additive for best halo effect
         Renderer rend = cylinderVisual.GetComponent<Renderer>();
         
-        // Try URP Unlit shader first (best for glowing effects)
-        Shader urpShader = Shader.Find("Universal Render Pipeline/Unlit");
-        if (urpShader == null)
-        {
-            // Fallback to URP Lit if Unlit not found
-            urpShader = Shader.Find("Universal Render Pipeline/Lit");
-        }
+        // Particles/Additive gives the best transparent glow/halo effect
+        Shader glowShader = Shader.Find("Particles/Standard Unlit");
+        if (glowShader == null)
+            glowShader = Shader.Find("Legacy Shaders/Particles/Additive");
+        if (glowShader == null)
+            glowShader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
+        if (glowShader == null)
+            glowShader = Shader.Find("Sprites/Default");
         
-        if (urpShader == null)
-        {
-            // Last resort: try to find any URP shader
-            urpShader = Shader.Find("Shader Graphs/Unlit");
-        }
+        cylinderMaterial = new Material(glowShader);
         
-        if (urpShader == null)
-        {
-            Debug.LogError("VaultMarker: Could not find URP shader! Make sure URP is set up correctly.");
-            urpShader = Shader.Find("Sprites/Default"); // Fallback
-        }
-        
-        cylinderMaterial = new Material(urpShader);
-        
-        // Set up transparency for URP
-        if (cylinderMaterial.HasProperty("_Surface"))
-        {
-            cylinderMaterial.SetFloat("_Surface", 1); // Transparent
-            cylinderMaterial.SetFloat("_Blend", 0); // Alpha
-        }
-        
+        // Set color
+        cylinderMaterial.SetColor("_Color", glowColor);
+        if (cylinderMaterial.HasProperty("_TintColor"))
+            cylinderMaterial.SetColor("_TintColor", glowColor);
         if (cylinderMaterial.HasProperty("_BaseColor"))
-        {
             cylinderMaterial.SetColor("_BaseColor", glowColor);
-        }
-        else if (cylinderMaterial.HasProperty("_Color"))
-        {
-            cylinderMaterial.SetColor("_Color", glowColor);
-        }
         
-        // Set emission for glow effect
-        if (cylinderMaterial.HasProperty("_EmissionColor"))
-        {
-            cylinderMaterial.EnableKeyword("_EMISSION");
-            cylinderMaterial.SetColor("_EmissionColor", glowColor * 2f);
-        }
+        // Set to Additive blending for glow effect
+        cylinderMaterial.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        cylinderMaterial.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.One);
+        cylinderMaterial.SetInt("_ZWrite", 0);
+        cylinderMaterial.DisableKeyword("_ALPHATEST_ON");
+        cylinderMaterial.EnableKeyword("_ALPHABLEND_ON");
+        cylinderMaterial.renderQueue = 3000;
         
-        // Enable transparency
-        cylinderMaterial.SetFloat("_ZWrite", 0);
-        cylinderMaterial.renderQueue = 3000; // Transparent queue
+        // Disable culling so it's visible from inside too
+        cylinderMaterial.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);
         
         rend.material = cylinderMaterial;
 
@@ -107,21 +120,12 @@ public class VaultMarker : MonoBehaviour
         Color c = glowColor;
         c.a = alpha;
         
-        // Update color using URP property names
+        // Update color on material
+        cylinderMaterial.SetColor("_Color", c);
+        if (cylinderMaterial.HasProperty("_TintColor"))
+            cylinderMaterial.SetColor("_TintColor", c);
         if (cylinderMaterial.HasProperty("_BaseColor"))
-        {
             cylinderMaterial.SetColor("_BaseColor", c);
-            if (cylinderMaterial.HasProperty("_EmissionColor"))
-                cylinderMaterial.SetColor("_EmissionColor", c * 2f);
-        }
-        else if (cylinderMaterial.HasProperty("_Color"))
-        {
-            cylinderMaterial.SetColor("_Color", c);
-        }
-        else
-        {
-            cylinderMaterial.color = c;
-        }
 
         // Rotate
         cylinderVisual.transform.Rotate(Vector3.up, rotationSpeed * Time.deltaTime, Space.World);
@@ -149,14 +153,7 @@ public class VaultMarker : MonoBehaviour
     {
         float duration = 1f;
         float elapsed = 0f;
-        
-        Color startColor;
-        if (cylinderMaterial.HasProperty("_BaseColor"))
-            startColor = cylinderMaterial.GetColor("_BaseColor");
-        else if (cylinderMaterial.HasProperty("_Color"))
-            startColor = cylinderMaterial.GetColor("_Color");
-        else
-            startColor = cylinderMaterial.color;
+        Color startColor = glowColor;
 
         while (elapsed < duration && cylinderMaterial != null)
         {
@@ -165,20 +162,11 @@ public class VaultMarker : MonoBehaviour
             Color c = startColor;
             c.a = Mathf.Lerp(startColor.a, 0f, t);
             
+            cylinderMaterial.SetColor("_Color", c);
+            if (cylinderMaterial.HasProperty("_TintColor"))
+                cylinderMaterial.SetColor("_TintColor", c);
             if (cylinderMaterial.HasProperty("_BaseColor"))
-            {
                 cylinderMaterial.SetColor("_BaseColor", c);
-                if (cylinderMaterial.HasProperty("_EmissionColor"))
-                    cylinderMaterial.SetColor("_EmissionColor", c * 2f);
-            }
-            else if (cylinderMaterial.HasProperty("_Color"))
-            {
-                cylinderMaterial.SetColor("_Color", c);
-            }
-            else
-            {
-                cylinderMaterial.color = c;
-            }
             
             yield return null;
         }

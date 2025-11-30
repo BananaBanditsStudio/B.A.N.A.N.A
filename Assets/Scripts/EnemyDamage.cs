@@ -180,6 +180,9 @@ public class EnemyDamage : MonoBehaviour
         if (isDead) return; // Prevent multiple death calls
         isDead = true;
         
+        // Track kill
+        GameStatsUI.AddKill();
+        
         // Stop any slipping animation if enemy is slipping
         if (isSlipping)
         {

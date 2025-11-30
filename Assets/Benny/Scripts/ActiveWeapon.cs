@@ -255,12 +255,12 @@ public class ActiveWeapon : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.Alpha1 + i))
                 {
                     SwitchToWeapon(i);
-                    WeaponUI ui = FindFirstObjectByType<WeaponUI>();
-                    if (ui != null)
+                    
+                    // Update WeaponUI
+                    if (weaponUI != null)
                     {
-                        ui.SetWeapon(weapon);
+                        weaponUI.SetWeapon(weapon);
                     }
-
 
                     return; // Exit early to avoid multiple switches
                 }
@@ -282,6 +282,12 @@ public class ActiveWeapon : MonoBehaviour
                 // Scroll up - next weapon
                 int nextIndex = (currentWeaponIndex + 1) % availableWeapons.Length;
                 SwitchToWeapon(nextIndex);
+                
+                // Update WeaponUI
+                if (weaponUI != null)
+                {
+                    weaponUI.SetWeapon(weapon);
+                }
             }
             else if (scroll < 0f)
             {
@@ -289,6 +295,12 @@ public class ActiveWeapon : MonoBehaviour
                 int prevIndex = currentWeaponIndex - 1;
                 if (prevIndex < 0) prevIndex = availableWeapons.Length - 1;
                 SwitchToWeapon(prevIndex);
+                
+                // Update WeaponUI
+                if (weaponUI != null)
+                {
+                    weaponUI.SetWeapon(weapon);
+                }
             }
         }
 
