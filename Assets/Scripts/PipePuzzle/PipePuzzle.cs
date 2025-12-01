@@ -12,6 +12,16 @@ public class PipePuzzle : Interactable
     public float spacing = 10f;
     public Canvas canvas;
     
+    [Header("Failure Penalty")]
+    [Tooltip("Time in seconds before player can attempt puzzle again after failing")]
+    public float failureCooldown = 30f;
+    [Tooltip("Prefab to spawn when player fails the puzzle (EnemyWithSM)")]
+    public GameObject failurePrefab;
+    [Tooltip("Where to spawn the failure prefab")]
+    public Transform failureSpawnPoint;
+    [Tooltip("Player reference to assign to spawned enemy")]
+    public GameObject playerReference;
+    
     [Header("Ignored Cells")]
     [Tooltip("Specify which cells to ignore (0-8). Cell index: row * 3 + col. Example: Cell 0 = row0col0, Cell 1 = row0col1")]
     public int[] ignoredCells = new int[0];
@@ -27,6 +37,11 @@ public class PipePuzzle : Interactable
     private float timeRemaining;
     private bool isActive = false;
     private bool isSolved = false;
+    private float cooldownEndTime = 0f; // When the cooldown expires
+    private bool isOnCooldown = false;
+    
+    // Public property to check if THIS specific puzzle instance is solved
+    public bool IsSolvedInstance => isSolved;
     
     // Static reference to check if any puzzle is active
     private static PipePuzzle activePuzzle = null;
@@ -39,6 +54,9 @@ public class PipePuzzle : Interactable
     private TextMeshProUGUI timerText;
     private Button closeButton;
     
+    // Track if this puzzle has been permanently solved (persists until scene reload)
+    private bool permanentlySolved = false;
+    
     void Start()
     {
         promptMessage = "Press E to solve banana puzzle";
@@ -46,12 +64,33 @@ public class PipePuzzle : Interactable
     
     protected override void Interact()
     {
+        // Don't allow interaction if already solved
+        if (permanentlySolved) return;
         OpenPuzzle();
     }
     
     void OpenPuzzle()
     {
         if (isActive) return;
+        if (permanentlySolved) return;
+        
+        // Check if on cooldown
+        if (isOnCooldown)
+        {
+            float remainingCooldown = cooldownEndTime - Time.time;
+            if (remainingCooldown > 0)
+            {
+                // Update prompt message to show cooldown
+                promptMessage = $"Puzzle locked! Wait {Mathf.CeilToInt(remainingCooldown)} seconds...";
+                return;
+            }
+            else
+            {
+                // Cooldown expired
+                isOnCooldown = false;
+                promptMessage = "Press E to solve banana puzzle";
+            }
+        }
         
         // Ensure the parent canvas has GraphicRaycaster for button interactions
         if (canvas != null)
@@ -325,6 +364,21 @@ public class PipePuzzle : Interactable
         {
             ClosePuzzle();
         }
+        
+        // Update cooldown prompt message (skip if permanently solved)
+        if (isOnCooldown && !isActive && !permanentlySolved)
+        {
+            float remainingCooldown = cooldownEndTime - Time.time;
+            if (remainingCooldown > 0)
+            {
+                promptMessage = $"Puzzle locked! Wait {Mathf.CeilToInt(remainingCooldown)} seconds...";
+            }
+            else
+            {
+                isOnCooldown = false;
+                promptMessage = "Press E to solve banana puzzle";
+            }
+        }
     }
     
     void CheckSolution()
@@ -347,7 +401,9 @@ public class PipePuzzle : Interactable
         if (solved)
         {
             isSolved = true;
+            permanentlySolved = true; // Mark as permanently solved - no more interactions
             puzzleSolvedGlobal = true; // Set global flag for other scripts to check
+            promptMessage = ""; // Clear the prompt so it doesn't show anymore
             StartCoroutine(DelayedWinPanel());
         }
     }
@@ -396,6 +452,13 @@ public class PipePuzzle : Interactable
     
     void ShowLosePanel()
     {
+        // Start cooldown
+        isOnCooldown = true;
+        cooldownEndTime = Time.time + failureCooldown;
+        
+        // Spawn failure prefab at spawn point
+        SpawnFailurePrefab();
+        
         GameObject losePanel = new GameObject("LosePanel");
         losePanel.transform.SetParent(puzzleCanvas.transform, false);
         RectTransform loseRect = losePanel.AddComponent<RectTransform>();
@@ -414,7 +477,7 @@ public class PipePuzzle : Interactable
         textRect.sizeDelta = new Vector2(600, 200);
         textRect.anchoredPosition = Vector2.zero;
         TextMeshProUGUI text = textGO.AddComponent<TextMeshProUGUI>();
-        text.text = "TIME'S UP!\n\nTry again!";
+        text.text = $"TIME'S UP!\n\nTry again in {Mathf.CeilToInt(failureCooldown)} seconds!";
         text.fontSize = 48;
         text.color = Color.white;
         text.alignment = TextAlignmentOptions.Center;
@@ -425,6 +488,35 @@ public class PipePuzzle : Interactable
         
         // Auto-close after delay using coroutine (works with unscaled time)
         StartCoroutine(DelayedClose(2f));
+    }
+    
+    void SpawnFailurePrefab()
+    {
+        if (failurePrefab == null) return;
+        
+        Vector3 spawnPosition = failureSpawnPoint != null 
+            ? failureSpawnPoint.position 
+            : transform.position; // Fallback to puzzle position
+            
+        Quaternion spawnRotation = failureSpawnPoint != null 
+            ? failureSpawnPoint.rotation 
+            : Quaternion.identity;
+        
+        GameObject spawnedEnemy = Instantiate(failurePrefab, spawnPosition, spawnRotation);
+        
+        // Set player reference and sight distance on the spawned enemy
+        EnemyWithSM enemyScript = spawnedEnemy.GetComponent<EnemyWithSM>();
+        if (enemyScript != null)
+        {
+            if (playerReference != null)
+            {
+                enemyScript.SetPlayerReference(playerReference);
+            }
+            
+            // Set very large sight distance so enemy can always see the player
+            enemyScript.sightDistance = 10000f;
+            enemyScript.fieldOfView = 360f; // Full 360 degree vision
+        }
     }
     
     void AddCloseButtonToPanel(GameObject panel, bool isWin)

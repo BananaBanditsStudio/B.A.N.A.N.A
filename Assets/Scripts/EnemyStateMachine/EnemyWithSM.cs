@@ -21,6 +21,15 @@ public class EnemyWithSM : MonoBehaviour
     [Header("Player Reference")]
     [SerializeField] private GameObject playerReference;
     private GameObject player;
+    
+    /// <summary>
+    /// Sets the player reference at runtime (used when spawning enemies dynamically)
+    /// </summary>
+    public void SetPlayerReference(GameObject playerObj)
+    {
+        playerReference = playerObj;
+        player = playerObj;
+    }
     private Animator animator;
 
     public float sightDistance = 20f;
@@ -313,6 +322,13 @@ public class EnemyWithSM : MonoBehaviour
 
     public void ApplyStun(float duration)
     {
+        // Don't apply stun if enemy is dead
+        EnemyDamage enemyDamage = GetComponent<EnemyDamage>();
+        if (enemyDamage != null && enemyDamage.IsDead())
+        {
+            return;
+        }
+        
         if (stateMachine != null)
         {
             stateMachine.ChangeState(new StunState(duration));

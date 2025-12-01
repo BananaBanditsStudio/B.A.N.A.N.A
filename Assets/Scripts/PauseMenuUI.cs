@@ -47,6 +47,8 @@ public class PauseMenuUI : MonoBehaviour
     private CanvasGroup canvasGroup;
     private Image backgroundImage;
     private GameObject panelTarget;
+    private bool isInitialized = false;
+    private bool showRequested = false; // Track if ShowPauseMenu was called before Start
 
     void Awake()
     {
@@ -57,16 +59,24 @@ public class PauseMenuUI : MonoBehaviour
 
         backgroundImage = panelTarget.GetComponent<Image>();
         if (!backgroundImage) backgroundImage = panelTarget.AddComponent<Image>();
+        
+        // Set hidden state immediately in Awake (before any Show calls)
+        canvasGroup.alpha = 0f;
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
     }
 
     void Start()
     {
         SetupUI();
-
-        // Start hidden; fade with unscaled time
-        canvasGroup.alpha = 0f;
-        canvasGroup.interactable = false;
-        canvasGroup.blocksRaycasts = false;
+        isInitialized = true;
+        
+        // If ShowPauseMenu was called before Start finished, apply it now
+        if (showRequested)
+        {
+            showRequested = false;
+            ShowPauseMenu();
+        }
     }
 
     private void SetupUI()
@@ -145,10 +155,11 @@ public class PauseMenuUI : MonoBehaviour
 
     public void ShowPauseMenu()
     {
-        // Ensure GameObject is active before starting coroutine
-        if (!gameObject.activeSelf)
+        // If Start() hasn't run yet, defer until it does
+        if (!isInitialized)
         {
-            gameObject.SetActive(true);
+            showRequested = true;
+            return;
         }
         
         StopAllCoroutines();
@@ -159,25 +170,19 @@ public class PauseMenuUI : MonoBehaviour
 
     public void HidePauseMenu()
     {
-        // Ensure GameObject is active before starting coroutine
+        // Immediately block interaction to prevent double-clicks during fade
+        canvasGroup.interactable = false;
+        canvasGroup.blocksRaycasts = false;
+        
+        // If inactive, just set alpha directly
         if (!gameObject.activeSelf)
         {
-            // If inactive, just set the state directly without coroutine
-            if (canvasGroup != null)
-            {
-                canvasGroup.alpha = 0f;
-                canvasGroup.interactable = false;
-                canvasGroup.blocksRaycasts = false;
-            }
+            canvasGroup.alpha = 0f;
             return;
         }
         
         StopAllCoroutines();
-        StartCoroutine(FadeTo(0f, fadeOutDuration, () =>
-        {
-            canvasGroup.interactable = false;
-            canvasGroup.blocksRaycasts = false;
-        }));
+        StartCoroutine(FadeTo(0f, fadeOutDuration));
     }
 
     private System.Collections.IEnumerator FadeTo(float target, float duration, System.Action onDone = null)

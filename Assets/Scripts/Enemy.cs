@@ -138,6 +138,13 @@ public class SimplePatrol : MonoBehaviour
     // Public API: simple stun, owned by the enemy
     public void ApplyStun(float seconds)
     {
+        // Don't apply stun if enemy is dead
+        EnemyDamage enemyDamage = GetComponent<EnemyDamage>();
+        if (enemyDamage != null && enemyDamage.IsDead())
+        {
+            return;
+        }
+        
         // Cancel any existing stun
         if (stunCoroutine != null)
         {

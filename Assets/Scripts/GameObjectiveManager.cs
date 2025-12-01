@@ -2,9 +2,22 @@ using UnityEngine;
 using TMPro;
 using System.Collections.Generic;
 
+public enum StartingObjective
+{
+    FindKeys,           // Start from beginning
+    SolvePuzzle,        // Skip keys
+    CollectVaultSecrets,// Skip keys + puzzle
+    FindBankVault,      // Skip to bank vault
+    StealBanana         // Skip to final objective
+}
+
 public class GameObjectiveManager : MonoBehaviour
 {
     public static GameObjectiveManager Instance { get; private set; }
+
+    [Header("Starting Point")]
+    [Tooltip("Choose which objective to start from (for testing or different game modes)")]
+    public StartingObjective startFrom = StartingObjective.FindKeys;
 
     [Header("Objective Text UI")]
     public TextMeshProUGUI objectiveText;
@@ -30,6 +43,10 @@ public class GameObjectiveManager : MonoBehaviour
     public string findVaultText = "Find the bank vault";
     public string findVaultCompleteText = "Bank vault found!";
 
+    [Header("Final Objective Settings")]
+    public string finalObjectiveText = "Kill all enemies and steal the banana";
+    public string finalObjectiveCompleteText = "You win!";
+
     [Header("Debug")]
     public bool showDebugLogs = true;
 
@@ -41,10 +58,12 @@ public class GameObjectiveManager : MonoBehaviour
     private bool puzzleObjectiveComplete = false;
     private bool vaultSecretsObjectiveComplete = false;
     private bool bankVaultObjectiveComplete = false;
+    private bool finalObjectiveComplete = false;
 
     // Static counters for pickups
     public static int keyCardCount = 0;
     public static bool bankVaultFound = false;
+    public static bool bananaStolen = false;
 
     private HashSet<string> collectedItems = new HashSet<string>();
     private HashSet<string> reachedLocations = new HashSet<string>();
@@ -56,6 +75,7 @@ public class GameObjectiveManager : MonoBehaviour
     public System.Action<int> OnKeyCardCollected;
     public System.Action OnVaultSecretsObjectiveComplete;
     public System.Action OnBankVaultFound;
+    public System.Action OnFinalObjectiveComplete;
     public System.Action<int> OnObjectiveComplete;
 
     void Awake()
@@ -71,23 +91,26 @@ public class GameObjectiveManager : MonoBehaviour
         if (objectiveUI == null)
             objectiveUI = FindFirstObjectByType<ObjectiveUI>();
 
+        // Apply starting point skip
+        ApplyStartingObjective();
+
         keysCollected = PlayerInventory.keyCount;
         keyCardsCollected = keyCardCount;
 
-        // Check if objectives are already complete
-        if (keysCollected >= requiredKeys && !keyObjectiveComplete)
+        // Check if objectives are already complete (only for non-skipped objectives)
+        if (!keyObjectiveComplete && keysCollected >= requiredKeys)
         {
             CompleteKeyObjective();
         }
-        if (PipePuzzle.IsPuzzleSolved && !puzzleObjectiveComplete && keyObjectiveComplete)
+        if (!puzzleObjectiveComplete && keyObjectiveComplete && PipePuzzle.IsPuzzleSolved)
         {
             CompletePuzzleObjective();
         }
-        if (keyCardsCollected >= requiredKeyCards && !vaultSecretsObjectiveComplete && puzzleObjectiveComplete)
+        if (!vaultSecretsObjectiveComplete && puzzleObjectiveComplete && keyCardsCollected >= requiredKeyCards)
         {
             CompleteVaultSecretsObjective();
         }
-        if (bankVaultFound && !bankVaultObjectiveComplete && vaultSecretsObjectiveComplete)
+        if (!bankVaultObjectiveComplete && vaultSecretsObjectiveComplete && bankVaultFound)
         {
             CompleteBankVaultObjective();
         }
@@ -95,7 +118,58 @@ public class GameObjectiveManager : MonoBehaviour
         UpdateObjectiveText();
 
         if (showDebugLogs)
-            Debug.Log($"GameObjectiveManager: Started. Keys: {keysCollected}/{requiredKeys}");
+            Debug.Log($"GameObjectiveManager: Started from '{startFrom}'. Current objective index: {currentObjectiveIndex}");
+    }
+
+    void ApplyStartingObjective()
+    {
+        // Skip objectives based on starting point selection
+        switch (startFrom)
+        {
+            case StartingObjective.FindKeys:
+                // Start from beginning - no skips
+                break;
+                
+            case StartingObjective.SolvePuzzle:
+                // Skip keys objective
+                keyObjectiveComplete = true;
+                keysCollected = requiredKeys;
+                currentObjectiveIndex = 1;
+                break;
+                
+            case StartingObjective.CollectVaultSecrets:
+                // Skip keys + puzzle
+                keyObjectiveComplete = true;
+                puzzleObjectiveComplete = true;
+                keysCollected = requiredKeys;
+                currentObjectiveIndex = 2;
+                break;
+                
+            case StartingObjective.FindBankVault:
+                // Skip to bank vault objective
+                keyObjectiveComplete = true;
+                puzzleObjectiveComplete = true;
+                vaultSecretsObjectiveComplete = true;
+                keysCollected = requiredKeys;
+                keyCardsCollected = requiredKeyCards;
+                currentObjectiveIndex = 3;
+                break;
+                
+            case StartingObjective.StealBanana:
+                // Skip to final objective
+                keyObjectiveComplete = true;
+                puzzleObjectiveComplete = true;
+                vaultSecretsObjectiveComplete = true;
+                bankVaultObjectiveComplete = true;
+                keysCollected = requiredKeys;
+                keyCardsCollected = requiredKeyCards;
+                bankVaultFound = true;
+                currentObjectiveIndex = 4;
+                break;
+        }
+        
+        if (showDebugLogs && startFrom != StartingObjective.FindKeys)
+            Debug.Log($"GameObjectiveManager: Skipped to '{startFrom}'");
     }
 
     void Update()
@@ -115,6 +189,10 @@ public class GameObjectiveManager : MonoBehaviour
         else if (!bankVaultObjectiveComplete)
         {
             CheckBankVaultObjective();
+        }
+        else if (!finalObjectiveComplete)
+        {
+            CheckFinalObjective();
         }
     }
 
@@ -167,6 +245,14 @@ public class GameObjectiveManager : MonoBehaviour
         if (bankVaultFound)
         {
             CompleteBankVaultObjective();
+        }
+    }
+
+    void CheckFinalObjective()
+    {
+        if (bananaStolen)
+        {
+            CompleteFinalObjective();
         }
     }
 
@@ -233,6 +319,21 @@ public class GameObjectiveManager : MonoBehaviour
         UpdateObjectiveText();
     }
 
+    void CompleteFinalObjective()
+    {
+        if (finalObjectiveComplete) return;
+
+        finalObjectiveComplete = true;
+        currentObjectiveIndex++;
+
+        if (showDebugLogs)
+            Debug.Log("GameObjectiveManager: Final objective complete! YOU WIN!");
+
+        OnFinalObjectiveComplete?.Invoke();
+        OnObjectiveComplete?.Invoke(4);
+        UpdateObjectiveText();
+    }
+
     void UpdateObjectiveText()
     {
         if (objectiveText == null) return;
@@ -253,9 +354,13 @@ public class GameObjectiveManager : MonoBehaviour
         {
             objectiveText.text = findVaultText;
         }
+        else if (!finalObjectiveComplete)
+        {
+            objectiveText.text = finalObjectiveText;
+        }
         else
         {
-            objectiveText.text = "All objectives complete!";
+            objectiveText.text = finalObjectiveCompleteText;
         }
     }
 
@@ -319,5 +424,15 @@ public class GameObjectiveManager : MonoBehaviour
     {
         keyCardCount = 0;
         bankVaultFound = false;
+        bananaStolen = false;
     }
+
+    public static void StealBanana()
+    {
+        bananaStolen = true;
+        if (Instance != null && Instance.showDebugLogs)
+            Debug.Log("Banana stolen! YOU WIN!");
+    }
+
+    public bool IsFinalObjectiveComplete() => finalObjectiveComplete;
 }

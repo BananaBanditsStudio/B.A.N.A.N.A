@@ -3181,10 +3181,11 @@ MonoBehaviour:
   path: {fileID: 0}
   currentState: 
   playerReference: {fileID: 0}
-  sightDistance: 15
+  sightDistance: 10
   fieldOfView: 180
   attackBehaviorType: 1
   rangedFireRate: 2
+  throwAnimationSpeed: 1
   bulletPrefab: {fileID: 8513641787784238836, guid: 740124fe1eac7a043b1242813332760d, type: 3}
   gunBarrel: {fileID: 1389833427987409190}
   meleeAttackRange: 2
@@ -3211,7 +3212,7 @@ MonoBehaviour:
   patrolSpeed: 3
   chaseSpeed: 7.5
   showSightCircle: 1
-  meleeAttackSound: {fileID: 0}
+  meleeAttackSound: {fileID: 8300000, guid: 42b292e9032b94b45849d51e3e34b941, type: 3}
   rangedAttackSound: {fileID: 0}
   chargeAttackSound: {fileID: 0}
   bigJumpAttackSound: {fileID: 0}

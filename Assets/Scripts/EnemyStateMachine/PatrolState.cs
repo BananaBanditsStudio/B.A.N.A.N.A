@@ -18,6 +18,13 @@ public class PatrolState : BaseState
 
     public override void Perform()
     {
+        // If no path is set, go straight to attack mode
+        if (enemy.path == null || enemy.path.waypoints == null || enemy.path.waypoints.Count == 0)
+        {
+            stateMachine.ChangeState(new AttackState());
+            return;
+        }
+        
         // Code to execute while in the patrol state
         PatrolCycle();
         if (enemy.CanSeePlayer()) {

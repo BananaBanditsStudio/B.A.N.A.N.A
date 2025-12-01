@@ -97,6 +97,12 @@ public class EnemyDamage : MonoBehaviour
         return isSlipping;
     }
     
+    // Method to check if enemy is dead
+    public bool IsDead()
+    {
+        return isDead;
+    }
+    
     // Recovery timer in case slipping animation gets interrupted
     System.Collections.IEnumerator SlippingRecoveryTimer()
     {
@@ -240,6 +246,7 @@ public class EnemyDamage : MonoBehaviour
         if (animator != null)
         {
             animator.SetTrigger("isDead"); // Use trigger to transition to Death state
+            animator.SetBool("dead", true); // Set bool to prevent other animations from interrupting
         }
 
         // Destroy after animation completes

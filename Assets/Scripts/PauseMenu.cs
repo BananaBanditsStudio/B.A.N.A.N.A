@@ -67,7 +67,7 @@ public class PauseMenu : MonoBehaviour
 
     void Update()
     {
-        // If puzzle is active, disable pause menu canvas to prevent blocking puzzle UI
+        // Block pause menu while puzzle is active
         if (PipePuzzle.IsAnyPuzzleActive)
         {
             if (isPaused)
@@ -75,31 +75,10 @@ public class PauseMenu : MonoBehaviour
                 // Puzzle opened while pause menu was active - close it
                 ResumeGame();
             }
-            
-            // Disable pause menu canvas to prevent it from blocking puzzle UI
-            if (pauseMenuUI != null)
-            {
-                var canvas = pauseMenuUI.GetComponentInParent<Canvas>();
-                if (canvas != null)
-                {
-                    canvas.enabled = false; // Disable canvas to prevent blocking
-                }
-            }
-            return;
+            return; // Don't process pause input while puzzle is active
         }
         
-        // Re-enable pause menu canvas when puzzle is not active
-        if (pauseMenuUI != null)
-        {
-            var canvas = pauseMenuUI.GetComponentInParent<Canvas>();
-            if (canvas != null && !canvas.enabled)
-            {
-                canvas.enabled = true; // Re-enable when puzzle closes
-            }
-        }
-        
-        // Only respond to Escape key - don't sync with other pause systems
-        // This ensures the pause menu only shows when user presses Escape
+        // Toggle cooldown to prevent double-toggles
         if (Time.unscaledTime - lastToggleTime < ToggleCooldown) return;
 
         if (Input.GetKeyDown(pauseKey))
@@ -120,37 +99,28 @@ public class PauseMenu : MonoBehaviour
         if (isPaused) return;
         isPaused = true;
 
-        // Pause the game - but don't interfere with GameStateManager
-        // We manage our own pause state independently
+        // Pause the game
         Time.timeScale = 0f;
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        // Show UI (no SetActive off/on; use CanvasGroup fade)
+        // Show UI via CanvasGroup fade (pauseMenuUI should always be active)
         if (pauseMenuUI)
         {
-            // Ensure GameObject is active before trying to start coroutine
-            if (!pauseMenuUI.activeSelf)
-            {
-                pauseMenuUI.SetActive(true);
-            }
+            pauseMenuUI.SetActive(true); // Ensure active once
             
             var ui = pauseMenuUI.GetComponent<PauseMenuUI>();
-            if (ui && pauseMenuUI.activeSelf)
+            if (ui)
             {
                 ui.ShowPauseMenu();
-            }
-            else
-            {
-                pauseMenuUI.SetActive(true);
             }
         }
 
         if (audioSource && pauseSound) audioSource.PlayOneShot(pauseSound);
 
-        // Give UI focus and mouse
+        // Clear UI selection so keyboard nav starts fresh
         var es = EventSystem.current;
-        if (es) es.SetSelectedGameObject(null);
+        if (es) es.SetSelectedGameObject(resumeButton ? resumeButton.gameObject : null);
     }
 
     public void ResumeGame()
@@ -158,25 +128,16 @@ public class PauseMenu : MonoBehaviour
         if (!isPaused) return;
         isPaused = false;
 
-        // Resume the game - manage our own pause state independently
-        // But don't change time scale if puzzle is active (puzzle manages it)
-        if (!PipePuzzle.IsAnyPuzzleActive)
-        {
-            Time.timeScale = 1f;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
+        // Resume the game (puzzle check is redundant since Update blocks pause when puzzle is active)
+        Time.timeScale = 1f;
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
 
+        // Hide UI via CanvasGroup fade
         if (pauseMenuUI)
         {
-            // Ensure GameObject is active before trying to start coroutine
-            if (!pauseMenuUI.activeSelf)
-            {
-                pauseMenuUI.SetActive(true);
-            }
-            
             var ui = pauseMenuUI.GetComponent<PauseMenuUI>();
-            if (ui && pauseMenuUI.activeSelf)
+            if (ui)
             {
                 ui.HidePauseMenu();
             }
@@ -188,7 +149,7 @@ public class PauseMenu : MonoBehaviour
 
         if (audioSource && resumeSound) audioSource.PlayOneShot(resumeSound);
 
-        // Clear any UI selection so Esc is read cleanly next toggle
+        // Clear UI selection
         var es = EventSystem.current;
         if (es) es.SetSelectedGameObject(null);
     }
