@@ -88,7 +88,7 @@ public class LevelTrigger : MonoBehaviour
         if (interactPrompt) interactPrompt.SetActive(showPrompt);
     }
 
-    void TryDrive()
+    public void TryDrive()
     {
         isLevelEnding = true;
         Debug.Log("Player starting drive transition...");
