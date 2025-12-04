@@ -11,12 +11,14 @@ public class ObjectiveDisplay : MonoBehaviour
 
     [Header("Objective Settings")]
     [TextArea] public string[] objectives = {
-        "Use WASD keys to move around",
-        "Press SPACE to jump",
-        "Press CTRL to crouch",
-        "Press B to dash",
-        "Press M to open and close map",
-        "All Objectives Complete!"
+        "Use WASD keys to move around",          // 0
+        "Press SPACE to jump",                   // 1
+        "Press CTRL to crouch",                  // 2
+        "Press B to dash",                       // 3
+        "Press M to open and close map",         // 4
+        "Steal the banana from the playground",  // 5 (event-only)
+        "Go to the escape car",                  // 6 (event-only)
+        "All Objectives Complete!"               // 7
     };
     public float fadeDuration = 1f;
     public float displayDuration = 3f;
@@ -43,7 +45,7 @@ public class ObjectiveDisplay : MonoBehaviour
     
     void Update()
     {
-        // Check keys based on current objective
+        // Check keys based on current objective (first 5 objectives are key-based)
         if (showing)
         {
             switch (currentObjectiveIndex)
@@ -63,11 +65,14 @@ public class ObjectiveDisplay : MonoBehaviour
                 case 4: // Map objective
                     CheckMapKey();
                     break;
+                // 5: Steal banana (completed via event)
+                // 6: Go to escape car (completed via event)
+                // 7: "All Objectives Complete!" auto-completes after delay
             }
         }
         
-        // Auto-complete final objective after a delay
-        if (currentObjectiveIndex == 5 && showing && Time.time - objectiveStartTime >= displayDuration)
+        // Auto-complete final objective ("All Objectives Complete!") after a delay
+        if (currentObjectiveIndex == 7 && showing && Time.time - objectiveStartTime >= displayDuration)
         {
             Debug.Log($"Auto-completing final objective after {displayDuration} seconds");
             CompleteObjective();
@@ -181,12 +186,36 @@ public class ObjectiveDisplay : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Called from an EventOnlyInteractable when the player steals the banana.
+    /// </summary>
+    public void CompleteStealBananaObjective()
+    {
+        if (currentObjectiveIndex == 5)
+        {
+            Debug.Log("Steal Banana objective completed via event.");
+            CompleteObjective();
+        }
+    }
+
+    /// <summary>
+    /// Called from an EventOnlyInteractable when the player reaches the escape car.
+    /// </summary>
+    public void CompleteEscapeCarObjective()
+    {
+        if (currentObjectiveIndex == 6)
+        {
+            Debug.Log("Escape Car objective completed via event.");
+            CompleteObjective();
+        }
+    }
+
     public void CompleteObjective()
     {
         if (!showing) return;
         
-        // Notify ObjectiveUI if assigned (only for objectives 0-4, which map to UI objectives 0-4)
-        if (objectiveUI != null && currentObjectiveIndex < 5)
+        // Notify ObjectiveUI if assigned for all real objectives (exclude final \"All Objectives Complete!\" line)
+        if (objectiveUI != null && currentObjectiveIndex < objectives.Length - 1)
         {
             objectiveUI.MarkObjectiveComplete();
         }

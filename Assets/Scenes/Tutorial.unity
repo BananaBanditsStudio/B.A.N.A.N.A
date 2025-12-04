@@ -23303,7 +23303,7 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -23338,7 +23338,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 600008279}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 130c8b386c4e8f64daa23b483b150847, type: 3}
   m_Name: 
@@ -23354,6 +23354,59 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -3910990755373119420, guid: 3ee7b4f07b21ddb4b8110db745b9e7d7, type: 3}
   m_PrefabInstance: {fileID: 1454961731}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &600008288
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600008279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97a0e1a8466904cef9959c0e351c0b3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::InteractionEvent
+  onInteract:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1780099621}
+        m_TargetAssemblyTypeName: ObjectiveDisplay, Assembly-CSharp
+        m_MethodName: CompleteEscapeCarObjective
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 600008282}
+        m_TargetAssemblyTypeName: LevelTrigger, Assembly-CSharp
+        m_MethodName: TryDrive
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &600008289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 600008279}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d44a32a6a24340859cab3309748b0ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EventOnlyInteractable
+  useEvents: 1
+  promptMessage: Press E to drive
 --- !u!1 &603200438
 GameObject:
   m_ObjectHideFlags: 0
@@ -32003,31 +32056,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8107903773755909374, guid: 49a763f43a1774f7ca55241736984630, type: 3}
   m_PrefabInstance: {fileID: 1774411289}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &989085843
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 989085841}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f445e6388eef76e419bd9dec7872e84a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::BananaPickup
-  pickupSound: {fileID: 0}
-  pickupVFX: {fileID: 0}
-  bananaValue: 1
-  enemyPrefab: {fileID: 8452250182899081397, guid: c39676c8789cec74a9bb5cd43a26aae6, type: 3}
-  enemyCount: 5
-  spawnCenter: {fileID: 701315677}
-  spawnRadius: 3
-  bananaMarker: {fileID: 1921988790}
-  carMarker: {fileID: 1362534642}
-  carTrigger: {fileID: 600008279}
-  objectiveTracker: {fileID: 1720470613}
-  interactPrompt: {fileID: 0}
-  playerCamera: {fileID: 0}
 --- !u!1001 &989357696
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -50921,7 +50949,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1362534641
 RectTransform:
   m_ObjectHideFlags: 0
@@ -52104,6 +52132,10 @@ PrefabInstance:
       value: BananaMobile
       objectReference: {fileID: 0}
     - target: {fileID: 8771091787928289351, guid: 3ee7b4f07b21ddb4b8110db745b9e7d7, type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 8771091787928289351, guid: 3ee7b4f07b21ddb4b8110db745b9e7d7, type: 3}
       propertyPath: m_TagString
       value: Car
       objectReference: {fileID: 0}
@@ -52120,6 +52152,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8771091787928289351, guid: 3ee7b4f07b21ddb4b8110db745b9e7d7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 600008280}
+    - targetCorrespondingSourceObject: {fileID: 8771091787928289351, guid: 3ee7b4f07b21ddb4b8110db745b9e7d7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 600008289}
+    - targetCorrespondingSourceObject: {fileID: 8771091787928289351, guid: 3ee7b4f07b21ddb4b8110db745b9e7d7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 600008288}
   m_SourcePrefab: {fileID: -4161369568681901532, guid: 3ee7b4f07b21ddb4b8110db745b9e7d7, type: 3}
 --- !u!1001 &1457745481
 PrefabInstance:
@@ -55056,6 +55094,7 @@ GameObject:
   - component: {fileID: 1624614918}
   - component: {fileID: 1624614917}
   - component: {fileID: 1624614916}
+  - component: {fileID: 1624614919}
   m_Layer: 0
   m_Name: GlobalReferences
   m_TagString: Untagged
@@ -55118,6 +55157,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1624614919
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1624614915}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4de80bf4501024688a90aca349bc4ecc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySpawner
+  enemyPrefab: {fileID: 7230287969934151732, guid: 8b825121765de294ab210025fb06be76, type: 3}
+  spawnPoint: {fileID: 701315677}
+  spawnCount: 2
+  aggressiveSightDistance: 1000
+  aggressiveFieldOfView: 360
 --- !u!4 &1626472461 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4315301396323988, guid: e082979a473bb914ab8af10a5d754993, type: 3}
@@ -57337,16 +57393,72 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
       propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 600008282}
+      objectReference: {fileID: 1780099621}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1624614919}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
+      objectReference: {fileID: 1624614919}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
       propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: TryDrive
+      value: CompleteStealBananaObjective
+      objectReference: {fileID: 0}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: SpawnEnemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
+      value: DestroyAssignedObject
       objectReference: {fileID: 0}
     - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
       propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: LevelTrigger, Assembly-CSharp
+      value: ObjectiveDisplay, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: EnemySpawner, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
+      value: EnemySpawner, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgument
+      value: 
+      objectReference: {fileID: 989085841}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1746792139540141494, guid: 49a763f43a1774f7ca55241736984630, type: 3}
+      propertyPath: onInteract.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.GameObject, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 3291664622300281340, guid: 49a763f43a1774f7ca55241736984630, type: 3}
       propertyPath: m_LocalPosition.y
@@ -57403,10 +57515,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8107903773755909374, guid: 49a763f43a1774f7ca55241736984630, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 989085843}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49a763f43a1774f7ca55241736984630, type: 3}
 --- !u!4 &1775738036 stripped
 Transform:
@@ -57444,6 +57553,8 @@ MonoBehaviour:
   - Press CTRL to crouch
   - Press B to dash
   - Press M to open map
+  - Steal the banana from the playground
+  - Go to the escape car
   - All Objectives Complete!
   fadeDuration: 1
   displayDuration: 3
@@ -58342,7 +58453,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1806091691
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59511,7 +59622,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1921988789
 RectTransform:
   m_ObjectHideFlags: 0

@@ -109,7 +109,7 @@ public class BananaPickup : MonoBehaviour
         }
     }
 
-    private void TryCollect()
+    public void TryCollect()
     {
         // Marker logic
         if (bananaMarker != null) bananaMarker.gameObject.SetActive(false);
@@ -138,7 +138,7 @@ public class BananaPickup : MonoBehaviour
         Destroy(gameObject, 0.2f);
     }
 
-    void SpawnEnemies()
+    public void SpawnEnemies()
     {
         if (enemyPrefab == null || spawnCenter == null) return;
         for (int i = 0; i < enemyCount; i++)
