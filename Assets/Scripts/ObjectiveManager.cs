@@ -13,7 +13,9 @@ public class ObjectiveDisplay : MonoBehaviour
     [TextArea] public string[] objectives = {
         "Use WASD keys to move around",
         "Press SPACE to jump",
-        "Press C to crouch",
+        "Press CTRL to crouch",
+        "Press B to dash",
+        "Press M to open and close map",
         "All Objectives Complete!"
     };
     public float fadeDuration = 1f;
@@ -30,6 +32,8 @@ public class ObjectiveDisplay : MonoBehaviour
     private bool dPressed = false;
     private bool spacePressed = false;
     private bool cPressed = false;
+    private bool bPressed = false;
+    private bool mPressed = false;
 
     void Start()
     {
@@ -53,11 +57,17 @@ public class ObjectiveDisplay : MonoBehaviour
                 case 2: // Crouch objective
                     CheckCrouchKey();
                     break;
+                case 3: // Dash objective
+                    CheckDashKey();
+                    break;
+                case 4: // Map objective
+                    CheckMapKey();
+                    break;
             }
         }
         
         // Auto-complete final objective after a delay
-        if (currentObjectiveIndex == 3 && showing && Time.time - objectiveStartTime >= displayDuration)
+        if (currentObjectiveIndex == 5 && showing && Time.time - objectiveStartTime >= displayDuration)
         {
             Debug.Log($"Auto-completing final objective after {displayDuration} seconds");
             CompleteObjective();
@@ -123,15 +133,49 @@ public class ObjectiveDisplay : MonoBehaviour
     
     void CheckCrouchKey()
     {
-        // Check for C key press using Input System
+        // Check for CTRL key press using Input System
         if (UnityEngine.InputSystem.Keyboard.current != null)
         {
-            bool cKey = UnityEngine.InputSystem.Keyboard.current.cKey.isPressed;
+            bool leftCtrlKey = UnityEngine.InputSystem.Keyboard.current.leftCtrlKey.isPressed;
+            bool rightCtrlKey = UnityEngine.InputSystem.Keyboard.current.rightCtrlKey.isPressed;
+            bool ctrlKey = leftCtrlKey || rightCtrlKey;
             
-            if (cKey && !cPressed)
+            if (ctrlKey && !cPressed)
             {
                 cPressed = true;
-                Debug.Log("C key pressed - Crouch objective completed!");
+                Debug.Log("CTRL key pressed - Crouch objective completed!");
+                CompleteObjective();
+            }
+        }
+    }
+    
+    void CheckDashKey()
+    {
+        // Check for B key press using Input System
+        if (UnityEngine.InputSystem.Keyboard.current != null)
+        {
+            bool bKey = UnityEngine.InputSystem.Keyboard.current.bKey.isPressed;
+            
+            if (bKey && !bPressed)
+            {
+                bPressed = true;
+                Debug.Log("B key pressed - Dash objective completed!");
+                CompleteObjective();
+            }
+        }
+    }
+    
+    void CheckMapKey()
+    {
+        // Check for M key press using Input System
+        if (UnityEngine.InputSystem.Keyboard.current != null)
+        {
+            bool mKey = UnityEngine.InputSystem.Keyboard.current.mKey.isPressed;
+            
+            if (mKey && !mPressed)
+            {
+                mPressed = true;
+                Debug.Log("M key pressed - Map objective completed!");
                 CompleteObjective();
             }
         }
@@ -141,8 +185,8 @@ public class ObjectiveDisplay : MonoBehaviour
     {
         if (!showing) return;
         
-        // Notify ObjectiveUI if assigned (only for objectives 0-2, which map to UI objectives 0-2)
-        if (objectiveUI != null && currentObjectiveIndex < 3)
+        // Notify ObjectiveUI if assigned (only for objectives 0-4, which map to UI objectives 0-4)
+        if (objectiveUI != null && currentObjectiveIndex < 5)
         {
             objectiveUI.MarkObjectiveComplete();
         }

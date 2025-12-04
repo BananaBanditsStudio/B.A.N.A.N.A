@@ -57194,7 +57194,9 @@ MonoBehaviour:
   objectives:
   - Use WASD keys to move around
   - Press SPACE to jump
-  - Press C to crouch
+  - Press CTRL to crouch
+  - Press B to dash
+  - Press M to open map
   - All Objectives Complete!
   fadeDuration: 1
   displayDuration: 3
