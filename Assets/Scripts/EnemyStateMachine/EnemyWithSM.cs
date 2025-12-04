@@ -334,4 +334,60 @@ public class EnemyWithSM : MonoBehaviour
             stateMachine.ChangeState(new StunState(duration));
         }
     }
+
+     private float originalSightDistance;
+    private float originalFieldOfView;
+    private Coroutine alertCoroutine;
+    
+    /// <summary>
+    /// Alerts the enemy to the player's presence, causing them to immediately 
+    /// enter attack/chase mode regardless of sight range. Called when taking damage.
+    /// </summary>
+    public void AlertToPlayer()
+    {
+        // Don't alert if enemy is dead
+        EnemyDamage enemyDamage = GetComponent<EnemyDamage>();
+        if (enemyDamage != null && enemyDamage.IsDead())
+        {
+            return;
+        }
+
+        // Don't interrupt stun state
+        if (stateMachine != null && stateMachine.activeState != null)
+        {
+            if (stateMachine.activeState is StunState)
+            {
+                return;
+            }
+        }
+
+        // Store original values (only if not already alerted)
+        if (alertCoroutine == null)
+        {
+            originalSightDistance = sightDistance;
+            originalFieldOfView = fieldOfView;
+        }
+        
+        // Stop any existing alert coroutine and start fresh (refreshes timer)
+        if (alertCoroutine != null)
+        {
+            StopCoroutine(alertCoroutine);
+        }
+        
+        // Massively increase sight range and FOV so enemy can see player anywhere
+        sightDistance = 1000f;
+        fieldOfView = 360f; // Can see in all directions
+        
+        alertCoroutine = StartCoroutine(ResetAlertState());
+    }
+
+    private IEnumerator ResetAlertState()
+    {
+        yield return new WaitForSeconds(10f);
+        
+        // Reset to original values
+        sightDistance = originalSightDistance;
+        fieldOfView = originalFieldOfView;
+        alertCoroutine = null;
+    }
 }

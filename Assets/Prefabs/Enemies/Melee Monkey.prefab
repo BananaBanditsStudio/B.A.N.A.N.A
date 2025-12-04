@@ -3181,7 +3181,7 @@ MonoBehaviour:
   path: {fileID: 0}
   currentState: 
   playerReference: {fileID: 0}
-  sightDistance: 10
+  sightDistance: 15
   fieldOfView: 180
   attackBehaviorType: 1
   rangedFireRate: 2

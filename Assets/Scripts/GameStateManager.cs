@@ -70,9 +70,14 @@ public class GameStateManager : MonoBehaviour
         }
         else
         {
-            Time.timeScale = 1f;
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
+            // DON'T lock cursor or resume time if game over is active!
+            // Game over takes priority and needs the cursor unlocked
+            if (!isGameOver)
+            {
+                Time.timeScale = 1f;
+                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.visible = false;
+            }
         }
     }
     

@@ -36,6 +36,9 @@ public class ThrowAttackBehavior : IAttackBehavior
         }
     }
 
+    // Max distance at which enemy will stop and throw (otherwise chase closer)
+    private const float MAX_ATTACK_RANGE = 20f;
+    
     public void OnPerform(EnemyWithSM enemy, float deltaTime)
     {
         if (!isThrowing)
@@ -43,6 +46,22 @@ public class ThrowAttackBehavior : IAttackBehavior
             shootTimer += deltaTime;
         }
 
+        float distanceToPlayer = enemy.Player != null 
+            ? Vector3.Distance(enemy.transform.position, enemy.Player.transform.position) 
+            : 0f;
+        
+        // If too far, chase closer before attacking
+        if (distanceToPlayer > MAX_ATTACK_RANGE && !isThrowing)
+        {
+            if (enemy.Agent != null && enemy.Agent.isActiveAndEnabled && enemy.Agent.isOnNavMesh)
+            {
+                enemy.Agent.isStopped = false;
+                enemy.Agent.SetDestination(enemy.Player.transform.position);
+            }
+            return; // Don't attack yet, keep chasing
+        }
+
+        // Within attack range - stop and attack
         if (enemy.Agent != null && enemy.Agent.isActiveAndEnabled && enemy.Agent.isOnNavMesh)
         {
             enemy.Agent.isStopped = true;

@@ -182,7 +182,22 @@ public class PauseMenuUI : MonoBehaviour
         }
         
         StopAllCoroutines();
-        StartCoroutine(FadeTo(0f, fadeOutDuration));
+        StartCoroutine(FadeOutAndDeactivate());
+    }
+    
+    private System.Collections.IEnumerator FadeOutAndDeactivate()
+    {
+        float start = canvasGroup.alpha, t = 0f;
+        while (t < fadeOutDuration)
+        {
+            t += Time.unscaledDeltaTime;
+            canvasGroup.alpha = Mathf.Lerp(start, 0f, fadeOutDuration <= 0f ? 1f : t / fadeOutDuration);
+            yield return null;
+        }
+        canvasGroup.alpha = 0f;
+        
+        // IMPORTANT: Fully deactivate the GameObject so it doesn't interfere with other UI
+        gameObject.SetActive(false);
     }
 
     private System.Collections.IEnumerator FadeTo(float target, float duration, System.Action onDone = null)

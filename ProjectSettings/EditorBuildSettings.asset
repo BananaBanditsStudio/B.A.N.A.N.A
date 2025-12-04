@@ -5,16 +5,16 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/CutScene.unity
     guid: 8542395f92d80494ebdd1198f2af1b5d
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/TitleScreen.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Tutorial.unity
     guid: fb2bf577921b47e4f8cde110de5c617b
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Cutscene_TutorialtoMission1.unity
     guid: 8d17ce0b8a3fc11418195ebf35bce344
   - enabled: 1

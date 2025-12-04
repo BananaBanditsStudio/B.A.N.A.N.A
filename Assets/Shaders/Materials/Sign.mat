@@ -60,7 +60,7 @@ Material:
     - _Intesity: 13.2
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _frequency: 3.06
+    - _frequency: 0
     m_Colors: []
   m_BuildTextureStacks: []
   m_AllowLocking: 1

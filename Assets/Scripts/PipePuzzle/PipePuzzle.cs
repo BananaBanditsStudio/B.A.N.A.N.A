@@ -608,7 +608,9 @@ public class PipePuzzle : Interactable
             Destroy(puzzleCanvas);
         }
         
-        if (GameStateManager.Instance != null)
+        // Only unpause if game is NOT in game over state
+        // This prevents the puzzle from re-locking the cursor after game over triggers
+        if (GameStateManager.Instance != null && !GameStateManager.Instance.isGameOver)
         {
             GameStateManager.Instance.SetPaused(false);
         }

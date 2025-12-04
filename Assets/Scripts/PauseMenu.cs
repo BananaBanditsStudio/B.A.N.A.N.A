@@ -78,6 +78,24 @@ public class PauseMenu : MonoBehaviour
             return; // Don't process pause input while puzzle is active
         }
         
+        // Block pause menu during game over - don't interfere with game over UI
+        if (gameStateManager != null && gameStateManager.isGameOver)
+        {
+            if (isPaused)
+            {
+                // Game over triggered while pause menu was active - hide pause menu
+                // but don't call ResumeGame() which would lock the cursor
+                isPaused = false;
+                if (pauseMenuUI)
+                {
+                    var ui = pauseMenuUI.GetComponent<PauseMenuUI>();
+                    if (ui) ui.HidePauseMenu();
+                    else pauseMenuUI.SetActive(false);
+                }
+            }
+            return; // Don't process pause input during game over
+        }
+        
         // Toggle cooldown to prevent double-toggles
         if (Time.unscaledTime - lastToggleTime < ToggleCooldown) return;
 
@@ -128,10 +146,14 @@ public class PauseMenu : MonoBehaviour
         if (!isPaused) return;
         isPaused = false;
 
-        // Resume the game (puzzle check is redundant since Update blocks pause when puzzle is active)
-        Time.timeScale = 1f;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        // Only restore normal gameplay state if NOT in game over
+        // This prevents re-locking the cursor when game over is active
+        if (gameStateManager == null || !gameStateManager.isGameOver)
+        {
+            Time.timeScale = 1f;
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
 
         // Hide UI via CanvasGroup fade
         if (pauseMenuUI)

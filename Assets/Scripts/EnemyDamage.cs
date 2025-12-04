@@ -49,6 +49,25 @@ public class EnemyDamage : MonoBehaviour
         {
             Die();
         }
+        else
+        {
+            // Alert enemy to player's presence when taking damage (if still alive)
+            AlertEnemyToPlayer();
+        }
+    }
+    
+    /// <summary>
+    /// Alerts the enemy to the player's presence after taking damage.
+    /// Works with EnemyWithSM state machine system.
+    /// </summary>
+    private void AlertEnemyToPlayer()
+    {
+        // For EnemyWithSM (state machine) enemies
+        EnemyWithSM enemyWithSM = GetComponent<EnemyWithSM>();
+        if (enemyWithSM != null)
+        {
+            enemyWithSM.AlertToPlayer();
+        }
     }
     
     private void CreateDamagePopup(float damageAmount, bool isCriticalHit)
