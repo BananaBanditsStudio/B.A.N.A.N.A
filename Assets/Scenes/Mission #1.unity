@@ -38803,6 +38803,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1050924791110143967, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
+      propertyPath: m_Resource
+      value: 
+      objectReference: {fileID: 8300000, guid: 869f1883994a2364b86eaf95922f533e, type: 3}
     - target: {fileID: 1501829508711759091, guid: c8531cb2e7ca841249ab10b2f684f0e1, type: 3}
       propertyPath: promptText
       value: 
