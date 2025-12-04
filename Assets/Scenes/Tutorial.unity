@@ -2456,6 +2456,10 @@ PrefabInstance:
       propertyPath: playerReference
       value: 
       objectReference: {fileID: 1720470611}
+    - target: {fileID: 7230287969934151732, guid: 8b825121765de294ab210025fb06be76, type: 3}
+      propertyPath: showSightCircle
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8668492982123387130, guid: 8b825121765de294ab210025fb06be76, type: 3}
       propertyPath: m_Name
       value: Melee Monkey (1)
@@ -3851,6 +3855,10 @@ PrefabInstance:
       propertyPath: playerReference
       value: 
       objectReference: {fileID: 1720470611}
+    - target: {fileID: 7230287969934151732, guid: 8b825121765de294ab210025fb06be76, type: 3}
+      propertyPath: showSightCircle
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8668492982123387130, guid: 8b825121765de294ab210025fb06be76, type: 3}
       propertyPath: m_Name
       value: Melee Monkey (2)
@@ -32018,6 +32026,8 @@ MonoBehaviour:
   carMarker: {fileID: 1362534642}
   carTrigger: {fileID: 600008279}
   objectiveTracker: {fileID: 1720470613}
+  interactPrompt: {fileID: 0}
+  playerCamera: {fileID: 0}
 --- !u!1001 &989357696
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -52111,6 +52121,75 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 600008280}
   m_SourcePrefab: {fileID: -4161369568681901532, guid: 3ee7b4f07b21ddb4b8110db745b9e7d7, type: 3}
+--- !u!1001 &1457745481
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1584370878296028573, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: m_Name
+      value: MapViewer
+      objectReference: {fileID: 0}
+    - target: {fileID: 4540247031380630270, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: fullMapPanel
+      value: 
+      objectReference: {fileID: 1571627631}
+    - target: {fileID: 4540247031380630270, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: minimapCamera
+      value: 
+      objectReference: {fileID: 478800151}
+    - target: {fileID: 4540247031380630270, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: fullMapOrthographicSize
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8358182871710226556, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 13.62963
+      objectReference: {fileID: 0}
+    - target: {fileID: 8358182871710226556, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.18507
+      objectReference: {fileID: 0}
+    - target: {fileID: 8358182871710226556, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -15.69818
+      objectReference: {fileID: 0}
+    - target: {fileID: 8358182871710226556, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8358182871710226556, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8358182871710226556, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8358182871710226556, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8358182871710226556, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8358182871710226556, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8358182871710226556, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bcce50d9440164ba99c7d11506e929cd, type: 3}
 --- !u!1001 &1459140711
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -53756,6 +53835,11 @@ MonoScript:
   m_ClassName: MeshyBridge
   m_Namespace: 
   m_AssemblyName: MeshyAssembly
+--- !u!1 &1571627631 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4740486309067847302, guid: 9e32761bf05b98d4b905246cda9b02ab, type: 3}
+  m_PrefabInstance: {fileID: 464636985}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1573275764
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -64236,6 +64320,10 @@ PrefabInstance:
       propertyPath: playerReference
       value: 
       objectReference: {fileID: 1720470611}
+    - target: {fileID: 7230287969934151732, guid: 8b825121765de294ab210025fb06be76, type: 3}
+      propertyPath: showSightCircle
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8668492982123387130, guid: 8b825121765de294ab210025fb06be76, type: 3}
       propertyPath: m_Name
       value: Melee Monkey
@@ -67798,6 +67886,7 @@ SceneRoots:
   - {fileID: 263734110}
   - {fileID: 478800149}
   - {fileID: 2007567724}
+  - {fileID: 1457745481}
   - {fileID: 1800222624}
   - {fileID: 5886049342573702524}
   - {fileID: 7402409749248676200}
