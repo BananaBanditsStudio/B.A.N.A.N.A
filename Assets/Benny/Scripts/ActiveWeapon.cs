@@ -1,6 +1,8 @@
 using UnityEngine;
-using UnityEditor.Animations;
 using UnityEngine.Animations.Rigging;
+#if UNITY_EDITOR
+using UnityEditor.Animations;
+#endif
 
 public class ActiveWeapon : MonoBehaviour
 {
@@ -900,6 +902,7 @@ public class ActiveWeapon : MonoBehaviour
     [ContextMenu("Save Weapon Pose")]
     public void SaveWeaponPose()
     {
+#if UNITY_EDITOR
         GameObjectRecorder recorder = new GameObjectRecorder(gameObject);
 
         if (weaponParent != null)
@@ -919,6 +922,9 @@ public class ActiveWeapon : MonoBehaviour
         recorder.SaveToClip(weaponAnimClip);
 
         Debug.Log("Weapon pose saved to clip!");
+#else
+        Debug.LogWarning("SaveWeaponPose is only available in the Unity Editor.");
+#endif
     }
 
     [ContextMenu("Debug: List All Animation Clips")]
