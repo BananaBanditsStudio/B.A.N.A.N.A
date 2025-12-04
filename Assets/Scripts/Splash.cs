@@ -8,19 +8,36 @@ public class SplashScreenController : MonoBehaviour
     public Image logo;
 
     public float logoFadeInTime = 1.2f;
-    public float logoHoldTime   = 1.2f;
-    public float fadeOutTime    = 1.2f;
+    public float logoHoldTime = 1.2f;
+    public float fadeOutTime = 1.2f;
 
-    void Start()
+    // 🔑 This remembers if the splash has already played
+    private static bool hasPlayed = false;
+
+    private void Awake()
     {
+        // If we've already shown the splash once this run, skip it
+        if (hasPlayed)
+        {
+            gameObject.SetActive(false);   // Hide SplashCanvas instantly
+            return;
+        }
+
+        hasPlayed = true; // First time: mark as played
+    }
+
+    private void Start()
+    {
+        // Only runs on the first time (because otherwise we early-return in Awake)
         StartCoroutine(RunSplash());
     }
 
     IEnumerator RunSplash()
     {
-        // Start: black screen, logo invisible
         Color black = blackPanel.color;
         Color logoCol = logo.color;
+
+        // Start: black screen, logo invisible
         black.a = 1f;
         logoCol.a = 0f;
         blackPanel.color = black;
@@ -39,7 +56,7 @@ public class SplashScreenController : MonoBehaviour
         // --- Hold ---
         yield return new WaitForSeconds(logoHoldTime);
 
-        // --- Fade both logo + black panel out together ---
+        // --- Fade both logo + black out ---
         t = 0f;
         while (t < fadeOutTime)
         {
@@ -52,7 +69,7 @@ public class SplashScreenController : MonoBehaviour
             yield return null;
         }
 
-        // Remove splash, menu is now visible
+        // Remove splash, menu shows
         gameObject.SetActive(false);
     }
 }
