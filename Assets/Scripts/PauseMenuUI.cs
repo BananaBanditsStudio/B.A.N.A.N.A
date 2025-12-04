@@ -44,6 +44,10 @@ public class PauseMenuUI : MonoBehaviour
     [Header("Title")]
     public string pausedTitle = "POTASSIUM BREAK!";
 
+    [Header("Button Labels (leave empty to use defaults)")]
+    public string resumeButtonLabel = "Resume";
+    public string quitButtonLabel = "Quit";
+
     private CanvasGroup canvasGroup;
     private Image backgroundImage;
     private GameObject panelTarget;
@@ -91,18 +95,24 @@ public class PauseMenuUI : MonoBehaviour
             ApplyTMPStyle(pauseTitle, titleFaceColor, outlineColor, outlineWidth);
         }
 
-        // Buttons look
-        if (resumeButton) SetupBananaButton(resumeButton, "Resume");
-        if (quitButton) SetupBananaButton(quitButton, "Quit");
+        // Buttons look - use configured labels or preserve existing text
+        if (resumeButton) SetupBananaButton(resumeButton, resumeButtonLabel);
+        if (quitButton) SetupBananaButton(quitButton, quitButtonLabel);
     }
 
     private void SetupBananaButton(Button btn, string label)
     {
-        // label text
+        // label text - only set if label is provided and button text is empty/default
         var tmp = btn.GetComponentInChildren<TextMeshProUGUI>(true);
         if (tmp)
         {
-            tmp.text = label;
+            // Only set text if label is provided and button doesn't already have meaningful text
+            // This allows external scripts (like GameOverManager2) to set text before Start()
+            if (!string.IsNullOrEmpty(label) && (string.IsNullOrEmpty(tmp.text) || tmp.text == "Button"))
+            {
+                tmp.text = label;
+            }
+            // Always apply styling regardless of whether we set the text
             if (applyOutlineToButtonLabels)
                 ApplyTMPStyle(tmp, buttonLabelFaceColor, outlineColor, outlineWidth);
             else
@@ -211,5 +221,33 @@ public class PauseMenuUI : MonoBehaviour
         }
         canvasGroup.alpha = target;
         onDone?.Invoke();
+    }
+
+    /// <summary>
+    /// Update button labels dynamically (useful for reusing this component for game over menu)
+    /// </summary>
+    public void SetButtonLabels(string resumeLabel, string quitLabel)
+    {
+        resumeButtonLabel = resumeLabel;
+        quitButtonLabel = quitLabel;
+        
+        // Update button text immediately if buttons exist
+        if (resumeButton != null && !string.IsNullOrEmpty(resumeLabel))
+        {
+            var tmp = resumeButton.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (tmp != null)
+            {
+                tmp.text = resumeLabel;
+            }
+        }
+        
+        if (quitButton != null && !string.IsNullOrEmpty(quitLabel))
+        {
+            var tmp = quitButton.GetComponentInChildren<TextMeshProUGUI>(true);
+            if (tmp != null)
+            {
+                tmp.text = quitLabel;
+            }
+        }
     }
 }
