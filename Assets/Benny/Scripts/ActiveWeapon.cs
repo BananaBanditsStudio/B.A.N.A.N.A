@@ -1,8 +1,10 @@
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
+using System.Collections;
 #if UNITY_EDITOR
 using UnityEditor.Animations;
 #endif
+using System;
 
 public class ActiveWeapon : MonoBehaviour
 {
@@ -61,11 +63,17 @@ public class ActiveWeapon : MonoBehaviour
         // Find the clip to override
         FindWeaponAnimationClip();
 
-        // Get RigBuilder component
+        // Get RigBuilder component and ensure it's enabled
         rigBuilder = GetComponent<RigBuilder>();
         if (rigBuilder == null)
         {
             Debug.LogWarning("No RigBuilder found on this GameObject!");
+        }
+        else
+        {
+            // Ensure RigBuilder is enabled for runtime (critical for builds)
+            rigBuilder.enabled = true;
+            Debug.Log("✓ RigBuilder found and enabled");
         }
 
         // Get ALL hand IK constraints under Hand_IK
@@ -489,10 +497,16 @@ public class ActiveWeapon : MonoBehaviour
         availableWeapons[weaponIndex].gameObject.SetActive(true);
         isWeaponEquipped = true;
 
-        // Update IK constraint targets to use weapon-specific grips
-        UpdateIKConstraintTargets();
+        // Ensure RigBuilder is enabled before equipping (critical for builds)
+        if (rigBuilder != null && !rigBuilder.enabled)
+        {
+            rigBuilder.enabled = true;
+            Debug.LogWarning("RigBuilder was disabled! Enabled it for IK to work.");
+        }
 
-        SetHandIkWeight(1f);
+        // Update IK constraint targets to use weapon-specific grips
+        // Use coroutine to ensure weapon is fully active and grips are accessible
+        StartCoroutine(DelayedIKUpdate());
         Debug.Log($"✓ Weapon {weaponIndex + 1} EQUIPPED: {availableWeapons[weaponIndex].name}");
     }
 
@@ -545,6 +559,13 @@ public class ActiveWeapon : MonoBehaviour
     {
         bool success = false;
 
+        // Ensure RigBuilder is enabled (critical for runtime builds)
+        if (rigBuilder != null && !rigBuilder.enabled)
+        {
+            rigBuilder.enabled = true;
+            Debug.LogWarning("RigBuilder was disabled! Enabled it for IK to work.");
+        }
+
         // Method 1: Set weight on ALL IK constraints found (both left and right hands)
         if (allHandIkConstraints != null && allHandIkConstraints.Length > 0)
         {
@@ -558,9 +579,12 @@ public class ActiveWeapon : MonoBehaviour
                 }
             }
 
-            // Force the rig to rebuild/update
-            if (rigBuilder != null)
+            // Note: rigBuilder.Build() is typically not needed at runtime
+            // Animation Rigging updates automatically, but we can force an update if needed
+            if (rigBuilder != null && rigBuilder.enabled)
             {
+                // Only rebuild if RigBuilder is enabled
+                // Build() is mainly for editor-time, but can help force updates
                 rigBuilder.Build();
                 Debug.Log("✓ RigBuilder rebuilt");
             }
@@ -682,10 +706,19 @@ public class ActiveWeapon : MonoBehaviour
         Transform leftGrip = GetLeftHandGrip();
         Transform rightGrip = GetRightHandGrip();
 
+        Debug.Log($"[UpdateIKConstraintTargets] Weapon: {(weapon != null ? weapon.name : "NULL")}, " +
+                  $"Left grip: {(leftGrip != null ? leftGrip.name : "NULL")}, " +
+                  $"Right grip: {(rightGrip != null ? rightGrip.name : "NULL")}");
+
         // Update left hand IK constraint target
         if (leftHandIKConstraint != null && leftGrip != null)
         {
             UpdateConstraintTarget(leftHandIKConstraint, leftGrip, "Left");
+        }
+        else
+        {
+            if (leftHandIKConstraint == null) Debug.LogWarning("[UpdateIKConstraintTargets] Left hand IK constraint is NULL!");
+            if (leftGrip == null) Debug.LogWarning("[UpdateIKConstraintTargets] Left grip is NULL!");
         }
 
         // Update right hand IK constraint target
@@ -693,11 +726,22 @@ public class ActiveWeapon : MonoBehaviour
         {
             UpdateConstraintTarget(rightHandIKConstraint, rightGrip, "Right");
         }
+        else
+        {
+            if (rightHandIKConstraint == null) Debug.LogWarning("[UpdateIKConstraintTargets] Right hand IK constraint is NULL!");
+            if (rightGrip == null) Debug.LogWarning("[UpdateIKConstraintTargets] Right grip is NULL!");
+        }
 
-        // Force rig rebuild to apply changes
-        if (rigBuilder != null)
+        // Force rig rebuild to apply changes (if RigBuilder is enabled)
+        if (rigBuilder != null && rigBuilder.enabled)
         {
             rigBuilder.Build();
+            Debug.Log("[UpdateIKConstraintTargets] RigBuilder rebuilt after target update");
+        }
+        else
+        {
+            if (rigBuilder == null) Debug.LogWarning("[UpdateIKConstraintTargets] RigBuilder is NULL!");
+            else if (!rigBuilder.enabled) Debug.LogWarning("[UpdateIKConstraintTargets] RigBuilder is disabled!");
         }
     }
 
@@ -708,6 +752,46 @@ public class ActiveWeapon : MonoBehaviour
     private void UpdateConstraintTarget(Component constraint, Transform target, string handName)
     {
         if (constraint == null || target == null) return;
+
+        // Try direct type casting first (most reliable for runtime)
+        try
+        {
+            // Try TwoBoneIKConstraint
+            var twoBoneIK = constraint as TwoBoneIKConstraint;
+            if (twoBoneIK != null)
+            {
+                var data = twoBoneIK.data;
+                data.target = target;
+                twoBoneIK.data = data;
+                Debug.Log($"✓ [RUNTIME] Updated {handName} hand TwoBoneIKConstraint target directly: {target.name}");
+                return;
+            }
+
+            // Try ChainIKConstraint
+            var chainIK = constraint as ChainIKConstraint;
+            if (chainIK != null)
+            {
+                var data = chainIK.data;
+                data.target = target;
+                chainIK.data = data;
+                Debug.Log($"✓ [RUNTIME] Updated {handName} hand ChainIKConstraint target directly: {target.name}");
+                return;
+            }
+
+            // Try MultiAimConstraint (if used for hand IK)
+            var multiAim = constraint as MultiAimConstraint;
+            if (multiAim != null)
+            {
+                // MultiAimConstraint uses a different structure, but let's try
+                var data = multiAim.data;
+                // MultiAimConstraint doesn't have a single target, so skip it
+                Debug.LogWarning($"[RUNTIME] MultiAimConstraint doesn't support single target updates for {handName} hand");
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogWarning($"[RUNTIME] Direct type casting failed: {e.Message}");
+        }
 
 #if UNITY_EDITOR
         try
@@ -763,55 +847,144 @@ public class ActiveWeapon : MonoBehaviour
             Debug.LogWarning($"Failed to update {handName} hand IK constraint via SerializedObject: {e.Message}");
         }
 #else
-        // Runtime fallback: Use reflection
+        // Runtime fallback: Use reflection to update constraint targets
+        // CRITICAL: Animation Rigging constraints (TwoBoneIKConstraint, etc.) store target in data.m_Target field
+        // The data struct is a VALUE TYPE, so we must get it, modify it, and set it back
         System.Type constraintType = constraint.GetType();
+        Debug.Log($"[RUNTIME] Updating {handName} hand IK constraint target. Type: {constraintType.Name}, Target: {target.name}");
 
-        // Try common property names
-        System.Reflection.PropertyInfo targetProp = constraintType.GetProperty("target") ??
-                                                   constraintType.GetProperty("m_Target");
+        bool success = false;
 
-        if (targetProp != null && targetProp.CanWrite)
+        // Method 1: Try data.m_Target field (most common in TwoBoneIKConstraint, ChainIKConstraint, etc.)
+        // Animation Rigging constraints store target in a data struct as a field
+        System.Reflection.PropertyInfo dataProp = constraintType.GetProperty("data", 
+            System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+        
+        if (dataProp != null)
         {
             try
             {
-                targetProp.SetValue(constraint, target);
-                Debug.Log($"✓ Updated {handName} hand IK constraint target (runtime): {target.name}");
-                return;
+                // Get the data struct (value type, so we get a copy)
+                object data = dataProp.GetValue(constraint);
+                if (data != null)
+                {
+                    System.Type dataType = data.GetType();
+                    
+                    // Try m_Target field first (most common in Animation Rigging - TwoBoneIKConstraint uses this)
+                    System.Reflection.FieldInfo dataTargetField = dataType.GetField("m_Target", 
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+                    
+                    if (dataTargetField != null && dataTargetField.FieldType == typeof(Transform))
+                    {
+                        // Modify the struct copy
+                        dataTargetField.SetValue(data, target);
+                        // Set the modified struct back to the constraint
+                        dataProp.SetValue(constraint, data);
+                        Debug.Log($"✓ [RUNTIME] Updated {handName} hand IK constraint via data.m_Target field: {target.name}");
+                        success = true;
+                    }
+                    else
+                    {
+                        // Try m_Target property
+                        System.Reflection.PropertyInfo dataTargetProp = dataType.GetProperty("m_Target", 
+                            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+                        
+                        if (dataTargetProp != null && dataTargetProp.CanWrite && dataTargetProp.PropertyType == typeof(Transform))
+                        {
+                            dataTargetProp.SetValue(data, target);
+                            dataProp.SetValue(constraint, data);
+                            Debug.Log($"✓ [RUNTIME] Updated {handName} hand IK constraint via data.m_Target property: {target.name}");
+                            success = true;
+                        }
+                        else
+                        {
+                            // Try target property (without m_ prefix)
+                            System.Reflection.PropertyInfo targetProp = dataType.GetProperty("target", 
+                                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.IgnoreCase);
+                            
+                            if (targetProp != null && targetProp.CanWrite && targetProp.PropertyType == typeof(Transform))
+                            {
+                                targetProp.SetValue(data, target);
+                                dataProp.SetValue(constraint, data);
+                                Debug.Log($"✓ [RUNTIME] Updated {handName} hand IK constraint via data.target property: {target.name}");
+                                success = true;
+                            }
+                        }
+                    }
+                }
             }
             catch (System.Exception e)
             {
-                Debug.LogWarning($"Failed to set target property on {constraintType.Name}: {e.Message}");
+                Debug.LogWarning($"[RUNTIME] Failed to set data.m_Target: {e.Message}\nStackTrace: {e.StackTrace}");
             }
         }
 
-        // Try data.target pattern
-        System.Reflection.PropertyInfo dataProp = constraintType.GetProperty("data");
-        if (dataProp != null)
+        // Method 2: Try direct m_Target field on constraint (fallback)
+        if (!success)
         {
-            object data = dataProp.GetValue(constraint);
-            if (data != null)
+            System.Reflection.FieldInfo targetField = constraintType.GetField("m_Target", 
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+            if (targetField != null && targetField.FieldType == typeof(Transform))
             {
-                System.Type dataType = data.GetType();
-                System.Reflection.PropertyInfo dataTargetProp = dataType.GetProperty("target") ??
-                                                              dataType.GetProperty("m_Target");
-                if (dataTargetProp != null && dataTargetProp.CanWrite)
+                try
                 {
-                    try
-                    {
-                        dataTargetProp.SetValue(data, target);
-                        dataProp.SetValue(constraint, data);
-                        Debug.Log($"✓ Updated {handName} hand IK constraint data.target (runtime): {target.name}");
-                        return;
-                    }
-                    catch (System.Exception e)
-                    {
-                        Debug.LogWarning($"Failed to set data.target property: {e.Message}");
-                    }
+                    targetField.SetValue(constraint, target);
+                    Debug.Log($"✓ [RUNTIME] Updated {handName} hand IK constraint via m_Target field: {target.name}");
+                    success = true;
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"[RUNTIME] Failed to set m_Target field: {e.Message}");
                 }
             }
         }
 
-        Debug.LogWarning($"⚠ Could not update {handName} hand IK constraint target at runtime. Constraint type: {constraintType.Name}");
+        // Method 3: Try direct target property (fallback)
+        if (!success)
+        {
+            System.Reflection.PropertyInfo directTargetProp = constraintType.GetProperty("target", 
+                System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.IgnoreCase);
+            if (directTargetProp != null && directTargetProp.CanWrite && directTargetProp.PropertyType == typeof(Transform))
+            {
+                try
+                {
+                    directTargetProp.SetValue(constraint, target);
+                    Debug.Log($"✓ [RUNTIME] Updated {handName} hand IK constraint via target property: {target.name}");
+                    success = true;
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"[RUNTIME] Failed to set target property: {e.Message}");
+                }
+            }
+        }
+
+        if (!success)
+        {
+            // Log all available fields and properties for debugging
+            Debug.LogError($"❌ [RUNTIME] Could not update {handName} hand IK constraint target! Constraint type: {constraintType.Name}");
+            Debug.LogError($"Available properties in {constraintType.Name}:");
+            foreach (var prop in constraintType.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic))
+            {
+                Debug.LogError($"  - {prop.Name} ({prop.PropertyType.Name})");
+            }
+            Debug.LogError($"Available fields in {constraintType.Name}:");
+            foreach (var field in constraintType.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic))
+            {
+                Debug.LogError($"  - {field.Name} ({field.FieldType.Name})");
+            }
+        }
+        else
+        {
+            // Force constraint to update by toggling weight (helps RigBuilder recognize the change)
+            IRigConstraint rigConstraint = constraint as IRigConstraint;
+            if (rigConstraint != null)
+            {
+                float currentWeight = rigConstraint.weight;
+                rigConstraint.weight = 0f;
+                rigConstraint.weight = currentWeight;
+            }
+        }
 #endif
     }
 
@@ -1124,6 +1297,31 @@ public class ActiveWeapon : MonoBehaviour
     public RaycastWeapon GetCurrentWeapon()
     {
         return weapon; // or whatever variable stores the ACTIVE gun
+    }
+
+    /// <summary>
+    /// Coroutine to delay IK update, ensuring weapon is fully active and grips are accessible.
+    /// This is especially important in builds where timing can differ from the editor.
+    /// </summary>
+    private IEnumerator DelayedIKUpdate()
+    {
+        // Wait one frame to ensure weapon GameObject is fully active
+        yield return null;
+        
+        // Update IK constraint targets to use weapon-specific grips
+        UpdateIKConstraintTargets();
+        
+        // Wait another frame to ensure targets are set
+        yield return null;
+        
+        // Set IK weight after targets are updated
+        SetHandIkWeight(1f);
+        
+        // Force one more update after weight is set
+        yield return null;
+        UpdateIKConstraintTargets();
+        
+        Debug.Log("[DelayedIKUpdate] IK targets and weight updated for weapon");
     }
 
 }
